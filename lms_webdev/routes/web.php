@@ -2,6 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('homepage');
-});
+Route::view('/', 'landingpage')->name('landingpage');
+Route::view('/login', 'auth.login')->name('login');
+Route::view('/signup', 'auth.signup')->name('signup');
