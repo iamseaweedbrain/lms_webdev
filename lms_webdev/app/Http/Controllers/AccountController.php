@@ -12,7 +12,8 @@ class AccountController extends Controller
     public function store(Request $request)
     {
         $user = new UserAccount();
-        $user->name = $request->name;
+        $user->firstname = $request->firstname;
+        $user->lastname = $request->lastname;
         $user->email = $request->email;
         $user->password = Hash::make($request->password);
         $user->avatar = 'avatars/active-cat.jpg';
