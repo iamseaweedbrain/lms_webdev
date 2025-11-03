@@ -30,7 +30,8 @@
                         },
                         main: '#000000',
                         page: '#FAF8F5',
-                        warning: '#FF6B6B'
+                        warning: '#FF6B6B',
+                        placeholder: '#222238'
                     },
                     fontFamily: {
                         outfit: ['Outfit', 'sans-serif'],
@@ -52,7 +53,7 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-[#FCFAF8] text-[#000000] flex flex-col min-h-screen">
+<body class="bg-page text-main flex flex-col min-h-screen">
     {{ $slot }}
 </body>
 </html>

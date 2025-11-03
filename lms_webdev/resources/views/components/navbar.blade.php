@@ -1,5 +1,5 @@
 <header class="flex justify-between items-center px-8 py-4">
-    <a href="{{ url('/') }}" class="font-bold text-xl">
+    <a href="{{ route('landingpage') }}" class="font-bold text-xl">
         LEARN<span class="text-yellow-400">FINITY</span>
     </a>
 
@@ -10,10 +10,12 @@
                 <span>SIGN IN</span>
             </a>
         @else
-            <a href="{{ route('landingpage') }}" class="flex items-center space-x-1">
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7m-9 2v8m-4 4h10a2 2 0 002-2V12a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                <span>HOME</span>
-            </a>
+            <a href="{{ route('landingpage') }}" 
+                class="flex items-center gap-2 px-4 py-2
+                        text-main font-poppins text-sm hover:text-pastel-yellow ">
+                    <iconify-icon icon="iconamoon:home-fill" class="w-5 h-5"></iconify-icon>
+                    <span>HOME</span>
+                </a>
         @endif
     </nav>
 </header>

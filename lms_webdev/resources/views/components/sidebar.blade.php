@@ -3,10 +3,10 @@
                 flex flex-col justify-between items-center fixed top-0 left-0 gap-[60px]">
 
         {{-- Top Icon --}}
-        <a href="{{ route('dashboard') }}" 
+        <a href="{{ route('notification') }}" 
            class="flex justify-center items-center w-[50px] h-[50px] my-10 rounded-full 
                   transition-all duration-200 ease-in-out text-main text-[22px] 
-                  {{ request()->is('dashboard') ? 'bg-main text-pastel-pink' : 'hover:bg-main hover:text-pastel-pink' }}">
+                  {{ request()->is('notification') ? 'bg-main text-pastel-pink' : 'hover:bg-main hover:text-pastel-pink' }}">
             <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" viewBox="0 0 24 24">
                 <rect width="24" height="24" fill="none"/>
                 <path fill="currentColor" fill-rule="evenodd"
