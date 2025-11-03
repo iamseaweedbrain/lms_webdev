@@ -37,6 +37,13 @@
                         outfit: ['Outfit', 'sans-serif'],
                         poppins: ['Poppins', 'sans-serif'],
                     },
+                    fontWeight: {
+                        light: 300,
+                        regular: 400,
+                        medium: 500,
+                        bold: 700,
+                        extrabold: 800,
+                    },
                     boxShadow: {
                         'pastel-pink': '4px 4px 0 #FFD6EA',
                         'pastel-yellow': '4px 4px 0 #FFE6A6',
