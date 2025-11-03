@@ -16,10 +16,43 @@
     <!-- para sa icons iconify na since ayun din gamit sa figma or dagdag kayo here -->
     <script src="https://code.iconify.design/iconify-icon/2.1.0/iconify-icon.min.js"></script>
 
+    <!-- theme colors -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        pastel: {
+                            pink: '#FFD6EA',
+                            yellow: '#FFE6A6',
+                            blue: '#D1E4E2',
+                            purple: '#D7CAE8',
+                        },
+                        main: '#000000',
+                        page: '#FAF8F5',
+                        warning: '#FF6B6B'
+                    },
+                    fontFamily: {
+                        outfit: ['Outfit', 'sans-serif'],
+                        poppins: ['Poppins', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'pastel-pink': '4px 4px 0 #FFD6EA',
+                        'pastel-yellow': '4px 4px 0 #FFE6A6',
+                        'pastel-blue': '4px 4px 0 #D1E4E2',
+                        'pastel-purple': '4px 4px 0 #D7CAE8',
+                        'main': '4px 4px 0 #000000',
+                        'warning': '4px 4px 0 #FF6B6B',
+                    },
+                },
+            },
+        };
+        </script>
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
-<body class="bg-[#FCFAF8] text-gray-900 flex flex-col min-h-screen">
+<body class="bg-[#FCFAF8] text-[#000000] flex flex-col min-h-screen">
     {{ $slot }}
 </body>
 </html>
