@@ -1,7 +1,6 @@
 <x-layouts.mainlayout>
     <!-- CLASSES PAGE -->
     <div class="p-6" id="classesPage">
-        <!-- Header -->
         <div class="flex justify-between items-center mb-10">
             <h1 class="text-3xl font-bold font-outfit">Your Classes</h1>
 
@@ -71,10 +70,13 @@
             </div>
 
             <div class="flex items-center gap-4 -mt-2">
-                <button class="p-2 hover:bg-gray-100 rounded-full transition">
+                <button 
+                    onclick="showMembers()" 
+                    class="p-2 hover:bg-gray-100 rounded-full transition"
+                    title="View Members">
                     <iconify-icon icon="mdi:account-group-outline" width="26" height="26" class="text-black"></iconify-icon>
                 </button>
-                <button class="p-2 hover:bg-gray-100 rounded-full transition">
+                <button class="p-2 hover:bg-gray-100 rounded-full transition" title="Settings">
                     <iconify-icon icon="mdi:cog-outline" width="26" height="26" class="text-black"></iconify-icon>
                 </button>
             </div>
@@ -131,6 +133,84 @@
             </div>
         </div>
 
+        <!-- MEMBERS TAB -->
+        <div id="membersSection" class="hidden flex flex-col gap-6">
+        <h2 class="font-semibold text-lg font-outfit mb-2">Class Members</h2>
+
+        <!-- Teachers -->
+        <div>
+            <h3 class="font-semibold text-md font-outfit text-gray-700 mb-2">Teachers</h3>
+            <div id="teachersList" class="flex flex-col gap-3">
+            <div class="bg-white border-2 border-[#F9CADA] rounded-xl p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                <img 
+                    src="{{ asset('images/teacher-santos.jpg') }}" 
+                    alt="Mr. Santos" 
+                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
+                >
+                <div>
+                    <p class="font-semibold text-lg font-outfit text-black">Mr. Santos</p>
+                    <p class="text-sm text-gray-500 font-outfit">Algebra 101 - Main Instructor</p>
+                </div>
+                </div>
+                <iconify-icon icon="mdi:account-tie-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
+            </div>
+            </div>
+        </div>
+
+        <!-- Students -->
+        <div>
+            <h3 class="font-semibold text-md font-outfit text-gray-700 mb-2">Students</h3>
+            <div id="studentsList" class="flex flex-col gap-3">
+            <div class="bg-white border-2 border-[#CBE8E9] rounded-xl p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                <img 
+                    src="{{ asset('images/student-venice.jpg') }}" 
+                    alt="Venice Don" 
+                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
+                >
+                <div>
+                    <p class="font-semibold text-lg font-outfit text-black">Venice Don</p>
+                    <p class="text-sm text-gray-500 font-outfit">Member</p>
+                </div>
+                </div>
+                <iconify-icon icon="mdi:account-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
+            </div>
+
+            <div class="bg-white border-2 border-[#CBE8E9] rounded-xl p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                <img 
+                    src="{{ asset('images/student-jake.jpg') }}" 
+                    alt="Jake Reyes" 
+                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
+                >
+                <div>
+                    <p class="font-semibold text-lg font-outfit text-black">Jake Reyes</p>
+                    <p class="text-sm text-gray-500 font-outfit">Member</p>
+                </div>
+                </div>
+                <iconify-icon icon="mdi:account-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
+            </div>
+
+            <div class="bg-white border-2 border-[#CBE8E9] rounded-xl p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                <img 
+                    src="{{ asset('images/student-lara.jpg') }}" 
+                    alt="Lara Cruz" 
+                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
+                >
+                <div>
+                    <p class="font-semibold text-lg font-outfit text-black">Lara Cruz</p>
+                    <p class="text-sm text-gray-500 font-outfit">Member</p>
+                </div>
+                </div>
+                <iconify-icon icon="mdi:account-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
+            </div>
+            </div>
+        </div>
+        </div>
+
+
         <style>
             #classHeader {
                 position: relative;
@@ -146,117 +226,145 @@
         </style>
     </div>
 
-    <script>
-        const dbData = {
-            posts: 12, // these will later come from your DB
-            assignments: 3
-        };
+<script>
+    const dbData = {
+        posts: 12,
+        assignments: 3,
+        members: 14
+    };
 
-        // CLASS DATA
-        const pinnedClasses = [
-            { creator: 'Mr. Santos', name: 'Algebra 101', count: '01', color: 'pink', status: 'Pending Assignments', role: 'Member' },
-            { creator: 'Ms. Lopez', name: 'Art Appreciation', count: '00', color: 'blue', status: 'No Pending Activities', role: 'Member' },
-            { creator: 'Prof. Cruz', name: 'Physics Lab', count: '10', color: 'yellow', status: 'Check Student Work', role: 'Member' },
-            { creator: 'Dr. Reyes', name: 'English Composition', count: '01', color: 'purple', status: 'Pending Assignments', role: 'Member' },
-        ];
+    const pinnedClasses = [
+        { creator: 'Mr. Santos', name: 'Algebra 101', count: '01', color: 'pink', status: 'Pending Assignments', role: 'Member' },
+        { creator: 'Ms. Lopez', name: 'Art Appreciation', count: '00', color: 'blue', status: 'No Pending Activities', role: 'Member' },
+        { creator: 'Prof. Cruz', name: 'Physics Lab', count: '10', color: 'yellow', status: 'Check Student Work', role: 'Member' },
+        { creator: 'Dr. Reyes', name: 'English Composition', count: '01', color: 'purple', status: 'Pending Assignments', role: 'Member' },
+    ];
 
-        const allClasses = [
-            { creator: 'Prof. Diaz', name: 'World Literature', count: '01', color: 'pink', status: 'Pending' },
-            { creator: 'Mr. Lim', name: 'Programming 2', count: '01', color: 'blue', status: 'Pending' },
-            { creator: 'Ms. Bautista', name: 'Philosophy', count: '01', color: 'yellow', status: 'Pending' },
-            { creator: 'Mr. Gomez', name: 'Multimedia Arts', count: '01', color: 'purple', status: 'Pending' },
-        ];
+    const allClasses = [
+        { creator: 'Prof. Diaz', name: 'World Literature', count: '01', color: 'pink', status: 'Pending' },
+        { creator: 'Mr. Lim', name: 'Programming 2', count: '01', color: 'blue', status: 'Pending' },
+        { creator: 'Ms. Bautista', name: 'Philosophy', count: '01', color: 'yellow', status: 'Pending' },
+        { creator: 'Mr. Gomez', name: 'Multimedia Arts', count: '01', color: 'purple', status: 'Pending' },
+    ];
 
-        function generatePinnedCard(creatorName, className, count, color, role) {
-            return `
-                <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}')"
-                    class="bg-white border-2 border-pastel-${color} rounded-2xl p-6 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition duration-200 shadow-pastel-${color}">
-                    <div class="flex justify-between items-start mb-3">
-                        <p class="text-gray-500 text-sm font-outfit">${creatorName}</p>
-                        <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
-                    </div>
-                    <h4 class="font-bold text-xl font-outfit mb-6">${className}</h4>
-                    <div class="flex justify-between items-end">
-                        <span class="bg-pastel-${color} text-black rounded-xl px-5 py-2 font-bold text-xl font-outfit shadow-sm">${count}</span>
-                        <div class="text-right">
-                            <p class="text-gray-400 text-xs font-outfit">Joined as</p>
-                            <p class="font-semibold text-sm font-outfit text-main">${role}</p>
-                        </div>
+    function generatePinnedCard(creatorName, className, count, color, role) {
+        return `
+            <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}')"
+                class="bg-white border-2 border-pastel-${color} rounded-2xl p-6 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition duration-200 shadow-pastel-${color}">
+                <div class="flex justify-between items-start mb-3">
+                    <p class="text-gray-500 text-sm font-outfit">${creatorName}</p>
+                    <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
+                </div>
+                <h4 class="font-bold text-xl font-outfit mb-6">${className}</h4>
+                <div class="flex justify-between items-end">
+                    <span class="bg-pastel-${color} text-black rounded-xl px-5 py-2 font-bold text-xl font-outfit shadow-sm">${count}</span>
+                    <div class="text-right">
+                        <p class="text-gray-400 text-xs font-outfit">Joined as</p>
+                        <p class="font-semibold text-sm font-outfit text-main">${role}</p>
                     </div>
                 </div>
-            `;
-        }
+            </div>
+        `;
+    }
 
-        function generateAllClassRow(creatorName, className, count, color, status) {
-            return `
-                <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}')"
-                    class="flex justify-between items-center bg-white border-2 border-pastel-${color} rounded-xl px-6 py-4 hover:scale-[1.02] transition duration-200 cursor-pointer shadow-pastel-${color}">
-                    <div>
-                        <p class="text-sm text-gray-500 font-outfit">${creatorName}</p>
-                        <h4 class="font-semibold text-lg font-outfit">${className}</h4>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <div class="flex flex-col items-center">
-                            <p class="text-xs text-gray-500 font-outfit">${status}</p>
-                            <span class="font-bold text-xl text-pastel-${color} font-outfit">${count}</span>
-                        </div>
-                        <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
-                    </div>
+    function generateAllClassRow(creatorName, className, count, color, status) {
+        return `
+            <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}')"
+                class="flex justify-between items-center bg-white border-2 border-pastel-${color} rounded-xl px-6 py-4 hover:scale-[1.02] transition duration-200 cursor-pointer shadow-pastel-${color}">
+                <div>
+                    <p class="text-sm text-gray-500 font-outfit">${creatorName}</p>
+                    <h4 class="font-semibold text-lg font-outfit">${className}</h4>
                 </div>
-            `;
-        }
+                <div class="flex items-center gap-4">
+                    <div class="flex flex-col items-center">
+                        <p class="text-xs text-gray-500 font-outfit">${status}</p>
+                        <span class="font-bold text-xl text-pastel-${color} font-outfit">${count}</span>
+                    </div>
+                    <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
+                </div>
+            </div>
+        `;
+    }
 
-        function renderPinnedClasses() {
-            document.getElementById('pinned-classes-container').innerHTML = pinnedClasses.map(c => generatePinnedCard(c.creator, c.name, c.count, c.color, c.role)).join('');
-        }
+    function renderPinnedClasses() {
+        document.getElementById('pinned-classes-container').innerHTML = pinnedClasses.map(c =>
+            generatePinnedCard(c.creator, c.name, c.count, c.color, c.role)
+        ).join('');
+    }
 
-        function renderAllClasses() {
-            document.getElementById('all-classes-container').innerHTML = allClasses.map(c => generateAllClassRow(c.creator, c.name, c.count, c.color, c.status)).join('');
-        }
+    function renderAllClasses() {
+        document.getElementById('all-classes-container').innerHTML = allClasses.map(c =>
+            generateAllClassRow(c.creator, c.name, c.count, c.color, c.status)
+        ).join('');
+    }
 
-        function openClassView(name, creator, count, color) {
-            document.getElementById('classesPage').classList.add('hidden');
-            document.getElementById('classViewPage').classList.remove('hidden');
-            document.getElementById('classTitle').textContent = name;
-            document.getElementById('classCreator').textContent = creator;
-            document.getElementById('classCount').textContent = dbData.posts;
-            document.getElementById('classLabel').textContent = 'New Posts';
-            document.getElementById('classHeader').className = `relative rounded-2xl p-10 flex justify-between items-start mb-10 bg-pastel-${color} shadow-sm overflow-visible`;
-        }
+    function openClassView(name, creator, count, color) {
+        document.getElementById('classesPage').classList.add('hidden');
+        document.getElementById('classViewPage').classList.remove('hidden');
+        document.getElementById('classTitle').textContent = name;
+        document.getElementById('classCreator').textContent = creator;
+        document.getElementById('classCount').textContent = dbData.posts;
+        document.getElementById('classLabel').textContent = 'New Posts';
+        document.getElementById('classHeader').className =
+            `relative rounded-2xl p-10 flex justify-between items-start mb-10 bg-pastel-${color} shadow-sm overflow-visible`;
 
-        function goBackToClasses() {
-            document.getElementById('classViewPage').classList.add('hidden');
-            document.getElementById('classesPage').classList.remove('hidden');
-        }
+        showTab('posts');
+    }
 
-        function showTab(tab) {
-            const posts = document.getElementById('postsSection');
-            const assignments = document.getElementById('assignmentsSection');
-            const postsTab = document.getElementById('postsTab');
-            const assignmentsTab = document.getElementById('assignmentsTab');
-            const classCount = document.getElementById('classCount');
-            const classLabel = document.getElementById('classLabel');
+    function goBackToClasses() {
+        document.getElementById('classViewPage').classList.add('hidden');
+        document.getElementById('classesPage').classList.remove('hidden');
+    }
 
-            if (tab === 'posts') {
-                posts.classList.remove('hidden');
-                assignments.classList.add('hidden');
-                postsTab.classList.add('font-semibold', 'text-black', 'border-b-4', 'border-[#F9CADA]');
-                assignmentsTab.classList.remove('font-semibold', 'text-black', 'border-b-4', 'border-[#F9CADA]');
-                classCount.textContent = dbData.posts;
-                classLabel.textContent = 'New Posts';
-            } else {
-                assignments.classList.remove('hidden');
-                posts.classList.add('hidden');
-                assignmentsTab.classList.add('font-semibold', 'text-black', 'border-b-4', 'border-[#F9CADA]');
-                postsTab.classList.remove('font-semibold', 'text-black', 'border-b-4', 'border-[#F9CADA]');
-                classCount.textContent = dbData.assignments;
-                classLabel.textContent = 'Pending Assignments';
+    function hideAllTabs() {
+        ['postsSection', 'assignmentsSection', 'membersSection'].forEach(id =>
+            document.getElementById(id).classList.add('hidden')
+        );
+    }
+
+    function resetTabStyles() {
+        ['postsTab', 'assignmentsTab', 'membersTab'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.classList.remove('border-b-4', 'border-[#F9CADA]', 'font-semibold', 'text-main');
+                el.classList.add('text-gray-500');
             }
-        }
+        });
+    }
 
-        window.onload = () => {
-            renderPinnedClasses();
-            renderAllClasses();
-        };
-    </script>
+    function showTab(tab) {
+        hideAllTabs();
+        resetTabStyles();
+
+        const activeTab = document.getElementById(`${tab}Tab`);
+        const classCount = document.getElementById('classCount');
+        const classLabel = document.getElementById('classLabel');
+
+        document.getElementById(`${tab}Section`).classList.remove('hidden');
+        activeTab.classList.add('border-b-4', 'border-[#F9CADA]', 'font-semibold', 'text-main');
+        activeTab.classList.remove('text-gray-500');
+
+        if (tab === 'posts') {
+            classCount.textContent = dbData.posts;
+            classLabel.textContent = 'New Posts';
+        } else if (tab === 'assignments') {
+            classCount.textContent = dbData.assignments;
+            classLabel.textContent = 'Pending Assignments';
+        } else if (tab === 'members') {
+            classCount.textContent = dbData.members;
+            classLabel.textContent = 'Total Members';
+        }
+    }
+
+    function showMembers() {
+        showTab('members');
+    }
+
+    window.onload = () => {
+        renderPinnedClasses();
+        renderAllClasses();
+    };
+</script>
+
+
 </x-layouts.mainlayout>
