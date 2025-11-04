@@ -56,52 +56,53 @@
     </div>
 
     <script>
+    function generatePinnedCard(creatorName, className, count, color, role) {
+        const borderColor = `border-pastel-${color}`;
+        const shadowClass = `shadow-pastel-${color}`; 
+        const bgColor = `bg-pastel-${color}`;
 
-        function generatePinnedCard(creatorName, className, count, color, role) {
-            const borderColor = `border-pastel-${color}`;
-            const shadowColor = `shadow-[6px_6px_0_0_var(--pastel-${color})]`;
-            const bgColor = `bg-pastel-${color}`;
-
-            return `
-                <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}')"
-                     class="bg-white border-2 ${borderColor} rounded-2xl p-6 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition duration-200 ${shadowColor}">
-                    <div class="flex justify-between items-start mb-3">
-                        <p class="text-gray-500 text-sm font-outfit">${creatorName}</p>
-                        <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
-                    </div>
-                    <h4 class="font-bold text-xl font-outfit mb-6">${className}</h4>
-                    <div class="flex justify-between items-end">
-                        <span class="${bgColor} text-black rounded-xl px-5 py-2 font-bold text-xl font-outfit shadow-sm">${count}</span>
-                        <div class="text-right">
-                            <p class="text-gray-400 text-xs font-outfit">Joined as</p>
-                            <p class="font-semibold text-sm font-outfit text-main">${role}</p>
-                        </div>
+        return `
+            <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}')"
+                class="bg-white border-2 ${borderColor} rounded-2xl p-6 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition duration-200 ${shadowClass}">
+                <div class="flex justify-between items-start mb-3">
+                    <p class="text-gray-500 text-sm font-outfit">${creatorName}</p>
+                    <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
+                </div>
+                <h4 class="font-bold text-xl font-outfit mb-6">${className}</h4>
+                <div class="flex justify-between items-end">
+                    <span class="${bgColor} text-black rounded-xl px-5 py-2 font-bold text-xl font-outfit shadow-sm">${count}</span>
+                    <div class="text-right">
+                        <p class="text-gray-400 text-xs font-outfit">Joined as</p>
+                        <p class="font-semibold text-sm font-outfit text-main">${role}</p>
                     </div>
                 </div>
-            `;
-        }
+            </div>
+        `;
+    }
 
-        function generateAllClassRow(creatorName, className, count, color, status) {
-            const borderColor = `border-pastel-${color}`;
-            const textColor = `text-pastel-${color}`;
 
-            return `
-                <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}')"
-                     class="flex justify-between items-center bg-white border-2 ${borderColor} rounded-xl px-6 py-4 hover:shadow-md transition cursor-pointer">
-                    <div>
-                        <p class="text-sm text-gray-500 font-outfit">${creatorName}</p>
-                        <h4 class="font-semibold text-lg font-outfit">${className}</h4>
-                    </div>
-                    <div class="flex items-center gap-4">
-                        <div class="flex flex-col items-center">
-                            <p class="text-xs text-gray-500 font-outfit">${status}</p>
-                            <span class="font-bold text-xl ${textColor} font-outfit">${count}</span>
-                        </div>
-                        <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
-                    </div>
+    function generateAllClassRow(creatorName, className, count, color, status) {
+        const borderColor = `border-pastel-${color}`;
+        const textColor = `text-pastel-${color}`;
+        const shadowClass = `shadow-pastel-${color}`;
+
+        return `
+            <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}')"
+                class="flex justify-between items-center bg-white border-2 ${borderColor} rounded-xl px-6 py-4 hover:scale-[1.02] transition duration-200 cursor-pointer ${shadowClass}">
+                <div>
+                    <p class="text-sm text-gray-500 font-outfit">${creatorName}</p>
+                    <h4 class="font-semibold text-lg font-outfit">${className}</h4>
                 </div>
-            `;
-        }
+                <div class="flex items-center gap-4">
+                    <div class="flex flex-col items-center">
+                        <p class="text-xs text-gray-500 font-outfit">${status}</p>
+                        <span class="font-bold text-xl ${textColor} font-outfit">${count}</span>
+                    </div>
+                    <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
+                </div>
+            </div>
+        `;
+    }
 
         const pinnedClasses = [
             { creator: 'Mr. Santos', name: 'Algebra 101', count: '01', color: 'pink', status: 'Pending Assignments', role: 'Member' },
