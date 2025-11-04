@@ -70,10 +70,140 @@
                     </ul>
                 </div>
                 
-                <div class="mt-8 flex flex-col gap-4 items-center">
-                    <button class="bg-main text-white w-80 px-3 py-5 rounded-full text-lg">
+                    <div class="mt-8 flex flex-col gap-4 items-center">
+                    <button id="change-password-open" class="bg-main text-white w-80 px-3 py-5 rounded-full text-lg" type="button">
                         Change Password
                     </button>
+
+                    <div id="change-password-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center" aria-hidden="true" role="dialog" aria-modal="true">
+                        <div class="absolute inset-0 bg-black/50 cg-fade-in"></div>
+                        <div class="relative bg-white rounded-lg shadow-lg w-11/12 max-w-lg mx-auto p-6 transform cg-pop-in">
+                            <h3 class="text-xl font-semibold mb-4">Change Password</h3>
+
+                            <form id="change-password-form" method="POST" action="{{ route('change-password') }}">
+                                @csrf
+                                <div class="flex flex-col gap-4">
+                                    <label class="flex flex-col">
+                                        <span class="text-sm font-medium text-gray-700">Current Password</span>
+                                        <div class="relative">
+                                            <input id="current_password" name="current_password" type="password" class="w-full mt-2 px-3 py-2 border rounded" required>
+                                            <button type="button" data-target="current_password" class="show-password absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" aria-label="Show password">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                            </button>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex flex-col">
+                                        <span class="text-sm font-medium text-gray-700">New Password</span>
+                                        <div class="relative">
+                                            <input id="new_password" name="new_password" type="password" class="w-full mt-2 px-3 py-2 border rounded" required minlength="8">
+                                            <button type="button" data-target="new_password" class="show-password absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" aria-label="Show password">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                            </button>
+                                        </div>
+                                    </label>
+
+                                    <label class="flex flex-col">
+                                        <span class="text-sm font-medium text-gray-700">Confirm New Password</span>
+                                        <div class="relative">
+                                            <input id="new_password_confirmation" name="new_password_confirmation" type="password" class="w-full mt-2 px-3 py-2 border rounded" required minlength="8">
+                                            <button type="button" data-target="new_password_confirmation" class="show-password absolute right-2 top-1/2 -translate-y-1/2 text-gray-500" aria-label="Show password">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                                            </button>
+                                        </div>
+                                    </label>
+                                </div>
+
+                                <div class="mt-6 flex justify-end gap-3">
+                                    <button id="change-password-cancel" type="button" class="px-4 py-2 rounded-full border border-gray-300 text-gray-700">Cancel</button>
+                                    <button id="change-password-confirm" type="button" class="px-4 py-2 rounded-full bg-main text-white">Confirm</button>
+                                </div>
+
+                                <button type="submit" id="change-password-submit" class="hidden">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div id="change-password-confirm-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center" aria-hidden="true" role="dialog" aria-modal="true">
+                        <div class="absolute inset-0 bg-black/50 cg-fade-in"></div>
+                        <div class="relative bg-white rounded-lg shadow-lg w-11/12 max-w-md mx-auto p-6 transform cg-pop-in">
+                            <h3 class="text-lg font-semibold mb-2">Confirm password change</h3>
+                            <p class="text-gray-700 mb-4">Are you sure you want to change your password?</p>
+                            <div class="flex justify-end gap-3">
+                                <button id="change-password-confirm-cancel" type="button" class="px-4 py-2 rounded-full border border-gray-300 text-gray-700">Cancel</button>
+                                <button id="change-password-confirm-ok" type="button" class="px-4 py-2 rounded-full bg-main text-white">Yes, change</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <script>
+                        (function () {
+                            var openBtn = document.getElementById('change-password-open');
+                            var modal = document.getElementById('change-password-modal');
+                            var cancelBtn = document.getElementById('change-password-cancel');
+                            var confirmBtn = document.getElementById('change-password-confirm');
+                            var submitBtn = document.getElementById('change-password-submit');
+
+                            var confirmModal = document.getElementById('change-password-confirm-modal');
+                            var confirmModalCancel = document.getElementById('change-password-confirm-cancel');
+                            var confirmModalOk = document.getElementById('change-password-confirm-ok');
+
+                            function showModal() { modal && modal.classList.remove('hidden'); modal && modal.setAttribute('aria-hidden', 'false'); }
+                            function hideModal() { modal && modal.classList.add('hidden'); modal && modal.setAttribute('aria-hidden', 'true'); }
+
+                            function showConfirmModal() { confirmModal && confirmModal.classList.remove('hidden'); confirmModal && confirmModal.setAttribute('aria-hidden','false'); }
+                            function hideConfirmModal() { confirmModal && confirmModal.classList.add('hidden'); confirmModal && confirmModal.setAttribute('aria-hidden','true'); }
+
+                            openBtn && openBtn.addEventListener('click', function (e) { e.preventDefault(); showModal(); });
+                            cancelBtn && cancelBtn.addEventListener('click', function (e) { e.preventDefault(); hideModal(); });
+
+                            confirmBtn && confirmBtn.addEventListener('click', function (e) {
+                                e.preventDefault();
+                                var newPass = document.getElementById('new_password').value;
+                                var newPassConf = document.getElementById('new_password_confirmation').value;
+                                var curr = document.getElementById('current_password').value;
+
+                                if (!curr || !newPass) {
+                                    alert('Please fill all password fields.');
+                                    return;
+                                }
+                                if (newPass.length < 8) {
+                                    alert('New password must be at least 8 characters.');
+                                    return;
+                                }
+                                if (newPass !== newPassConf) {
+                                    alert('New password and confirmation do not match.');
+                                    return;
+                                }
+                                showConfirmModal();
+                            });
+
+                            confirmModalCancel && confirmModalCancel.addEventListener('click', function (e) { e.preventDefault(); hideConfirmModal(); });
+                            confirmModalOk && confirmModalOk.addEventListener('click', function (e) { e.preventDefault(); hideConfirmModal(); hideModal(); submitBtn && submitBtn.click(); });
+
+                            var toggles = document.querySelectorAll('.show-password');
+                            toggles.forEach(function (btn) {
+                                btn.addEventListener('click', function () {
+                                    var targetId = btn.getAttribute('data-target');
+                                    var input = document.getElementById(targetId);
+                                    if (!input) return;
+                                    if (input.type === 'password') {
+                                        input.type = 'text';
+                                        btn.classList.add('text-main');
+                                    } else {
+                                        input.type = 'password';
+                                        btn.classList.remove('text-main');
+                                    }
+                                });
+                            });
+
+                            document.addEventListener('keydown', function (e) {
+                                if (e.key === 'Escape') {
+                                    hideModal(); hideConfirmModal();
+                                }
+                            });
+                        })();
+                    </script>
                     <form id="logout-form" method="POST" action="{{ route('logout') }}" class="hidden">
                         @csrf
                         <button type="submit" id="logout-form-submit" class="hidden">Logout</button>
@@ -116,8 +246,7 @@
                             function showModal() {
                                 if (!modal) return;
                                 modal.classList.remove('hidden');
-                                modal.setAttribute('aria-hidden', 'false');
-                                // trap focus on confirm button for a simple accessibility improvement
+                                modal.setAttribute('aria-hidden', 'false'); 
                                 confirmBtn && confirmBtn.focus();
                             }
 
@@ -140,11 +269,9 @@
 
                             confirmBtn && confirmBtn.addEventListener('click', function (e) {
                                 e.preventDefault();
-                                // submit the hidden logout form which contains the CSRF token
                                 logoutFormSubmit && logoutFormSubmit.click();
                             });
 
-                            // close modal on ESC
                             document.addEventListener('keydown', function (e) {
                                 if (e.key === 'Escape') {
                                     hideModal();

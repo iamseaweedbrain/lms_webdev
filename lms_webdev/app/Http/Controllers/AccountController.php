@@ -24,6 +24,7 @@ class AccountController extends Controller
 
         return redirect()->back()->with('success', 'User created!');
     }
+
     //panglogin to ofc
     public function login(Request $request)
     {
@@ -34,6 +35,11 @@ class AccountController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            try {
+                $currentSessionId = session()->getId();
+                DB::table('sessions')->where('id', $currentSessionId)->update(['user_id' => Auth::id()]);
+            } catch (\Exception $e) {
+            }
             return redirect()->intended('dashboard');
         }
 
@@ -53,5 +59,36 @@ class AccountController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect()->route('landingpage');
+    }
+
+
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required'],
+            'new_password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
+        /** @var AccountModel|null $user */
+        $user = Auth::user();
+
+        if (! ($user instanceof AccountModel) || ! Hash::check($request->input('current_password'), $user->password)) {
+            return redirect()->back()->withErrors(['current_password' => 'Current password is incorrect.']);
+        }
+
+        $user->password = Hash::make($request->input('new_password'));
+        $user->save();
+
+        try {
+            $currentSessionId = session()->getId();
+            DB::table('sessions')
+                ->where('user_id', $user->user_id)
+                ->where('id', '!=', $currentSessionId)
+                ->delete();
+        } catch (\Exception $e) {
+            // Log the exception or handle it as needed
+        }
+
+        return redirect()->back()->with('success', 'Password changed successfully.');
     }
 }
