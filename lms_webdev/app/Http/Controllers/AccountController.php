@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class AccountController extends Controller
 {
@@ -90,5 +91,44 @@ class AccountController extends Controller
         }
 
         return redirect()->back()->with('success', 'Password changed successfully.');
+    }
+
+    /**
+     * Update user profile settings (avatar, firstname, lastname).
+     */
+    public function updateSettings(Request $request)
+    {
+        /** @var AccountModel|null $user */
+        $user = Auth::user();
+
+        if (! ($user instanceof AccountModel)) {
+            return redirect()->back()->withErrors(['user' => 'User not authenticated']);
+        }
+
+        $data = $request->validate([
+            'firstname' => ['nullable', 'string', 'max:255'],
+            'lastname' => ['nullable', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', Rule::unique('useraccount')->ignore($user->user_id, 'user_id')],
+            'avatar' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        if (!empty($data['avatar'])) {
+            $user->avatar = $data['avatar'];
+        }
+
+        if (array_key_exists('firstname', $data)) {
+            $user->firstname = $data['firstname'];
+        }
+        if (array_key_exists('lastname', $data)) {
+            $user->lastname = $data['lastname'];
+        }
+
+        if (array_key_exists('email', $data)) {
+            $user->email = $data['email'];
+        }
+
+        $user->save();
+
+        return redirect()->back()->with('success', 'Profile updated.');
     }
 }
