@@ -6,6 +6,7 @@ use App\Models\AccountModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class AccountController extends Controller
 {
@@ -40,12 +41,17 @@ class AccountController extends Controller
             'email' => 'Invalid credentials.',
         ])->onlyInput('email');
     }
+    
     //panglogout sha beh
     public function logout(Request $request)
     {
-        AccountModel::logout();
+        $user = Auth::user();
+        if ($user) {
+            DB::table('sessions')->where('user_id', $user->user_id)->delete();
+        }
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+        return redirect()->route('landingpage');
     }
 }

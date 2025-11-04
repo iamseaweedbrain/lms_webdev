@@ -74,9 +74,12 @@
                     <button class="bg-main text-white w-80 px-3 py-5 rounded-full text-lg">
                         Change Password
                     </button>
-                    <button class="bg-warning text-white w-80 px-3 py-5 rounded-full text-lg">
-                        Log Out
-                    </button>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="bg-warning text-white w-80 px-3 py-5 rounded-full text-lg">
+                            Log Out
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
