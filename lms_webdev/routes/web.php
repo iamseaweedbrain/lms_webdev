@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('/signup', [AccountController::class, 'store'])->name('storeSignUp');
 Route::post('/login', [AccountController::class, 'login'])->name('retrieveLogIn');
 Route::post('/logout', [AccountController::class, 'logout'])->name('logout');
+Route::post('/change-password', [AccountController::class, 'changePassword'])->name('change-password');
 
 Route::view('/', 'landingpage')->name('landingpage');
 Route::view('/login', 'auth.login')->name('login');
