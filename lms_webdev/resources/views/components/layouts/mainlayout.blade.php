@@ -4,7 +4,7 @@
         <x-sidebar />
 
         {{-- Main Content --}}
-        <main class="flex-1 bg-page p-8 md:p-12">
+        <main class="flex-1 bg-page">
             {{ $slot }}
         </main>
     </div>
