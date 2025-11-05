@@ -32,14 +32,14 @@ class SubmissionModel extends Model
         return $this->belongsTo(PostModel::class, 'post_id', 'post_id');
     }
 
-    public function student()
+    /*public function student()
     {
-        return $this->belongsTo(UserAccount::class, 'user_id', 'userid');
-    }
+        return $this->belongsTo(AccountModel::class, 'user_id'foreignKey: , 'userid');
+    }*/
 
     public function grader()
     {
-        return $this->belongsTo(UserAccount::class, 'graded_by', 'userid');
+        return $this->belongsTo(AccountModel::class, 'graded_byforeignKey: ', 'userid');
     }
 }
 

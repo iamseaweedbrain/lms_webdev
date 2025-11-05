@@ -45,17 +45,27 @@
                         extrabold: 800,
                     },
                     boxShadow: {
-                        'pastel-pink': '4px 4px 0 #FFD6EA',
-                        'pastel-yellow': '4px 4px 0 #FFE6A6',
-                        'pastel-blue': '4px 4px 0 #D1E4E2',
-                        'pastel-purple': '4px 4px 0 #D7CAE8',
-                        'main': '4px 4px 0 #000000',
-                        'warning': '4px 4px 0 #FF6B6B',
+                        'pastel-pink': '8px 8px 0 #FFD6EA',
+                        'pastel-yellow': '8px 8px 0 #FFE6A6',
+                        'pastel-blue': '8px 8px 0 #D1E4E2',
+                        'pastel-purple': '8px 8px 0 #D7CAE8',
+                        'main': '8px 8px 0 #000000',
+                        'warning': '8px 8px 0 #FF6B6B',
+                    },
+                    borderWidth: {
+                        5: "5px",
+                        3: "3px",
+                    },
+                    borderColor: {
+                        'pastel-pink': '#FFD6EA',
+                        'pastel-yellow': '#FFE6A6',
+                        'pastel-blue': '#D1E4E2',
+                        'pastel-purple': '#D7CAE8',
                     },
                 },
             },
         };
-        </script>
+    </script>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>

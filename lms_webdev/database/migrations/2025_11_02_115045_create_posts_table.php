@@ -15,10 +15,11 @@ return new class extends Migration
             $table->id('post_id');
             $table->unsignedBigInteger('class_id');
             $table->string('user_id');
+            $table->string('avatar');
             $table->enum('post_type', ['material', 'assignment', 'announcement']);
             $table->text('content');
+            $table->enum('color', ['pink', 'blue', 'purple', 'yellow'])->default('pink');
             $table->dateTime('due_date')->nullable();
-            $table->integer('max_score')->nullable();
             $table->timestamp('created_at')->useCurrent();
 
             // foreign keys ulit sa mga tables
