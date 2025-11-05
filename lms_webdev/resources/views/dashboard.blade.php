@@ -1,35 +1,34 @@
 <x-layouts.mainlayout>
-    <div class="p-6">
-        {{-- Dashboard Header --}}
+    <div>
+        @php
+            $today = now();
+            $formattedDay = $today->format('l'); 
+            $formattedDate = $today->format('F j');
+        @endphp
+
         <div class="flex justify-between items-center mb-10">
             <h1 class="text-3xl font-bold">Dashboard</h1>
 
-            <div class="relative">
-                <input 
-                    type="text" 
-                    placeholder="Search class..." 
-                    class="px-5 py-2 rounded-full shadow-md focus:outline-none pr-10 w-[250px]"
-                >
+            <div class="relative flex items-center">
+                <input type="text" placeholder="Search class..." class="pl-8 py-2 rounded-full shadow-md focus:outline-none pr-10 w-[250px]">
                 <iconify-icon 
                     icon="mingcute:search-line" 
-                    width="24" 
-                    height="24" 
-                    class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
+                    width="20" 
+                    height="20" 
+                    class="absolute right-4 text-gray-500">
                 </iconify-icon>
             </div>
         </div>
 
-        {{-- Main Content Grid (Hero + Recent Posts Side by Side) --}}
-        <div class="flex gap-10 items-start">
-            {{-- Left Section (Hero) --}}
+        <div class="flex justify-between items-start">
             <div class="relative overflow-visible w-fit">
                 <p class="font-outfit font-regular text-[48px] text-main px-10">It’s a brand new day!</p>
-                <p class="font-outfit font-regular text-[20px] text-main px-10 mb-6">Tuesday, November 3</p>
+                <p class="font-outfit font-regular text-[20px] text-main px-10 mb-6">{{ $formattedDay }}, {{ $formattedDate }}</p>
 
-                <div class="relative bg-white w-[947px] h-[342px] px-[78px] py-[51px] border border-pastel-yellow shadow-[12px_12px_0_0_#FBE7A1] rounded-2xl z-10">
+                <div class="relative bg-white w-[947px] h-[342px] px-[78px] py-[51px] border-5 border-pastel-yellow shadow-[12px_12px_0_0_#FBE7A1] rounded-[45px] z-10">
                     <div class="grid grid-rows-2 gap-10">
                         <div>
-                            <p class="font-outfit font-bold text-[64px] text-main leading-none">Hi, Maxine!</p>
+                            <p class="font-outfit font-bold text-[64px] text-main leading-none">Hi, {{ $userFirstName }}!</p>
                             <p class="font-outfit font-light text-[24px] text-main mt-2">What are we gonna do today?</p>
                         </div>
                         <div class="flex items-center space-x-6">
@@ -63,121 +62,66 @@
                 </div>
             </div>
 
-            {{-- Right Section (Recent Posts) --}}
-            <aside class="w-full"> 
-                    <h3 class="font-bold text-lg mb-4 font-outfit">Recent Posts</h3>
-                    <div class="flex flex-col gap-4">
+            <div class="w-auto justify-center"> 
+                <div class="flex gap-5 pl-5">
+                    <iconify-icon icon="mdi:bullhorn" width="24" height="24"></iconify-icon>
+                    <p class="font-bold text-lg mb-4 font-outfit">Recent Announcements</p>
+                </div>
+
+                <div class="flex flex-col gap-4 justify-center">
+                    @forelse ($recentPosts as $post)
+                        @php
+                            $color = data_get($post, 'color_prefix', 'gray');
+                            $borderColor = "border-pastel-{$color}";
+                            $textColor = "text-pastel-{$color}";
+                            $shadowColor = "shadow-pastel-{$color}";
+                            $bgColor = "bg-pastel-{$color}";
+                        @endphp
                         
-                        <!-- Post 1 (Purple) -->
-                        <div class="flex items-center gap-4 bg-white border border-pastel-purple/50 p-4 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition">
-                            <div class="w-10 h-10 bg-pastel-purple/30 rounded-full flex-shrink-0"></div>
-                            <div class="flex-grow min-w-0">
-                                <h4 class="font-bold text-sm font-outfit">Class Name</h4>
-                                <p class="text-xs text-gray-500 font-outfit truncate">Lorem ipsum dolor sit amet consectetur adipisicing elit, sed do eiusmod tempor...</p>
-                            </div>
-                            <iconify-icon icon="ic:baseline-keyboard-arrow-right" width="20" height="20" class="text-gray-400"></iconify-icon>
-                        </div>
+                        <a href="{{ data_get($post, 'post_link', '#') }}" 
+                        class="flex items-center gap-5 bg-white border-3 {{ $borderColor }} p-6 w-[483px] h-[116px] rounded-[25px] {{ $shadowColor }} cursor-pointer hover:scale-[1.02] transition">
+                            
+                            <img src="{{ data_get($post, 'avatar', 'avatars/active-cat.jpg') }}" 
+                                alt="avatar" 
+                                class="w-[82px] h-[82px] rounded-[50px] flex-shrink-0">
 
-                        <!-- Post 2 (Pink) -->
-                        <div class="flex items-center gap-4 bg-white border border-pastel-pink/50 p-4 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition">
-                            <div class="w-10 h-10 bg-pastel-pink/30 rounded-full flex-shrink-0"></div>
-                            <div class="flex-grow min-w-0">
-                                <h4 class="font-bold text-sm font-outfit">Class Name</h4>
-                                <p class="text-xs text-gray-500 font-outfit truncate">Lorem ipsum dolor sit amet consectetur adipisicing elit, sed do eiusmod tempor...</p>
-                            </div>
-                            <iconify-icon icon="ic:baseline-keyboard-arrow-right" width="20" height="20" class="text-gray-400"></iconify-icon>
-                        </div>
+                            <div class="h-20 border-l border-5 {{ $borderColor }}"></div>
 
-                        <!-- Post 3 (Blue) -->
-                        <div class="flex items-center gap-4 bg-white border border-pastel-blue/50 p-4 rounded-xl shadow-md cursor-pointer hover:shadow-lg transition">
-                            <div class="w-10 h-10 bg-pastel-blue/30 rounded-full flex-shrink-0"></div>
-                            <div class="flex-grow min-w-0">
-                                <h4 class="font-bold text-sm font-outfit">Class Name</h4>
-                                <p class="text-xs text-gray-500 font-outfit truncate">Lorem ipsum dolor sit amet consectetur adipisicing elit, sed do eiusmod tempor...</p>
+                            <div class="flex flex-col justify-center grow min-w-0">
+                                <p class="font-bold text-[20px] font-outfit">{{ data_get($post, 'class_name', 'Class Name') }}</p>
+                                <p class="text-[14px] text-gray-500 font-outfit font-light truncate">
+                                    {{ data_get($post, 'content', 'No post content provided.') }}
+                                </p>
                             </div>
-                            <iconify-icon icon="ic:baseline-keyboard-arrow-right" width="20" height="20" class="text-gray-400"></iconify-icon>
-                        </div>
-                    </div>
-                </aside>
+
+                            <iconify-icon icon="ic:baseline-keyboard-arrow-right" width="32" height="32" class="{{ $textColor }} border {{ $borderColor }} rounded-[50px] shrink-0"></iconify-icon>
+                        </a>
+                    @empty
+                        <p class="text-gray-500 italic p-4">No recent posts found in your classes.</p>
+                    @endforelse
+                </div>
+            </div>
         </div>
 
-        <h3 class="font-bold text-xl mt-8 mb-4 border-t border-gray-200 font-outfit">Your Classes</h3>
-            <div id="your-classes-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
-            </div>
-
-            <h3 class="font-bold text-xl mb-4 font-outfit">Managed Classes</h3>
-            <div id="managed-classes-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
-            </div>
-            
-            <div class="flex justify-end space-x-2 text-gray-500 text-sm mt-2">
-                <iconify-icon icon="ic:baseline-keyboard-arrow-left" width="20" height="20" class="cursor-pointer hover:text-main"></iconify-icon>
-                <span class="font-semibold">1</span>
-                <iconify-icon icon="ic:baseline-keyboard-arrow-right" width="20" height="20" class="cursor-pointer hover:text-main"></iconify-icon>
-            </div>
-    </div>
-
-
-    <script>
-        /**
-         * Generates the HTML string for a single class card.
-         * @param {string} creatorName - The name of the class creator.
-         * @param {string} className - The name of the class.
-         * @param {string} count - The count (e.g., number of assignments).
-         * @param {string} colorPrefix - The color identifier (e.g., 'pink', 'blue', 'yellow', 'purple')
-         * @param {string} role - The user's role in the class (e.g., 'Member', 'Teacher').
-         * @returns {string} The HTML markup for the class card.
-         */
-
-        function generateClassCard(creatorName, className, count, colorPrefix, role) {
-            const borderColor = `border-pastel-${colorPrefix}`;
-            const shadowClass = `shadow-pastel-${colorPrefix}`;
-            const bgClass = `bg-pastel-${colorPrefix}`;
-            const textColor = `text-pastel-${colorPrefix}`;
-            const roleClass = (role === 'Teacher') ? 'text-main font-extrabold' : '';
-
-            return `
-                <div class="bg-white border-2 ${borderColor} rounded-2xl p-5 ${shadowClass} flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition duration-200" title="${className}">
-                    <div>
-                        <div class="flex justify-between items-start mb-2">
-                            <p class="text-gray-500 text-sm font-outfit">${creatorName}</p>
-                            <iconify-icon icon="ic:round-more-vert" width="24" height="24" class="text-gray-400"></iconify-icon>
-                        </div>
-                        <h4 class="font-bold text-2xl font-outfit mb-4">${className}</h4>
-                    </div>
-                    <div class="flex justify-between items-end">
-                        <span class="${bgClass} px-4 py-2 rounded-xl font-bold text-xl text-main font-outfit shadow-sm">${count}</span>
-                        <div class="text-right">
-                            <p class="text-gray-500 text-xs font-outfit">JOINED AS</p>
-                            <span class="font-semibold text-sm font-outfit ${textColor} ${roleClass}">${role}</span>
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
-
-        const yourClassesData = [
-            { creator: 'Teacher A', name: 'Intro to Geometry', count: '01', color: 'pink', role: 'Member' },
-            { creator: 'Prof. Smith', name: 'Advanced History', count: '00', color: 'blue', role: 'Member' },
-            { creator: 'Ms. Johnson', name: 'Creative Writing', count: '10', color: 'yellow', role: 'Member' },
-            { creator: 'Mr. Davis', name: 'Digital Art 101', count: '01', color: 'purple', role: 'Member' },
-        ];
-
-        const managedClassesData = [
-            { creator: 'You', name: 'My Science Class', count: '25', color: 'blue', role: 'Teacher' },
-            { creator: 'You', name: 'Algebra II', count: '30', color: 'pink', role: 'Teacher' },
-        ];
+        <h3 class="font-bold text-xl mt-8 mb-4 border-t border-gray-200 font-outfit pt-8">All Classes</h3>
+        <div id="your-classes-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-10">
+            @forelse ($allClasses as $class)
+                <x-class-card 
+                    :creatorName="data_get($class, 'creator')" 
+                    :className="data_get($class, 'name')" 
+                    :count="data_get($class, 'count')" 
+                    :colorPrefix="data_get($class, 'color')" 
+                    :role="data_get($class, 'role')" 
+                />
+            @empty
+                <p class="text-gray-500 col-span-full italic">You haven't joined any classes yet.</p>
+            @endforelse
+        </div>
         
-        function renderClassCards(data, containerId) {
-            const container = document.getElementById(containerId);
-            if (container) {
-                container.innerHTML = data.map(cls => 
-                    generateClassCard(cls.creator, cls.name, cls.count, cls.color, cls.role)
-                ).join('');
-            }
-        }
-        window.onload = function() {
-            renderClassCards(yourClassesData, 'your-classes-container');
-            renderClassCards(managedClassesData, 'managed-classes-container');
-        };
-    </script>
+        <div class="flex justify-end space-x-2 text-gray-500 text-sm mt-2">
+            <iconify-icon icon="ic:baseline-keyboard-arrow-left" width="20" height="20" class="cursor-pointer hover:text-main"></iconify-icon>
+            <span class="font-semibold">1</span>
+            <iconify-icon icon="ic:baseline-keyboard-arrow-right" width="20" height="20" class="cursor-pointer hover:text-main"></iconify-icon>
+        </div>
+    </div>
 </x-layouts.mainlayout>

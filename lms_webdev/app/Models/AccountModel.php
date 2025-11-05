@@ -13,7 +13,17 @@ class AccountModel extends Authenticatable
 
     protected $table = 'useraccount';
     protected $primaryKey = 'user_id';
-    public $incrementing = false; // since you're using uniqid()
+    public $incrementing = false;
     protected $fillable = ['firstname', 'lastname', 'email', 'password', 'avatar'];
     protected $hidden = ['password'];
+
+    public function classesCreated()
+    {
+        return $this->hasMany(ClassModel::class, 'creator_id', 'user_id');
+    }
+    
+    public function classMemberships()
+    {
+        return $this->hasMany(ClassMember::class, 'user_id', 'user_id');
+    }
 }

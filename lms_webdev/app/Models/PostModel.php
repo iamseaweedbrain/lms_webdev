@@ -15,6 +15,7 @@ class PostModel extends Model
     protected $fillable = [
         'class_id',
         'user_id',
+        'avatar',
         'post_type',
         'content',
         'due_date',
@@ -29,7 +30,7 @@ class PostModel extends Model
 
     public function user()
     {
-        return $this->belongsTo(UserAccount::class, 'user_id', 'user_id');
+        return $this->belongsTo(AccountModel::class, 'user_id', 'user_id');
     }
 }
 

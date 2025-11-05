@@ -30,9 +30,17 @@ class ClassMemberController extends Controller
     {
         $validated = $request->validate([
             'class_id' => 'required|exists:classes,id',
-            'user_id' => 'required|exists:user_accounts,user_id',
-            'role' => 'required|in:member,comember',
+            'user_id' => 'required|exists:useraccount,user_id',
+            'role' => 'nullable|in:member,coadmin,admin',
         ]);
+
+        $class = \App\Models\ClassModel::find($validated['class_id']);
+
+        if ($validated['user_id'] == $class->creator_id) {
+            $validated['role'] = 'admin';
+        } else {
+            $validated['role'] = $validated['role'] ?? 'member';
+        }
 
         return ClassMember::create($validated);
     }

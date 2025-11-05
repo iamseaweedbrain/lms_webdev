@@ -16,7 +16,8 @@ return new class extends Migration
             $table->string('creator_id');
             $table->string('classname');
             $table->text('description')->nullable();
-            $table->string('code')->unique(); 
+            $table->string('code')->unique();
+            $table->enum('color', ['pink', 'blue', 'purple', 'yellow'])->default('pink');
             $table->timestamps();
 
             // foreign key link to useraccounts table
