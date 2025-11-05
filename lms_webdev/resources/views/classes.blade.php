@@ -149,36 +149,66 @@
 
         <!-- POSTS TAB -->
         <div id="postsSection" class="flex flex-col gap-4">
-            <h2 class="font-semibold text-lg font-outfit mb-2">Posts</h2>
-            <div class="bg-white border-2 border-[#F9CADA] rounded-xl p-4 hover:shadow-md transition flex justify-between items-center">
-                <div>
-                    <h3 class="font-semibold text-lg font-outfit">Announcement</h3>
-                    <p class="text-gray-600 text-sm font-outfit">Please submit your essay before Friday.</p>
-                    <p class="text-xs text-gray-400 font-outfit mt-1">Posted: Nov 2, 2025</p>
-                </div>
-                <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400 hover:text-black transition cursor-pointer"></iconify-icon>
+        <h2 class="font-semibold text-lg font-outfit mb-2">Posts</h2>
+
+        <!-- Announcement Card -->
+        <div 
+            onclick="openDetailPage('announcement')" 
+            class="relative bg-white w-full px-6 py-4 border border-[#F9CADA] rounded-2xl 
+                shadow-[8px_8px_0_0_#FBD1E2] cursor-pointer 
+                hover:scale-[1.02] transition duration-200 flex justify-between items-center">
+            <div>
+            <h3 class="font-semibold text-lg font-outfit">Announcement</h3>
+            <p class="text-gray-600 text-sm font-outfit">Please submit your essay before Friday.</p>
+            <p class="text-xs text-gray-400 font-outfit mt-1">Posted: Nov 2, 2025</p>
             </div>
-            <div class="bg-white border-2 border-[#CBE8E9] rounded-xl p-4 hover:shadow-md transition flex justify-between items-center">
-                <div>
-                    <h3 class="font-semibold text-lg font-outfit">Announcement</h3>
-                    <p class="text-gray-600 text-sm font-outfit">Quiz on Chapter 3 next meeting.</p>
-                    <p class="text-xs text-gray-400 font-outfit mt-1">Posted: Nov 1, 2025</p>
-                </div>
-                <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400 hover:text-black transition cursor-pointer"></iconify-icon>
+            <iconify-icon 
+            icon="ic:round-more-vert" 
+            width="22" height="22" 
+            class="text-gray-400 hover:text-black transition cursor-pointer">
+            </iconify-icon>
+        </div>
+
+        <!-- Material Card -->
+        <div 
+            onclick="openDetailPage('material')" 
+            class="relative bg-white w-full px-6 py-4 border border-[#CBE8E9] rounded-2xl 
+                shadow-[8px_8px_0_0_#B7E3E6] cursor-pointer 
+                hover:scale-[1.02] transition duration-200 flex justify-between items-center">
+            <div>
+            <h3 class="font-semibold text-lg font-outfit">Material</h3>
+            <p class="text-gray-600 text-sm font-outfit">Material for final exam.</p>
+            <p class="text-xs text-gray-400 font-outfit mt-1">Posted: Nov 1, 2025</p>
             </div>
+            <iconify-icon 
+            icon="ic:round-more-vert" 
+            width="22" height="22" 
+            class="text-gray-400 hover:text-black transition cursor-pointer">
+            </iconify-icon>
+        </div>
         </div>
 
         <!-- ASSIGNMENTS TAB -->
         <div id="assignmentsSection" class="hidden flex flex-col gap-4">
-            <h2 class="font-semibold text-lg font-outfit mb-2">Assignments</h2>
-            <div class="bg-white border-2 border-[#F9CADA] rounded-xl p-4 hover:shadow-md transition flex justify-between items-center">
-                <div>
-                    <h3 class="font-semibold text-lg font-outfit">Essay Submission</h3>
-                    <p class="text-gray-600 text-sm font-outfit">Write a 300-word essay on modern art.</p>
-                    <p class="text-xs text-gray-400 font-outfit mt-1">Due: Nov 5, 2025</p>
-                </div>
-                <iconify-icon icon="ic:round-upload" width="22" height="22" class="text-gray-400 hover:text-black transition cursor-pointer"></iconify-icon>
+        <h2 class="font-semibold text-lg font-outfit mb-2">Assignments</h2>
+
+        <!-- Assignment Card -->
+        <div 
+            onclick="openDetailPage('assignment')" 
+            class="relative bg-white w-full px-6 py-4 border border-[#F9CADA] rounded-2xl 
+                shadow-[8px_8px_0_0_#FBD1E2] cursor-pointer 
+                hover:scale-[1.02] transition duration-200 flex justify-between items-center">
+            <div>
+            <h3 class="font-semibold text-lg font-outfit">Essay Submission</h3>
+            <p class="text-gray-600 text-sm font-outfit">Write a 300-word essay on modern art.</p>
+            <p class="text-xs text-gray-400 font-outfit mt-1">Due: Nov 5, 2025</p>
             </div>
+            <iconify-icon 
+            icon="ic:round-upload" 
+            width="22" height="22" 
+            class="text-gray-400 hover:text-black transition cursor-pointer">
+            </iconify-icon>
+        </div>
         </div>
 
         <!-- MEMBERS TAB -->
@@ -257,23 +287,193 @@
             </div>
         </div>
         </div>
-
-        <!-- POST / ASSIGNMENT DETAIL PAGE -->
-        <div id="detailPage" class="hidden p-6 relative">
+    </div>
+    
+        <!-- MATERIAL DETAIL PAGE -->
+        <div id="materialDetailPage" class="hidden px-10 py-6">
+        <div class="flex justify-between items-center mb-6">
             <button 
-                onclick="goBackToClassView()" 
-                class="text-main hover:bg-main/10 p-2 rounded-full transition mb-6">
+            onclick="goBack()" 
+            class="flex items-center gap-3 text-gray-600 hover:text-black hover:bg-main/10 p-2 rounded-full transition text-lg">
+            <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
+            </button>
+            <button class="bg-[#CBE8E9] text-black px-6 py-3 rounded-xl font-semibold hover:opacity-80 transition">
+            Mark As Read
+            </button>
+        </div>
+
+        <div class="relative bg-white w-[90%] max-w-5xl min-h-[80vh] mx-auto p-10 
+                    border-[3px] border-[#CBE8E9] 
+                    shadow-[12px_12px_0_0_#CBE8E9] 
+                    rounded-2xl z-10 flex flex-col">
+
+            <div class="flex flex-col">
+            <div class="flex gap-6 items-center">
+                <div class="relative w-[300px] h-[320px]">
+                <img 
+                    src="{{ asset('images/cat-mascot.png') }}" 
+                    alt="cat mascot" 
+                    class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
+                </div>
+
+                <div class="-mt-[140px] ml-[70px]">
+                <h2 class="font-semibold text-3xl leading-tight">Post Title</h2>
+                <p class="text-gray-500 text-base mt-1">Creator Name</p>
+                </div>
+            </div>
+
+            <div class="-mt-15 flex items-center justify-between">
+                <p class="text-gray-400 text-sm">Posted: Nov 1, 2025</p>
+                <div class="flex-1 ml-4 border-t-[5px] border-[#CBE8E9]"></div>
+            </div>
+            </div>
+
+            <div class="mt-10 space-y-4 flex-1 overflow-y-auto">
+                <!-- Material -->
+                <div class="flex items-start gap-6">
+                <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Material</h3>
+                <div class="relative border-[3px] border-[#CBE8E9] rounded-xl p-3 flex-1 shadow-[5px_5px_0_0_#CBE8E9] flex justify-between items-center">
+                    <div>
+                    <p class="font-bold text-normal text-gray-500">Final Exam File</p>
+                    <a href="#" class="text-blue-600 text-sm hover:underline">
+                        material.pdf
+                    </a>
+                    </div>
+                    <iconify-icon icon="mdi:arrow-up" width="24" height="24" class="text-gray-600"></iconify-icon>
+                </div>
+            </div>
+            <!-- Instructions -->
+            <div class="flex items-start gap-6">
+                <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Instructions</h3>
+                <p class="text-gray-600 text-base leading-relaxed flex-1 max-h-[400px] overflow-y-auto">
+                Read through the attached slides and summarize key concepts.
+            </div>
+            </div>
+        </div>
+        </div>
+
+
+        <!-- ANNOUNCEMENT DETAIL PAGE -->
+        <div id="announcementDetailPage" class="hidden px-10 py-6">
+        <div class="flex justify-between items-center mb-6">
+            <button 
+                onclick="goBack()" 
+                class="flex items-center gap-3 text-gray-600 hover:text-black hover:bg-main/10 p-2 rounded-full transition text-lg">
                 <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
             </button>
 
-            <div class="bg-white border-2 border-[#F9CADA] rounded-2xl p-8 shadow-sm">
-                <h2 id="detailTitle" class="text-3xl font-bold font-outfit mb-2">Post Title</h2>
-                <p id="detailMeta" class="text-sm text-gray-500 font-outfit mb-4">Posted by: Teacher Name | Nov 2, 2025</p>
-                <p id="detailBody" class="text-gray-700 font-outfit leading-relaxed">
-                    This is where the full content of the post or assignment will appear.
-                </p>
+            <button class="bg-[#F9E8C9] text-black px-6 py-3 rounded-xl font-semibold hover:opacity-80 transition">
+            Mark As Read
+            </button>
+        </div>
+
+        <div class="relative bg-white w-[90%] max-w-5xl min-h-[80vh] mx-auto p-10 
+                    border-[3px] border-[#F9E8C9] 
+                    shadow-[12px_12px_0_0_#F9E8C9] 
+                    rounded-2xl z-10 flex flex-col">
+
+            <div class="flex flex-col">
+            <div class="flex gap-6 items-center">
+                <div class="relative w-[300px] h-[320px]">
+                <img 
+                    src="{{ asset('images/cat-mascot.png') }}" 
+                    alt="cat mascot" 
+                    class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
+                </div>
+
+                <div class="-mt-[140px] ml-[70px]">
+                <h2 class="font-semibold text-3xl leading-tight">Post Title</h2>
+                <p class="text-gray-500 text-base mt-1">Creator Name</p>
+                </div>
+            </div>
+
+            <div class="-mt-15 flex items-center justify-start">
+                <p class="text-gray-400 text-sm">Posted: Nov 2, 2025</p>
+                <div class="flex-1 ml-4 border-t-[5px] border-[#F9E8C9]"></div>
+            </div>
+            </div>
+
+            <div class="mt-6 flex-1">
+            <h3 class="font-semibold text-gray-700 text-lg text-center">Announcement</h3>
+            <p class="text-gray-600 text-base mt-3 leading-relaxed max-w-2xl mx-auto">
+                Please submit your essay before Friday. Make sure to review the grading rubric carefully and upload your file in PDF format only. 
+                Late submissions will not be accepted, so plan your time accordingly. If you have any questions, feel free to reach out via email 
+                or during our consultation hours this week. Thank you for your cooperation and best of luck with your work!
+            </p>
             </div>
         </div>
+        </div>
+
+
+        <!-- ASSIGNMENT DETAIL PAGE -->
+        <div id="assignmentDetailPage" class="hidden px-10 py-6">
+        <div class="flex justify-between items-center mb-6">
+            <button 
+                onclick="goBack()" 
+                class="flex items-center gap-3 text-gray-600 hover:text-black hover:bg-main/10 p-2 rounded-full transition text-lg">
+                <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
+            </button>
+
+            <button class="bg-[#F9CADA] text-black px-6 py-3 rounded-xl font-semibold hover:opacity-80 transition">
+            Mark As Done
+            </button>
+        </div>
+
+        <div class="relative bg-white w-[90%] max-w-5xl min-h-[80vh] mx-auto p-10 
+                    border-[3px] border-[#F9CADA] 
+                    shadow-[12px_12px_0_0_#F9CADA] 
+                    rounded-2xl z-10 flex flex-col">
+
+            <div class="flex flex-col">
+            <div class="flex gap-6 items-center">
+                <div class="relative w-[300px] h-[320px]">
+                <img 
+                    src="{{ asset('images/cat-mascot.png') }}" 
+                    alt="cat mascot" 
+                    class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
+                </div>
+
+                <div class="-mt-[140px] ml-[70px]">
+                <h2 class="font-semibold text-3xl leading-tight">Essay Submission</h2>
+                <p class="text-gray-500 text-base mt-1">Mr. Santos</p>
+                </div>
+            </div>
+
+            <div class="-mt-15 flex items-center justify-between">
+                <p class="text-gray-400 text-sm">Posted: Nov 2, 2025</p>
+                <div class="flex-1 ml-4 border-t-[5px] border-[#F9CADA]"></div>
+            </div>
+            </div>
+
+            <div class="mt-6 space-y-6 flex-1 overflow-y-auto">
+            <div class="flex items-start gap-6">
+            <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Not Turned In</h3>
+            <div class="relative border-[3px] border-[#F9CADA] rounded-xl p-3 flex-1 shadow-[5px_5px_0_0_#F9CADA] flex items-center gap-3">
+                <input 
+                type="file" 
+                id="essayFile"
+                class="border border-gray-300 rounded-xl p-3 flex-1 text-base focus:ring-2 focus:ring-[#F9CADA] outline-none transition" />
+                <button 
+                    class="bg-[#F9CADA] px-4 py-2 rounded-xl font-semibold hover:opacity-80 transition flex-shrink-0"
+                    onclick="submitEssay()">
+                    SUBMIT
+                </button>
+            </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="flex items-start gap-6">
+                <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Instructions</h3>
+                <p class="text-gray-600 text-base leading-relaxed flex-1 max-h-[400px] overflow-y-auto">
+                    Write your essay according to the prompt, format it in Times New Roman 12pt double-spaced with a title page, 
+                    save it as a PDF named Lastname_Firstname_Assignment.pdf, and upload it using the Choose File button before t
+                    he deadline. Make sure your work is original and sources are properly cited.       
+                </p>
+            </div>
+            </div>
+        </div>
+        </div>
+
 
         <style>
             #classHeader {
@@ -373,7 +573,6 @@ function generateAllClassRow(creatorName, className, count, color, status, code)
     `;
 }
 
-
 function renderPinnedClasses() {
     document.getElementById('pinned-classes-container').innerHTML = pinnedClasses.map(c =>
         generatePinnedCard(c.creator, c.name, c.count, c.color, c.role, c.code)
@@ -450,6 +649,23 @@ function toggleClassCodePopup() {
     popup.classList.toggle('hidden');
 }
 
+function submitEssay() {
+    const fileInput = document.getElementById('essayFile');
+    
+    if (!fileInput.value) {
+      alert('Please select a file before submitting.');
+      return;
+    }
+
+    const confirmSubmit = confirm('Are you sure you want to submit your essay?');
+    if (!confirmSubmit) return;
+
+    alert('Your essay has been submitted successfully!');
+
+    fileInput.disabled = true;
+    document.querySelector('button[onclick="submitEssay()"]').disabled = true;
+}
+
 function copyClassCodePopup() {
     const codeText = document.getElementById('classCodeText').textContent;
 
@@ -500,7 +716,6 @@ function showCopyMessage() {
 }
 }
 
-
 function copyPinnedClassCode(code, event) {
     event.stopPropagation();
 
@@ -536,13 +751,11 @@ function copyPinnedClassCode(code, event) {
     }
 }
 
-
 function toggleJoinPopup() {
   console.log("Add button clicked!");
   const popup = document.getElementById('joinClassPopup');
   popup.classList.toggle('hidden');
 }
-
 
 function joinClassFromCode() {
   const codeInput = document.getElementById('joinClassCodeInput');
@@ -562,6 +775,29 @@ function joinClassFromCode() {
   } else {
     alert('Invalid class code. Please try again.');
   }
+}
+
+function openDetailPage(type) {
+    document.getElementById('classViewPage').classList.add('hidden');
+
+    document.getElementById('assignmentDetailPage').classList.add('hidden');
+    document.getElementById('materialDetailPage').classList.add('hidden');
+    document.getElementById('announcementDetailPage').classList.add('hidden');
+
+    if (type === 'assignment') {
+        document.getElementById('assignmentDetailPage').classList.remove('hidden');
+    } else if (type === 'material') {
+        document.getElementById('materialDetailPage').classList.remove('hidden');
+    } else if (type === 'announcement') {
+        document.getElementById('announcementDetailPage').classList.remove('hidden');
+    }
+}
+
+function goBack() {
+    document.getElementById('assignmentDetailPage').classList.add('hidden');
+    document.getElementById('materialDetailPage').classList.add('hidden');
+    document.getElementById('announcementDetailPage').classList.add('hidden');
+    document.getElementById('classViewPage').classList.remove('hidden');
 }
 
 function showMembers() {
