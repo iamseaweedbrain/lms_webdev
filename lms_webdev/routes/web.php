@@ -20,3 +20,6 @@ Route::view('/grades', 'grades')->name('grades');
 Route::view('/settings', 'settings')->name('settings');
 Route::view('/student', 'student')->name('student');
 Route::view('/notification', 'notification')->name('notification');
+Route::view('/settings-edit', 'settings-edit')->name('settings-edit');
+Route::post('/settings-update', [AccountController::class, 'updateSettings'])->name('settings-update');
+
