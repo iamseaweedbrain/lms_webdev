@@ -54,7 +54,7 @@
         <div id="all-classes-container" class="flex flex-col gap-4 mb-10"></div>
     </div>
 
-        <!-- Join Class Popup -->
+            <!-- Join Class Popup -->
         <div id="joinClassPopup" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
         <div class="bg-white rounded-2xl shadow-xl w-[380px] p-6 text-center relative font-outfit">
             <button 
@@ -125,7 +125,6 @@
                             Copy
                         </button>
                     </div>
-                    <p id="copyMsg" class="hidden text-green-600 text-xs mt-2 font-outfit">Copied!</p>
                 </div>
             </div>
             </div>
@@ -288,6 +287,16 @@
                 transform: translateY(50%);
                 left: -40px;
             }
+
+            #copyMsg {
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            #copyMsg.opacity-100 {
+                opacity: 1;
+            }
+
         </style>
     </div>
 
@@ -342,17 +351,6 @@ function generatePinnedCard(creatorName, className, count, color, role, code) {
             </div>
         </div>
     `;
-}
-
-function copyPinnedClassCode(code, event) {
-    event.stopPropagation();
-    navigator.clipboard.writeText(code).then(() => {
-        const toast = document.createElement('div');
-        toast.textContent = `Copied ${code}`;
-        toast.className = "fixed bottom-5 right-5 bg-main text-white px-4 py-2 rounded-xl shadow-lg text-sm font-outfit";
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 1500);
-    });
 }
 
 function generateAllClassRow(creatorName, className, count, color, status, code) {
@@ -454,16 +452,90 @@ function toggleClassCodePopup() {
 
 function copyClassCodePopup() {
     const codeText = document.getElementById('classCodeText').textContent;
-    navigator.clipboard.writeText(codeText).then(() => {
-        const msg = document.getElementById('copyMsg');
-        msg.classList.remove('hidden');
-        msg.classList.add('show');
-        setTimeout(() => {
-            msg.classList.remove('show');
-            setTimeout(() => msg.classList.add('hidden'), 300);
-        }, 1500);
-    });
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(codeText)
+                .then(showCopyMessage)
+                .catch(err => {
+                    console.warn("Clipboard writeText failed, using fallback:", err);
+                    fallbackCopy(codeText);
+                });
+        } else {
+            fallbackCopy(codeText);
+        }
+    } catch (err) {
+        console.error("Clipboard API not supported:", err);
+        fallbackCopy(codeText);
+    }
+
+    function fallbackCopy(text) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+        showCopyMessage();
+    }
+
+function showCopyMessage() {
+    const toast = document.createElement('div');
+    toast.textContent = `Copied ${codeText}`;
+    toast.className = `
+        fixed bottom-5 right-5 bg-main text-white 
+        px-4 py-2 rounded-xl shadow-lg text-sm font-outfit 
+        z-[9999] opacity-0 transition-opacity duration-300
+    `;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('opacity-100'));
+
+    setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        setTimeout(() => toast.remove(), 300);
+    }, 1500);
 }
+}
+
+
+function copyPinnedClassCode(code, event) {
+    event.stopPropagation();
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code).then(showToast);
+    } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = code;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+        showToast();
+    }
+
+    function showToast() {
+        const toast = document.createElement('div');
+        toast.textContent = `Copied ${code}`;
+        toast.className = `
+            fixed bottom-5 right-5 bg-main text-white 
+            px-4 py-2 rounded-xl shadow-lg text-sm font-outfit 
+            z-[9999] opacity-0 transition-opacity duration-300
+        `;
+        document.body.appendChild(toast);
+
+        requestAnimationFrame(() => toast.classList.add('opacity-100'));
+        setTimeout(() => {
+            toast.classList.remove('opacity-100');
+            setTimeout(() => toast.remove(), 300);
+        }, 1500);
+    }
+}
+
 
 function toggleJoinPopup() {
   console.log("Add button clicked!");
@@ -484,11 +556,11 @@ function joinClassFromCode() {
   const foundClass = allClasses.find(c => c.code === code) || pinnedClasses.find(c => c.code === code);
 
   if (foundClass) {
-    alert(`✅ You have joined ${foundClass.name} by ${foundClass.creator}!`);
+    alert(`You have joined ${foundClass.name} by ${foundClass.creator}!`);
     toggleJoinPopup();
     codeInput.value = '';
   } else {
-    alert('❌ Invalid class code. Please try again.');
+    alert('Invalid class code. Please try again.');
   }
 }
 
