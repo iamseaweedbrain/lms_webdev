@@ -6,18 +6,25 @@ use App\Models\PostModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class PostController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request, $code)
     {
         $routeName = $request->route()->getName();
-        
-        if ($routeName === 'posts.create') {
-            return view('new_post');
-        } elseif ($routeName === 'assignments.create') {
-            return view('new_assignment');
+        $class = DB::table('classes')->where('code', $code)->first();
+
+        if (!$class) {
+            abort(404, 'Class not found');
         }
+        if ($routeName === 'posts.create') {
+            return view('new_post', ['code' => $code]);
+        } elseif ($routeName === 'assignments.create') {
+            return view('new_assignment', ['code' => $code]);
+        }
+
+        abort(404);
     }
 
     public function index(Request $request)
@@ -37,44 +44,57 @@ class PostController extends Controller
         }
     }
 
-    public function newPost(Request $request)
+    public function newPost(Request $request, $code)
     {
-        $validated = $request->validate([
-            'post_type' => 'required|in:material,assignment,announcement',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'code' => 'required|string|exists:classes,code',
-            'color' => 'nullable|string', // Add color validation if needed
-        ]);
-        
-        $classId = DB::table('classes')->where('code', $validated['code'])->value('class_id');
-
-        if (!$classId) {
-            return back()->withErrors(['code' => 'Class with provided code not found.'])->withInput();
-        }
-
-        if (!Auth::check()) {
+        if (! Auth::check()) {
             return redirect()->route('login');
         }
-        
+
+        $validated = $request->validate([
+            'post_type'   => 'required|in:material,assignment,announcement',
+            'title'       => 'required|string|max:255',
+            'description' => 'required|string',
+            'color'       => 'nullable|in:pink,blue,purple,yellow',
+            'due_date'    => 'nullable|date',
+        ]);
+
+        $title = $validated['title'];
+        $content = $validated['description'];
+
+        // Optional: verify that class with this code exists
+        $classExists = DB::table('classes')->where('code', $code)->exists();
+        if (! $classExists) {
+            return back()->withErrors(['code' => 'Class not found.'])->withInput();
+        }
+
+        // Build the post data
         $postData = [
-            'user_id' => Auth::id(),
-            'class_id' => $classId,
-            'post_title' => $validated['title'], 
-            'post_type' => $validated['post_type'],
-            'content' => $validated['description'],
+            'user_id'    => Auth::id(),
+            'code'       => $code, // from the URL
+            'post_title' => $title,
+            'post_type'  => $validated['post_type'],
+            'content'    => $content,
         ];
 
-        // Only add color if it's present in the request
-        if (isset($validated['color'])) {
+        if (!empty($validated['color'])) {
             $postData['color'] = $validated['color'];
         }
 
-        PostModel::create($postData);
+        if (!empty($validated['due_date'])) {
+            $postData['due_date'] = $validated['due_date'];
+        }
 
-        return redirect()->route('posts.index')->with('success', 'Post created successfully!');
+        try {
+            $post = PostModel::create($postData);
+
+            return redirect()->route('posts.index')
+                            ->with('success', 'Post created successfully!');
+        } catch (\Throwable $e) {
+            Log::error('Error creating post', ['exception' => $e->getMessage(), 'data' => $postData]);
+            return back()->with('error', 'Server error while creating post. Check logs.')->withInput();
+        }
     }
-    public function newAssignment(Request $request)
+    public function newAssignment(Request $request, $code)
     {
         $validatedData = $request->validate([
             'due_date' => ['required', 'date', 'after_or_equal:' . now()->format('Y-m-d H:i')],
@@ -82,7 +102,16 @@ class PostController extends Controller
             'instructions' => 'nullable|string',
         ]);
 
-        PostModel::create($validatedData);
+        $assignmentData = [
+            'user_id'    => Auth::id(),
+            'code'       => $code,
+            'post_title' => $validatedData['title'],
+            'post_type'  => 'assignment',
+            'content'    => $validatedData['instructions'] ?? null,
+            'due_date'   => $validatedData['due_date'],
+        ];
+                
+        PostModel::create($assignmentData);
 
         return redirect()->route('assignments.index')
                          ->with('success', 'Assignment created successfully!');
