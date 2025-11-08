@@ -1,228 +1,127 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Dashboard - Grades Overview</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: "Poppins", sans-serif;
-    }
+<x-layouts.mainlayout title="Grades Overview">
+    <div class="flex flex-col gap-12 pr-28 pt-9 font-poppins relative">
+        @php
+            $activeColor = 'yellow';
+            if(isset($selectedClass)) {
+                $activeColor = $selectedClass['color'];
+            }
+        @endphp
 
-    body {
-      display: flex;
-      background-color: #fafafa;
-      color: #222;
-    }
+        <div class="flex justify-between items-center">
+            <div>
+                <h1 class="text-4xl font-bold text-main font-outfit">Grades Overview</h1>
+            </div>
+            <div class="relative">
+                <input type="text"
+                       placeholder="Search assignment..."
+                       class="pl-10 pr-4 py-3 rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-pastel-{{ $activeColor }} w-[260px] text-sm text-gray-700 placeholder-gray-400">
+                <iconify-icon icon="mingcute:search-line"
+                              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                              width="20" height="20"></iconify-icon>
+            </div>
+        </div>
 
-    /* Sidebar */
-    .sidebar {
-      width: 70px;
-      background: #fff;
-      border-right: 1px solid #eee;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 20px 0;
-      gap: 25px;
-    }
+        <div class="absolute right-28 top-40 z-50" x-data="{ open: false }">
+            <div class="relative">
+                <button 
+                    @click="open = !open"
+                    class="relative flex items-center justify-between gap-2 w-56 bg-white border-2 text-gray-800 text-lg font-semibold px-8 py-3 rounded-2xl hover:bg-gray-50 transition z-10 border-pastel-{{ $activeColor }} shadow-[3px_3px_0_0_theme(colors.pastel-{{ $activeColor }}.DEFAULT)]"
+                >
+                    <span>{{ $selectedClass['classname'] ?? $selectedClass['class_name'] ?? 'Select Class' }}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg"
+                        class="h-4 w-4 transition-transform duration-200"
+                        :class="{ 'rotate-180': open }"
+                        fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
 
-    .sidebar i {
-      font-size: 22px;
-      cursor: pointer;
-      color: #333;
-    }
+                <div 
+                    x-show="open" 
+                    @click.away="open = false" 
+                    x-transition
+                    class="absolute left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50"
+                >
+                    @foreach($allClasses as $class)
+                        <a href="{{ route('grades', ['class' => $class['id']]) }}"
+                          class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F6E3C5] hover:text-black font-medium transition">
+                            {{ $class['class_name'] ?? $class['classname'] }}
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+        </div>
 
-    /* Main content */
-    .main {
-      flex: 1;
-      padding: 30px 50px;
-    }
+        <section class="pl-4 pr-0 py-8 -space-y-2 flex flex-col relative overflow-hidden z-10">
+            <div class="flex justify-between items-center flex-wrap gap-3">
+              <div class="flex flex-wrap -space-x-2">
+              @foreach($recentClasses as $class)
+                @php
+                $isActive = isset($selectedClass) && $selectedClass['id'] === $class['id'];
+                @endphp
+                <a href="{{ route('grades', ['class' => $class['id']]) }}"
+                 class="px-14 py-6 rounded-t-3xl font-semibold text-lg transform transition-all duration-300 ease-out
+                  hover:scale-105 hover:-translate-y-1 hover:shadow-lg
+                    {{ $isActive
+                    ? 'bg-pastel-'.$class['color'].'/100 text-main'
+                    : 'bg-pastel-'.$class['color'].'/100 text-main/80 hover:bg-pastel-'.$class['color'].'/90' }}"
+                 style="min-width:120px;">
+                {{ $class['classname'] }}
+                </a>
+              @endforeach
+              </div>
+            </div>
 
-    h1 {
-      font-size: 22px;
-      font-weight: 700;
-      margin-bottom: 20px;
-    }
+            <div class="overflow-x-auto relative z-10 -mt-6">
+                <table class="bg-white min-w-full rounded-xl overflow-hidden">
+                    <thead>
+                        <tr class="bg-pastel-{{ $activeColor }} text-main">
+                            <th class="px-6 py-8 text-left font-bold text-lg">Assignment Name</th>
+                            <th class="px-6 py-8 text-left font-bold text-lg w-24">Score</th>
+                            <th class="px-6 py-8 text-left font-bold text-lg">Feedback</th>
+                            <th class="px-6 py-8 text-center font-bold text-lg w-20">Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($assignments as $assignment)
+                            <tr class="border-b border-gray-200 hover:bg-pastel-{{ $activeColor }}/30 transition">
+                                <td class="px-6 py-4 text-gray-700">{{ $assignment['name'] }}</td>
+                                <td class="px-6 py-4 text-green-600 font-medium">{{ $assignment['score'] ?? '-' }}</td>
+                                <td class="px-6 py-4 text-gray-600 truncate max-w-xs">{{ $assignment['feedback'] ?? '-' }}</td>
+                                <td class="px-6 py-4 text-center">
+                                    <a href="{{ route('student_grade', ['id' => $assignment['submission_id']]) }}"
+                                       class="inline-block p-2 rounded-full hover:bg-pastel-{{ $activeColor }}/60 transition">
+                                        <iconify-icon icon="ic:round-chevron-right" width="24" height="24"></iconify-icon>
+                                    </a>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="text-center py-10 text-gray-400 font-medium">
+                                    No assignments found for this class.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
 
-    /* Top bar */
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-    }
-
-    .search {
-      background: #fff;
-      border-radius: 20px;
-      padding: 8px 15px;
-      display: flex;
-      align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-
-    .search input {
-      border: none;
-      outline: none;
-      font-size: 14px;
-      padding-left: 8px;
-    }
-
-    /* Tabs */
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-    }
-
-    .tab {
-      background: #fde2e4;
-      border-radius: 8px;
-      padding: 10px 20px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .tab:nth-child(2) { background: #f7cad0; }
-    .tab:nth-child(3) { background: #fff1b6; }
-    .tab:nth-child(4) { background: #e7d5ff; }
-
-    .tab.active {
-      background: #000;
-      color: #fff;
-    }
-
-    /* Table */
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #f3f8f8;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-
-    th, td {
-      padding: 14px 18px;
-      text-align: left;
-    }
-
-    th {
-      background-color: #d9ecec;
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    td {
-      border-top: 1px solid #dcdcdc;
-      font-size: 14px;
-    }
-
-    .details {
-      text-align: right;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    /* Pagination */
-    .pagination {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-      gap: 6px;
-    }
-
-    .pagination button {
-      border: 1px solid #ccc;
-      background: #f9f9f9;
-      border-radius: 6px;
-      padding: 6px 10px;
-      cursor: pointer;
-    }
-
-    .pagination button.active {
-      background: #c9e7e5;
-      font-weight: 600;
-    }
-  </style>
-</head>
-<body>
-
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <img src="c:\Users\USER\Downloads\Rectangle 19.png" alt="Logo" />
-    <img src="c:\Users\USER\Downloads\material-symbols_dashboard-rounded.png" alt="Dashboard Icon" />
-    <img src="c:\Users\USER\Downloads\fluent_class-24-filled.png" alt="Class Icon" />
-    <img src="c:\Users\USER\Downloads\Group 17.png" alt="Calendar and events icon showing monthly schedule" />
-    <img src="c:\Users\USER\Downloads\material-symbols_settings-rounded.png" alt="Settings Icon" />
-  </div>
-
-  <!-- Main Content -->
-  <div class="main">
-    <div class="top-bar">
-      <h1>Grades Overview</h1>
-      <div class="search">
-        🔍 <input type="text" placeholder="Search assignments">
-      </div>
+            @if($pageCount > 1)
+                <div class="flex justify-center gap-2 mt-6">
+                    @for($i = 1; $i <= $pageCount; $i++)
+                        <a href="{{ route('grades', ['class' => $selectedClass['id'] ?? null, 'page' => $i]) }}"
+                           class="px-3 py-1 rounded-full font-semibold text-sm transition
+                                  {{ $i == $currentPage 
+                                        ? 'bg-pastel-'.$activeColor.' text-main' 
+                                        : 'bg-gray-100 text-gray-500 hover:bg-pastel-'.$activeColor.' hover:text-main' }}">
+                            {{ $i }}
+                        </a>
+                    @endfor
+                </div>
+            @endif
+        </section>
     </div>
 
-    <div class="tabs">
-      <div class="tab">Class Name</div>
-      <div class="tab">Class Name</div>
-      <div class="tab">Class Name</div>
-      <div class="tab">Class Name</div>
-      <div class="tab active">Class Name ⬇️</div>
-    </div>
-
-    <table>
-      <thead>
-        <tr>
-          <th>Assignment Name</th>
-          <th>Score</th>
-          <th>Feedback</th>
-          <th>Details</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Assign #1: Ayuku na mag-aral laging...</td>
-          <td>100/100</td>
-          <td>Nagreklamo i layk...</td>
-          <td class="details">⋮</td>
-        </tr>
-        <tr>
-          <td>Assign #1: Ayuku na mag-aral laging...</td>
-          <td>100/100</td>
-          <td>Nagreklamo i layk...</td>
-          <td class="details">⋮</td>
-        </tr>
-        <tr>
-          <td>Assign #1: Ayuku na mag-aral laging...</td>
-          <td>100/100</td>
-          <td>Nagreklamo i layk...</td>
-          <td class="details">⋮</td>
-        </tr>
-        <tr>
-          <td>Assign #1: Ayuku na mag-aral laging...</td>
-          <td>100/100</td>
-          <td>Nagreklamo i layk...</td>
-          <td class="details">⋮</td>
-        </tr>
-      </tbody>
-    </table>
-
-    <div class="pagination">
-      <button class="active">1</button>
-      <button>2</button>
-      <button>3</button>
-      <button>4</button>
-      <button>...</button>
-      <button>10</button>
-    </div>
-  </div>
-
-</body>
-</html>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</x-layouts.mainlayout>
