@@ -13,13 +13,13 @@ return new class extends Migration
     {
         Schema::create('classmembers', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('class_id');
+            $table->string('code');
             $table->string('user_id');
             $table->enum('role', ['member', 'coadmin', 'admin'])->default('member');
             $table->timestamp('joined_at')->useCurrent();
 
             // foreign key links sa mga nakalink na table
-            $table->foreign('class_id')->references('id')->on('classes')->onDelete('cascade');
+            $table->foreign('code')->references('code')->on('classes')->onDelete('cascade');
             $table->foreign('user_id')->references('user_id')->on('useraccount')->onDelete('cascade');
         });
     }

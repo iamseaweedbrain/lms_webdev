@@ -11,18 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('posts', function (Blueprint $table) {
-            $table->id('post_id');
-            $table->string('code');
+        Schema::create('pinned_classes', function (Blueprint $table) {
+            $table->id();
             $table->string('user_id');
-            $table->string('avatar');
-            $table->enum('post_type', ['material', 'assignment', 'announcement']);
-            $table->text('content');
-            $table->enum('color', ['pink', 'blue', 'purple', 'yellow'])->default('pink');
-            $table->dateTime('due_date')->nullable();
-            $table->timestamp('created_at')->useCurrent();
+            $table->string('code');
+            $table->timestamps();
 
-            // foreign keys ulit sa mga tables
             $table->foreign('code')->references('code')->on('classes')->onDelete('cascade');
             $table->foreign('user_id')->references('user_id')->on('useraccount')->onDelete('cascade');
         });
@@ -33,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('posts');
+        Schema::dropIfExists('pinned_classes');
     }
 };

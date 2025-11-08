@@ -26,4 +26,8 @@ class AccountModel extends Authenticatable
     {
         return $this->hasMany(ClassMember::class, 'user_id', 'user_id');
     }
+    public function pinnedClasses()
+    {
+        return $this->belongsToMany(ClassModel::class, 'pinned_classes', 'user_id', 'code');
+    }
 }

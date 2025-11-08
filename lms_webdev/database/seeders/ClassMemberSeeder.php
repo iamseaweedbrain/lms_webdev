@@ -14,7 +14,7 @@ class ClassMemberSeeder extends Seeder
     {
         DB::table('classmembers')->truncate();
 
-        $allClassIds = DB::table('classes')->pluck('id');
+        $allClassIds = DB::table('classes')->pluck('code');
         // Fetch all student user IDs
         $studentIds = DB::table('useraccount')->where('email', 'like', 'student%')->pluck('user_id');
 
@@ -22,7 +22,7 @@ class ClassMemberSeeder extends Seeder
         foreach ($allClassIds as $classId) {
             foreach ($studentIds as $userId) {
                 $data[] = [
-                    'class_id' => $classId,
+                    'code' => $classId,
                     'user_id' => $userId,
                     'role' => (rand(1, 10) === 1) ? 'coadmin' : 'member',
                     'joined_at' => now()->subDays(rand(1, 30)),

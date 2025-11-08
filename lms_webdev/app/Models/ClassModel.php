@@ -10,7 +10,7 @@ class ClassModel extends Model
     use HasFactory;
 
     protected $table = 'classes';
-    protected $fillable = ['creator_id', 'classname', 'description', 'code'];
+    protected $fillable = ['creator_id', 'classname', 'description', 'code', 'color'];
 
     // Relationships
     public function creator()
@@ -22,5 +22,10 @@ class ClassModel extends Model
     {
         return $this->hasMany(ClassMember::class, 'class_id', 'id');
     }
+    public function pinnedBy()
+    {
+        return $this->belongsToMany(User::class, 'pinned_classes', 'code', 'user_id');
+    }
+
 }
 

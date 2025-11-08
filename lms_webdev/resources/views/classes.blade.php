@@ -1,8 +1,8 @@
 <x-layouts.mainlayout>
     <!-- CLASSES PAGE -->
-    <div class="p-6" id="classesPage">
+    <div class="p-6 mr-10" id="classesPage">
         <div class="flex justify-between items-center mb-10">
-            <h1 class="text-3xl font-bold font-outfit">Your Classes</h1>
+            <h1 class="text-3xl font-bold font-poppins">Your Classes</h1>
 
             <div class="flex items-center gap-3">
                 <button 
@@ -11,33 +11,41 @@
                     <iconify-icon icon="ic:round-add" width="26" height="26" class="text-black"></iconify-icon>
                 </button>
 
-        <div class="relative w-[250px]">
-        <input 
-            type="text" 
-            placeholder="Search class..." 
-            class="w-full h-10 pl-5 pr-10 rounded-full shadow-md focus:outline-none"
-        >
-        <div class="absolute inset-y-0 right-3 flex items-center">
-            <iconify-icon 
-            icon="mingcute:search-line" 
-            width="22" 
-            height="22" 
-            class="text-gray-500">
-            </iconify-icon>
-        </div>
-        </div>
+                <div class="relative flex items-center">
+                    <input type="text" placeholder="Search class..." class="pl-8 py-2 focus:outline-none pr-10 shadow-md rounded-[15px] w-[250px] h-[50px]">
+                    <iconify-icon icon="mingcute:search-line" width="20" height="20" class="absolute right-4 text-gray-500"></iconify-icon>
+                </div>
             </div>
         </div>
 
         <!-- Pinned Classes -->
         <div class="mb-10">
-            <h2 class="font-semibold text-xl mb-4 font-outfit">Pinned Classes</h2>
-            <div id="pinned-classes-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+            <div class="flex items-center gap-5 pl-5 mb-4">
+                <iconify-icon icon="f7:pin-fill" width="20" height="20"></iconify-icon>
+                <p class="font-bold text-[26px] font-outfit">Pinned Classes</p>
+            </div>
+            
+            <div id="pinned-classes-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @forelse ($pinnedClassesDetails as $class)
+                    <x-class-card 
+                        :creatorName="$class->creator->name ?? 'N/A'"
+                        :className="$class->name"
+                        :count="$class->pending_count ?? 0" 
+                        :colorPrefix="$class->color_prefix ?? 'default'"
+                        :role="$class->user_role ?? 'student'"
+                    />
+                @empty
+                    <p class="text-gray-500 col-span-full ml-5">You haven't pinned any classes yet.</p>
+                @endforelse
+            </div>
         </div>
 
         <!-- All Classes -->
         <div class="flex justify-between items-center mb-4">
-            <h2 class="font-semibold text-xl font-outfit">All Classes</h2>
+            <div class="flex items-center gap-5 pl-5">
+                <iconify-icon icon="si:book-fill" width="20" height="20"></iconify-icon>
+                <p class="font-bold text-[26px] font-outfit">All Classes</p>
+            </div>
             <div class="relative flex items-center text-sm font-outfit text-gray-500 cursor-pointer group">
                 <span>Sort by Name</span>
                 <iconify-icon 
@@ -509,13 +517,6 @@ const dbData = {
     members: 14
 };
 
-const pinnedClasses = [
-    { creator: 'Mr. Santos', name: 'Algebra 101', count: '01', color: 'pink', status: 'Pending Assignments', role: 'Member', code: 'ALG101' },
-    { creator: 'Ms. Lopez', name: 'Art Appreciation', count: '00', color: 'blue', status: 'No Pending Activities', role: 'Member', code: 'ART202' },
-    { creator: 'Prof. Cruz', name: 'Physics Lab', count: '10', color: 'yellow', status: 'Check Student Work', role: 'Member', code: 'PHY303' },
-    { creator: 'Dr. Reyes', name: 'English Composition', count: '01', color: 'purple', status: 'Pending Assignments', role: 'Member', code: 'ENG404' },
-];
-
 const allClasses = [
     { creator: 'Prof. Diaz', name: 'World Literature', count: '01', color: 'pink', status: 'Pending', code: 'LIT505' },
     { creator: 'Mr. Lim', name: 'Programming 2', count: '01', color: 'blue', status: 'Pending', code: 'PROG606' },
@@ -523,37 +524,6 @@ const allClasses = [
     { creator: 'Mr. Gomez', name: 'Multimedia Arts', count: '01', color: 'purple', status: 'Pending', code: 'MMA808' },
 ];
 
-function generatePinnedCard(creatorName, className, count, color, role, code) {
-    return `
-        <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}', '${code}')"
-            class="bg-white border-2 border-pastel-${color} rounded-2xl p-6 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition duration-200 shadow-pastel-${color}">
-            <div class="flex justify-between items-start mb-3">
-                <p class="text-gray-500 text-sm font-outfit">${creatorName}</p>
-                <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
-            </div>
-            <h4 class="font-bold text-xl font-outfit mb-2">${className}</h4>
-
-            <div class="flex items-center gap-2 mb-4">
-                <p class="text-gray-600 text-sm font-outfit">Code:</p>
-                <span id="class-code-${code}" class="font-semibold text-main text-sm font-outfit">${code}</span>
-                <button 
-                    onclick="copyPinnedClassCode('${code}', event)" 
-                    class="text-gray-400 hover:text-black transition"
-                    title="Copy code">
-                    <iconify-icon icon="mdi:content-copy" width="16" height="16"></iconify-icon>
-                </button>
-            </div>
-
-            <div class="flex justify-between items-end">
-                <span class="bg-pastel-${color} text-black rounded-xl px-5 py-2 font-bold text-xl font-outfit shadow-sm">${count}</span>
-                <div class="text-right">
-                    <p class="text-gray-400 text-xs font-outfit">Joined as</p>
-                    <p class="font-semibold text-sm font-outfit text-main">${role}</p>
-                </div>
-            </div>
-        </div>
-    `;
-}
 
 function generateAllClassRow(creatorName, className, count, color, status, code) {
     return `
@@ -575,11 +545,6 @@ function generateAllClassRow(creatorName, className, count, color, status, code)
     `;
 }
 
-function renderPinnedClasses() {
-    document.getElementById('pinned-classes-container').innerHTML = pinnedClasses.map(c =>
-        generatePinnedCard(c.creator, c.name, c.count, c.color, c.role, c.code)
-    ).join('');
-}
 
 function renderAllClasses() {
     document.getElementById('all-classes-container').innerHTML = allClasses.map(c =>

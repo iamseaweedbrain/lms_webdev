@@ -1,6 +1,8 @@
 <?php
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ClassController;
+use App\Http\Controllers\PinnedClassesController;
 use App\Http\Controllers\SubmissionController;
 use Illuminate\Support\Facades\Route;
 
@@ -27,4 +29,6 @@ Route::view('/notification', 'notification')->name('notification');
 Route::view('/settings-edit', 'settings-edit')->name('settings-edit');
 Route::get('/student_grade/{id}', [SubmissionController::class, 'show'])->name('student_grade');
 
+
+Route::get('/classes', [PinnedClassesController::class, 'index'])->name('classes');
 

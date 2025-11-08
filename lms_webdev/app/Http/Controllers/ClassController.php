@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\ClassModel;
+use App\Models\ClassMember;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ClassController extends Controller
 {
@@ -31,6 +33,7 @@ class ClassController extends Controller
         $validated = $request->validate([
             'class_name' => 'required|string',
             'description' => 'nullable|string',
+            'color'=> 'nullable|string',
         ]);
 
         return ClassModel::create($validated);
@@ -66,5 +69,28 @@ class ClassController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function join(Request $request)
+    {
+        $validated = $request->validate([
+            'code' => 'required|string|exists:classes,code', 
+        ]);
+
+        $userId = Auth::id();
+
+        $exists = ClassMember::where('code', $validated['code'])
+                            ->where('user_id', $userId)
+                            ->exists();
+
+        if ($exists) {
+            return redirect()->back()->with('error', 'You are already a member of this class.');
+        }
+
+        ClassMember::create([
+            'code' => $validated['code'],
+            'user_id' => $userId,
+        ]);
+
+        return redirect()->back()->with('success', 'Successfully joined the class!');
     }
 }
