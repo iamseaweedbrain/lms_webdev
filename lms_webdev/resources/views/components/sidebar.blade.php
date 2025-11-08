@@ -1,3 +1,5 @@
+Side bar.blade
+
 <section class="font-poppins bg-page m-0">
     <div class="w-[120px] h-screen bg-white shadow-[2px_0_10px_rgba(0,0,0,0.05)] 
                 flex flex-col justify-between items-center fixed top-0 left-0 gap-[60px]">
@@ -59,19 +61,109 @@
             </a>
         </div>
 
-        {{-- Bottom Icon --}}
-        <a href="{{ route('student') }}" 
-           class="flex justify-center items-center w-[50px] h-[50px] my-10 rounded-full text-[22px] transition-all duration-200 
-                  {{ request()->is('student') ? 'bg-main text-pastel-pink' : 'text-main hover:bg-main hover:text-pastel-pink' }}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 256 256">
+        {{-- Bottom Icon - Toggle Student/Teacher View --}}
+        <button
+           id="viewToggleBtn"
+           onclick="toggleViewMode()"
+           class="flex justify-center items-center w-[50px] h-[50px] my-10 rounded-full text-[22px] transition-all duration-200
+                  {{ request()->is('classes') ? 'text-main hover:bg-main hover:text-pastel-pink cursor-pointer' : 'text-gray-300 cursor-not-allowed' }}"
+           title="{{ request()->is('classes') ? 'Toggle Student/Teacher View' : 'Only available on Classes page' }}">
+            <svg id="toggleIcon" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 256 256">
                 <rect width="256" height="256" fill="none"/>
                 <path fill="currentColor"
                       d="m231.65 194.55l-33.19-157.8a16 16 0 0 0-19-12.39l-46.81 10.06a16.08 16.08 0 0 0-12.3 19l33.19 157.8A16 16 0 0 0 169.16 224a16.3 16.3 0 0 0 3.38-.36l46.81-10.06a16.09 16.09 0 0 0 12.3-19.03M136 50.15v-.09l46.8-10l3.33 15.87L139.33 66Zm10 47.38l-3.35-15.9l46.82-10.06l3.34 15.9Zm70 100.41l-46.8 10l-3.33-15.87l46.8-10.07l3.33 15.85zM104 32H56a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h48a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16M56 48h48v16H56Zm48 160H56v-16h48z"/>
             </svg>
-        </a>
+        </button>
     </div>
 
     <div class="ml-[120px] p-10">
         {{ $slot }}
     </div>
 </section>
+
+<script>
+function toggleViewMode() {
+    const isOnClassesPage = window.location.pathname === '/classes';
+
+    if (!isOnClassesPage) {
+        const toast = document.createElement('div');
+        toast.textContent = 'This feature is only available on the Classes page';
+        toast.className = `
+            fixed bottom-5 right-5 bg-gray-600 text-white
+            px-4 py-2 rounded-xl shadow-lg text-sm font-outfit
+            z-[9999] opacity-0 transition-opacity duration-300
+        `;
+        document.body.appendChild(toast);
+
+        requestAnimationFrame(() => toast.classList.add('opacity-100'));
+
+        setTimeout(() => {
+            toast.classList.remove('opacity-100');
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+
+        return; 
+    }
+
+    const currentMode = localStorage.getItem('viewMode') || 'student';
+    const newMode = currentMode === 'student' ? 'teacher' : 'student';
+
+    localStorage.setItem('viewMode', newMode);
+
+    window.dispatchEvent(new CustomEvent('viewModeChanged', { detail: { mode: newMode } }));
+
+    updateToggleButton(newMode);
+
+    showViewModeToast(newMode);
+}
+
+function updateToggleButton(mode) {
+    const btn = document.getElementById('viewToggleBtn');
+    const icon = document.getElementById('toggleIcon');
+    const isOnClassesPage = window.location.pathname === '/classes';
+
+    if (!btn || !icon) return;
+
+    if (isOnClassesPage) {
+        if (mode === 'teacher') {
+            btn.classList.add('bg-main', 'text-pastel-pink');
+            btn.classList.remove('text-main', 'text-gray-300');
+            icon.innerHTML = `
+                <rect width="256" height="256" fill="none"/>
+                <path fill="currentColor" d="M216 40H40a16 16 0 0 0-16 16v144a16 16 0 0 0 16 16h13.39a8 8 0 0 0 7.23-4.57a48 48 0 0 1 86.76 0a8 8 0 0 0 7.23 4.57H216a16 16 0 0 0 16-16V56a16 16 0 0 0-16-16M80 144a24 24 0 1 1 24 24a24 24 0 0 1-24-24m136 56h-56.57a63.93 63.93 0 0 0-13.16-16.06a40 40 0 1 0-52.54 0A63.93 63.93 0 0 0 80.57 200H40V56h176Zm-88-56a24 24 0 1 1 24-24a24 24 0 0 1-24 24m0-40a16 16 0 1 0 16 16a16 16 0 0 0-16-16"/>
+            `;
+        } else {
+            btn.classList.remove('bg-main', 'text-pastel-pink', 'text-gray-300');
+            btn.classList.add('text-main');
+            icon.innerHTML = `
+                <rect width="256" height="256" fill="none"/>
+                <path fill="currentColor" d="m231.65 194.55l-33.19-157.8a16 16 0 0 0-19-12.39l-46.81 10.06a16.08 16.08 0 0 0-12.3 19l33.19 157.8A16 16 0 0 0 169.16 224a16.3 16.3 0 0 0 3.38-.36l46.81-10.06a16.09 16.09 0 0 0 12.3-19.03M136 50.15v-.09l46.8-10l3.33 15.87L139.33 66Zm10 47.38l-3.35-15.9l46.82-10.06l3.34 15.9Zm70 100.41l-46.8 10l-3.33-15.87l46.8-10.07l3.33 15.85zM104 32H56a16 16 0 0 0-16 16v160a16 16 0 0 0 16 16h48a16 16 0 0 0 16-16V48a16 16 0 0 0-16-16M56 48h48v16H56Zm48 160H56v-16h48z"/>
+            `;
+        }
+    }
+}
+
+function showViewModeToast(mode) {
+    const toast = document.createElement('div');
+    toast.textContent = `Switched to ${mode.charAt(0).toUpperCase() + mode.slice(1)} View`;
+    toast.className = `
+        fixed bottom-5 right-5 bg-main text-white
+        px-4 py-2 rounded-xl shadow-lg text-sm font-outfit
+        z-[9999] opacity-0 transition-opacity duration-300
+    `;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('opacity-100'));
+
+    setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        setTimeout(() => toast.remove(), 300);
+    }, 2000);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const currentMode = localStorage.getItem('viewMode') || 'student';
+    updateToggleButton(currentMode);
+});
+</script>
+
