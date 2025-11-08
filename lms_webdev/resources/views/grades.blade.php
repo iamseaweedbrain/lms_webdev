@@ -94,12 +94,17 @@
                     <tbody>
                         @forelse($assignments as $assignment)
                             <tr class="border-b border-gray-200 hover:bg-pastel-{{ $activeColor }}/30 transition">
-                                <td class="px-6 py-4 text-gray-700 align-top">{{ $assignment['name'] }}</td>
-                                <td class="px-6 py-4 text-green-600 font-medium text-center align-top">{{ $assignment['score'] ?? '-' }}</td>
-                                <td class="px-6 py-4 text-gray-600 truncate align-top">{{ $assignment['feedback'] ?? '-' }}</td>
+                                <td class="px-6 py-4 text-gray-700 align-top">
+                                    <a href="{{ route('student_grade', ['id' => $assignment['submission_id']]) }}" class="block w-full h-full">{{ $assignment['name'] }}</a>
+                                </td>
+                                <td class="px-6 py-4 text-green-600 font-medium text-center align-top">
+                                    <a href="{{ route('student_grade', ['id' => $assignment['submission_id']]) }}" class="block w-full h-full">{{ $assignment['score'] ?? '-' }}</a>
+                                </td>
+                                <td class="px-6 py-4 text-gray-600 truncate align-top">
+                                    <a href="{{ route('student_grade', ['id' => $assignment['submission_id']]) }}" class="block w-full h-full">{{ $assignment['feedback'] ?? '-' }}</a>
+                                </td>
                                 <td class="px-6 py-4 text-center align-top">
-                                    <a href="{{ route('student_grade', ['id' => $assignment['submission_id']]) }}"
-                                       class="inline-block p-2 rounded-full hover:bg-pastel-{{ $activeColor }}/60 transition">
+                                    <a href="{{ route('student_grade', ['id' => $assignment['submission_id']]) }}" class="inline-block p-2 rounded-full hover:bg-pastel-{{ $activeColor }}/60 transition">
                                         <iconify-icon icon="ic:round-chevron-right" width="24" height="24"></iconify-icon>
                                     </a>
                                 </td>
