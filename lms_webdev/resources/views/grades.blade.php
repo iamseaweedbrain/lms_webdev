@@ -28,7 +28,7 @@
                     @click="open = !open"
                     class="relative flex items-center justify-between gap-2 w-56 bg-white border-2 text-gray-800 text-lg font-semibold px-8 py-3 rounded-2xl hover:bg-gray-50 transition z-10 border-pastel-{{ $activeColor }} shadow-[3px_3px_0_0_theme(colors.pastel-{{ $activeColor }}.DEFAULT)]"
                 >
-                    <span>{{ $selectedClass['classname'] ?? $selectedClass['class_name'] ?? 'Select Class' }}</span>
+                    <span class="block truncate max-w-[180px]">{{ $selectedClass['classname'] ?? $selectedClass['class_name'] ?? 'Select Class' }}</span>
                     <svg xmlns="http://www.w3.org/2000/svg"
                         class="h-4 w-4 transition-transform duration-200"
                         :class="{ 'rotate-180': open }"
@@ -45,10 +45,10 @@
                     class="absolute left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50"
                 >
                     @foreach($allClasses as $class)
-                        <a href="{{ route('grades', ['class' => $class['id']]) }}"
-                          class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F6E3C5] hover:text-black font-medium transition">
-                            {{ $class['class_name'] ?? $class['classname'] }}
-                        </a>
+                                                <a href="{{ route('grades', ['class' => $class['id']]) }}"
+                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F6E3C5] hover:text-black font-medium transition truncate">
+                                                        <span class="block truncate">{{ $class['class_name'] ?? $class['classname'] }}</span>
+                                                </a>
                     @endforeach
                 </div>
             </div>
@@ -62,14 +62,14 @@
                 @php
                 $isActive = isset($selectedClass) && $selectedClass['id'] === $class['id'];
                 @endphp
-                <a href="{{ route('grades', ['class' => $class['id']]) }}"
-                 class="px-14 py-6 rounded-t-3xl font-semibold text-lg transform transition-all duration-300 ease-out
+                                <a href="{{ route('grades', ['class' => $class['id']]) }}"
+                                 class="px-14 py-6 rounded-t-3xl font-semibold text-lg transform transition-all duration-300 ease-out
                   hover:scale-105 hover:-translate-y-1 hover:shadow-lg
                     {{ $isActive
                     ? 'bg-pastel-'.$class['color'].'/100 text-main'
                     : 'bg-pastel-'.$class['color'].'/100 text-main/80 hover:bg-pastel-'.$class['color'].'/90' }}"
                  style="min-width:120px;">
-                {{ $class['classname'] }}
+                                <span class="block truncate max-w-[140px]">{{ $class['classname'] }}</span>
                 </a>
               @endforeach
               </div>
