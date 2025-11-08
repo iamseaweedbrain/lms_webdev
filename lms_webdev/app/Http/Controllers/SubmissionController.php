@@ -140,7 +140,38 @@ class SubmissionController extends Controller
      */
     public function show(string $id)
     {
-        return view('students_grade', ['id' => $id]);
+        $submission = SubmissionModel::with(['post.user'])->findOrFail($id);
+
+        $post = $submission->post;
+        $creatorName = $post && $post->user ? ($post->user->firstname . ' ' . $post->user->lastname) : 'Instructor';
+        $assignmentName = $post->post_title ?? $post->content ?? 'Assignment';
+        $createdDate = $post->created_at ?? null;
+        if ($createdDate) {
+            try {
+                $createdDate = date('M d, Y', strtotime($createdDate));
+            } catch (\Exception $e) {
+                $createdDate = null;
+            }
+        }
+
+        $dateSubmitted = $submission->submitted_at ? date('M d, Y H:i', strtotime($submission->submitted_at)) : '—';
+        $filePath = $submission->file_path ?? 'No file';
+        $fileFormat = $submission->file_type ?? '';
+        $feedback = $submission->feedback ?? 'No feedback yet.';
+        $grade = $submission->score !== null ? $submission->score : '—';
+        $score = ($submission->score !== null && $post && $post->max_score) ? ($submission->score . ' / ' . $post->max_score) : ($submission->score ?? '—');
+
+        return view('grades_view', [
+            'creatorName' => $creatorName,
+            'assignmentName' => $assignmentName,
+            'createdDate' => $createdDate,
+            'dateSubmitted' => $dateSubmitted,
+            'filePath' => $filePath,
+            'fileFormat' => $fileFormat,
+            'feedback' => $feedback,
+            'grade' => $grade,
+            'score' => $score,
+        ]);
     }
 
     /**
