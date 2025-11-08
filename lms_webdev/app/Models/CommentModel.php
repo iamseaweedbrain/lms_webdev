@@ -27,7 +27,7 @@ class CommentModel extends Model
 
     public function user()
     {
-        return $this->belongsTo(UserAccount::class, 'user_id', 'userid');
+        return $this->belongsTo(AccountModel::class, 'user_id', 'userid');
     }
 }
 

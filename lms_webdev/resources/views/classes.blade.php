@@ -1,11 +1,13 @@
 <x-layouts.mainlayout>
-    <div class="p-6">
-
+    <!-- CLASSES PAGE -->
+    <div class="p-6" id="classesPage">
         <div class="flex justify-between items-center mb-10">
             <h1 class="text-3xl font-bold font-outfit">Your Classes</h1>
 
             <div class="flex items-center gap-3">
-                <button class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition">
+                <button 
+                    onclick="toggleJoinPopup()" 
+                    class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition">
                     <iconify-icon icon="ic:round-add" width="26" height="26" class="text-black"></iconify-icon>
                 </button>
 
@@ -25,259 +27,788 @@
             </div>
         </div>
 
-
+        <!-- Pinned Classes -->
         <div class="mb-10">
             <h2 class="font-semibold text-xl mb-4 font-outfit">Pinned Classes</h2>
             <div id="pinned-classes-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
         </div>
 
+        <!-- All Classes -->
         <div class="flex justify-between items-center mb-4">
             <h2 class="font-semibold text-xl font-outfit">All Classes</h2>
-
             <div class="relative flex items-center text-sm font-outfit text-gray-500 cursor-pointer group">
                 <span>Sort by Name</span>
                 <iconify-icon 
                     icon="mdi:chevron-down" 
                     class="ml-1 text-gray-500 group-hover:text-black transition">
                 </iconify-icon>
-
-        <div class="hidden absolute right-0 mt-6 bg-white border border-gray-200 rounded-lg shadow-md w-32 text-gray-600 text-sm group-hover:block">
-            <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Name</p>
-            <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Creator</p>
-            <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Newest</p>
-            <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Oldest</p>
+                <div class="hidden absolute right-0 mt-6 bg-white border border-gray-200 rounded-lg shadow-md w-32 text-gray-600 text-sm group-hover:block">
+                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Name</p>
+                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Creator</p>
+                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Newest</p>
+                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Oldest</p>
+                </div>
+            </div>
         </div>
-    </div>
-</div>
-
 
         <div id="all-classes-container" class="flex flex-col gap-4 mb-10"></div>
-
     </div>
 
-    <script>
-    function generatePinnedCard(creatorName, className, count, color, role) {
-        const borderColor = `border-pastel-${color}`;
-        const shadowClass = `shadow-pastel-${color}`; 
-        const bgColor = `bg-pastel-${color}`;
-
-        return `
-            <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}')"
-                class="bg-white border-2 ${borderColor} rounded-2xl p-6 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition duration-200 ${shadowClass}">
-                <div class="flex justify-between items-start mb-3">
-                    <p class="text-gray-500 text-sm font-outfit">${creatorName}</p>
-                    <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
-                </div>
-                <h4 class="font-bold text-xl font-outfit mb-6">${className}</h4>
-                <div class="flex justify-between items-end">
-                    <span class="${bgColor} text-black rounded-xl px-5 py-2 font-bold text-xl font-outfit shadow-sm">${count}</span>
-                    <div class="text-right">
-                        <p class="text-gray-400 text-xs font-outfit">Joined as</p>
-                        <p class="font-semibold text-sm font-outfit text-main">${role}</p>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-
-    function generateAllClassRow(creatorName, className, count, color, status) {
-        const borderColor = `border-pastel-${color}`;
-        const textColor = `text-pastel-${color}`;
-        const shadowClass = `shadow-pastel-${color}`;
-
-        return `
-            <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}')"
-                class="flex justify-between items-center bg-white border-2 ${borderColor} rounded-xl px-6 py-4 hover:scale-[1.02] transition duration-200 cursor-pointer ${shadowClass}">
-                <div>
-                    <p class="text-sm text-gray-500 font-outfit">${creatorName}</p>
-                    <h4 class="font-semibold text-lg font-outfit">${className}</h4>
-                </div>
-                <div class="flex items-center gap-4">
-                    <div class="flex flex-col items-center">
-                        <p class="text-xs text-gray-500 font-outfit">${status}</p>
-                        <span class="font-bold text-xl ${textColor} font-outfit">${count}</span>
-                    </div>
-                    <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
-                </div>
-            </div>
-        `;
-    }
-
-        const pinnedClasses = [
-            { creator: 'Mr. Santos', name: 'Algebra 101', count: '01', color: 'pink', status: 'Pending Assignments', role: 'Member' },
-            { creator: 'Ms. Lopez', name: 'Art Appreciation', count: '00', color: 'blue', status: 'No Pending Activities', role: 'Member' },
-            { creator: 'Prof. Cruz', name: 'Physics Lab', count: '10', color: 'yellow', status: 'Check Student Work', role: 'Member' },
-            { creator: 'Dr. Reyes', name: 'English Composition', count: '01', color: 'purple', status: 'Pending Assignments', role: 'Member' },
-        ];
-
-        const allClasses = [
-            { creator: 'Prof. Diaz', name: 'World Literature', count: '01', color: 'pink', status: 'Pending' },
-            { creator: 'Mr. Lim', name: 'Programming 2', count: '01', color: 'blue', status: 'Pending' },
-            { creator: 'Ms. Bautista', name: 'Philosophy', count: '01', color: 'yellow', status: 'Pending' },
-            { creator: 'Mr. Gomez', name: 'Multimedia Arts', count: '01', color: 'purple', status: 'Pending' },
-        ];
-
-        function renderPinnedClasses() {
-            const container = document.getElementById('pinned-classes-container');
-            container.innerHTML = pinnedClasses.map(cls => 
-                generatePinnedCard(cls.creator, cls.name, cls.count, cls.color, cls.role)
-            ).join('');
-        }
-
-        function renderAllClasses() {
-            const container = document.getElementById('all-classes-container');
-            container.innerHTML = allClasses.map(cls => 
-                generateAllClassRow(cls.creator, cls.name, cls.count, cls.color, cls.status)
-            ).join('');
-        }
-
-        window.onload = function() {
-            renderPinnedClasses();
-            renderAllClasses();
-        };
-
-        function openClassView(name, creator, count, color) {
-            document.querySelector('.p-6').classList.add('hidden');
-            document.getElementById('classViewPage').classList.remove('hidden');
-            document.getElementById('classTitle').textContent = name;
-            document.getElementById('classCreator').textContent = creator;
-            document.getElementById('classCount').textContent = count;
-            document.getElementById('classHeader').classList.add(`bg-pastel-${color}`);
-        }
-
-        function goBackToClasses() {
-            document.getElementById('classViewPage').classList.add('hidden');
-            document.querySelector('.p-6').classList.remove('hidden');
-            document.getElementById('classHeader').className = 'rounded-2xl p-6 flex justify-between items-center mb-6';
-        }
-
-    </script>
-
-
- <!-- Class View Page -->
-<div id="classViewPage" class="hidden p-6 relative overflow-visible">
-
-    <div class="flex justify-between items-center mb-8">
-        
-        <div class="flex items-center gap-6">
+            <!-- Join Class Popup -->
+        <div id="joinClassPopup" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+        <div class="bg-white rounded-2xl shadow-xl w-[380px] p-6 text-center relative font-outfit">
             <button 
-                onclick="goBackToClasses()" 
-                class="text-main hover:bg-main/10 p-2 rounded-full transition">
+            onclick="toggleJoinPopup()" 
+            class="absolute top-3 right-3 text-gray-400 hover:text-black transition">
+            <iconify-icon icon="mdi:close" width="22" height="22"></iconify-icon>
+            </button>
+
+            <h2 class="text-xl font-bold mb-3">Join a Class</h2>
+            <p class="text-gray-600 text-sm mb-6">Enter the class code provided by your teacher.</p>
+
+            <input 
+            id="joinClassCodeInput"
+            type="text" 
+            placeholder="Enter class code (e.g., ALG101)" 
+            class="border border-gray-300 rounded-lg w-full py-2 px-4 text-sm mb-5 focus:outline-none focus:ring-2 focus:ring-main"
+            >
+
+            <button 
+            onclick="joinClassFromCode()" 
+            class="bg-main text-white px-5 py-2 rounded-lg font-semibold hover:bg-main/80 transition">
+            Join Class
+            </button>
+        </div>
+        </div>
+
+    <!-- CLASS VIEW PAGE -->
+    <div id="classViewPage" class="hidden p-6 relative overflow-visible">
+        <div class="flex justify-between items-center mb-8">
+            <div class="flex items-center gap-6">
+                <button 
+                    onclick="goBackToClasses()" 
+                    class="text-main hover:bg-main/10 p-2 rounded-full transition">
+                    <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
+                </button>
+
+                <div class="flex items-center gap-6 font-outfit text-lg -mt-2">
+                    <button id="postsTab" onclick="showTab('posts')" class="font-semibold text-black border-b-4 border-[#F9CADA] pb-0">Posts</button>
+                    <button id="assignmentsTab" onclick="showTab('assignments')" class="text-black pb-0">Assignments</button>
+                </div>
+
+            </div>
+
+            <div class="flex items-center gap-4 -mt-2">
+                <button 
+                    onclick="showMembers()" 
+                    class="p-2 hover:bg-gray-100 rounded-full transition"
+                    title="View Members">
+                    <iconify-icon icon="mdi:account-group-outline" width="26" height="26" class="text-black"></iconify-icon>
+                </button>
+            <!-- Share Icon (Class Code Copy) -->
+            <div class="relative">
+                <button 
+                    onclick="toggleClassCodePopup()" 
+                    class="p-2 hover:bg-gray-100 rounded-full transition"
+                    title="Share Class Code">
+                    <iconify-icon icon="mdi:share-variant-outline" width="26" height="26" class="text-black"></iconify-icon>
+                </button>
+
+                <!-- Hidden popup -->
+                <div id="classCodePopup" class="hidden absolute right-0 mt-3 bg-white border border-gray-200 rounded-lg shadow-md p-3 w-52 z-50">
+                    <p class="font-semibold text-sm text-gray-700 mb-2 font-outfit">Class Code:</p>
+                    <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
+                        <span id="classCodeText" class="font-mono text-sm text-gray-700">ABC123</span>
+                        <button 
+                            onclick="copyClassCodePopup()" 
+                            class="text-main font-outfit text-xs font-semibold hover:underline">
+                            Copy
+                        </button>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+
+        <div id="classHeader" class="relative rounded-2xl p-10 flex justify-between items-start mb-10 bg-pastel-pink shadow-sm overflow-visible">
+            <div class="z-10 ml-[240px] mt-[30px]">
+                <h1 id="classTitle" class="text-4xl font-bold font-outfit text-black mb-1">Class Name</h1>
+                <p id="classCreator" class="text-gray-700 font-outfit text-base mb-6">Creator Name</p>
+            </div>
+
+            <div class="text-right z-10 mt-[25px]">
+                <span id="classCount" class="block text-5xl font-bold font-outfit text-black leading-none">00</span>
+                <p id="classLabel" class="text-gray-800 font-outfit text-sm">New Posts</p>
+            </div>
+
+            <img 
+                src="{{ asset('images/cat-mascot.png') }}" 
+                alt="cat mascot" 
+                class="absolute -left-10 bottom-0 translate-y-[-60%] translate-x-[50%] w-[200px] h-[220px] z-[5] pointer-events-none select-none">
+        </div>
+
+        <!-- POSTS TAB -->
+        <div id="postsSection" class="flex flex-col gap-4">
+        <h2 class="font-semibold text-lg font-outfit mb-2">Posts</h2>
+
+        <!-- Announcement Card -->
+        <div 
+            onclick="openDetailPage('announcement')" 
+            class="relative bg-white w-full px-6 py-4 border border-[#F9CADA] rounded-2xl 
+                shadow-[8px_8px_0_0_#FBD1E2] cursor-pointer 
+                hover:scale-[1.02] transition duration-200 flex justify-between items-center">
+            <div>
+            <h3 class="font-semibold text-lg font-outfit">Announcement</h3>
+            <p class="text-gray-600 text-sm font-outfit">Please submit your essay before Friday.</p>
+            <p class="text-xs text-gray-400 font-outfit mt-1">Posted: Nov 2, 2025</p>
+            </div>
+            <iconify-icon 
+            icon="ic:round-more-vert" 
+            width="22" height="22" 
+            class="text-gray-400 hover:text-black transition cursor-pointer">
+            </iconify-icon>
+        </div>
+
+        <!-- Material Card -->
+        <div 
+            onclick="openDetailPage('material')" 
+            class="relative bg-white w-full px-6 py-4 border border-[#CBE8E9] rounded-2xl 
+                shadow-[8px_8px_0_0_#B7E3E6] cursor-pointer 
+                hover:scale-[1.02] transition duration-200 flex justify-between items-center">
+            <div>
+            <h3 class="font-semibold text-lg font-outfit">Material</h3>
+            <p class="text-gray-600 text-sm font-outfit">Material for final exam.</p>
+            <p class="text-xs text-gray-400 font-outfit mt-1">Posted: Nov 1, 2025</p>
+            </div>
+            <iconify-icon 
+            icon="ic:round-more-vert" 
+            width="22" height="22" 
+            class="text-gray-400 hover:text-black transition cursor-pointer">
+            </iconify-icon>
+        </div>
+        </div>
+
+        <!-- ASSIGNMENTS TAB -->
+        <div id="assignmentsSection" class="hidden flex flex-col gap-4">
+        <h2 class="font-semibold text-lg font-outfit mb-2">Assignments</h2>
+
+        <!-- Assignment Card -->
+        <div 
+            onclick="openDetailPage('assignment')" 
+            class="relative bg-white w-full px-6 py-4 border border-[#F9CADA] rounded-2xl 
+                shadow-[8px_8px_0_0_#FBD1E2] cursor-pointer 
+                hover:scale-[1.02] transition duration-200 flex justify-between items-center">
+            <div>
+            <h3 class="font-semibold text-lg font-outfit">Essay Submission</h3>
+            <p class="text-gray-600 text-sm font-outfit">Write a 300-word essay on modern art.</p>
+            <p class="text-xs text-gray-400 font-outfit mt-1">Due: Nov 5, 2025</p>
+            </div>
+            <iconify-icon 
+            icon="ic:round-upload" 
+            width="22" height="22" 
+            class="text-gray-400 hover:text-black transition cursor-pointer">
+            </iconify-icon>
+        </div>
+        </div>
+
+        <!-- MEMBERS TAB -->
+        <div id="membersSection" class="hidden flex flex-col gap-6">
+        <h2 class="font-semibold text-lg font-outfit mb-2">Class Members</h2>
+
+        <!-- Teachers -->
+        <div>
+            <h3 class="font-semibold text-md font-outfit text-gray-700 mb-2">Teachers</h3>
+            <div id="teachersList" class="flex flex-col gap-3">
+            <div class="bg-white border-2 border-[#F9CADA] rounded-xl p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                <img 
+                    src="{{ asset('images/teacher-santos.jpg') }}" 
+                    alt="Mr. Santos" 
+                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
+                >
+                <div>
+                    <p class="font-semibold text-lg font-outfit text-black">Mr. Santos</p>
+                    <p class="text-sm text-gray-500 font-outfit">Algebra 101 - Main Instructor</p>
+                </div>
+                </div>
+                <iconify-icon icon="mdi:account-tie-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
+            </div>
+            </div>
+        </div>
+
+        <!-- Students -->
+        <div>
+            <h3 class="font-semibold text-md font-outfit text-gray-700 mb-2">Students</h3>
+            <div id="studentsList" class="flex flex-col gap-3">
+            <div class="bg-white border-2 border-[#CBE8E9] rounded-xl p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                <img 
+                    src="{{ asset('images/student-venice.jpg') }}" 
+                    alt="Venice Don" 
+                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
+                >
+                <div>
+                    <p class="font-semibold text-lg font-outfit text-black">Venice Don</p>
+                    <p class="text-sm text-gray-500 font-outfit">Member</p>
+                </div>
+                </div>
+                <iconify-icon icon="mdi:account-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
+            </div>
+
+            <div class="bg-white border-2 border-[#CBE8E9] rounded-xl p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                <img 
+                    src="{{ asset('images/student-jake.jpg') }}" 
+                    alt="Jake Reyes" 
+                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
+                >
+                <div>
+                    <p class="font-semibold text-lg font-outfit text-black">Jake Reyes</p>
+                    <p class="text-sm text-gray-500 font-outfit">Member</p>
+                </div>
+                </div>
+                <iconify-icon icon="mdi:account-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
+            </div>
+
+            <div class="bg-white border-2 border-[#CBE8E9] rounded-xl p-4 flex justify-between items-center">
+                <div class="flex items-center gap-4">
+                <img 
+                    src="{{ asset('images/student-lara.jpg') }}" 
+                    alt="Lara Cruz" 
+                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
+                >
+                <div>
+                    <p class="font-semibold text-lg font-outfit text-black">Lara Cruz</p>
+                    <p class="text-sm text-gray-500 font-outfit">Member</p>
+                </div>
+                </div>
+                <iconify-icon icon="mdi:account-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
+            </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    
+        <!-- MATERIAL DETAIL PAGE -->
+        <div id="materialDetailPage" class="hidden px-10 py-6">
+        <div class="flex justify-between items-center mb-6">
+            <button 
+            onclick="goBack()" 
+            class="flex items-center gap-3 text-gray-600 hover:text-black hover:bg-main/10 p-2 rounded-full transition text-lg">
+            <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
+            </button>
+            <button class="bg-[#CBE8E9] text-black px-6 py-3 rounded-xl font-semibold hover:opacity-80 transition">
+            Mark As Read
+            </button>
+        </div>
+
+        <div class="relative bg-white w-[90%] max-w-5xl min-h-[80vh] mx-auto p-10 
+                    border-[3px] border-[#CBE8E9] 
+                    shadow-[12px_12px_0_0_#CBE8E9] 
+                    rounded-2xl z-10 flex flex-col">
+
+            <div class="flex flex-col">
+            <div class="flex gap-6 items-center">
+                <div class="relative w-[300px] h-[320px]">
+                <img 
+                    src="{{ asset('images/cat-mascot.png') }}" 
+                    alt="cat mascot" 
+                    class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
+                </div>
+
+                <div class="-mt-[140px] ml-[70px]">
+                <h2 class="font-semibold text-3xl leading-tight">Post Title</h2>
+                <p class="text-gray-500 text-base mt-1">Creator Name</p>
+                </div>
+            </div>
+
+            <div class="-mt-15 flex items-center justify-between">
+                <p class="text-gray-400 text-sm">Posted: Nov 1, 2025</p>
+                <div class="flex-1 ml-4 border-t-[5px] border-[#CBE8E9]"></div>
+            </div>
+            </div>
+
+            <div class="mt-10 space-y-4 flex-1 overflow-y-auto">
+                <!-- Material -->
+                <div class="flex items-start gap-6">
+                <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Material</h3>
+                <div class="relative border-[3px] border-[#CBE8E9] rounded-xl p-3 flex-1 shadow-[5px_5px_0_0_#CBE8E9] flex justify-between items-center">
+                    <div>
+                    <p class="font-bold text-normal text-gray-500">Final Exam File</p>
+                    <a href="#" class="text-blue-600 text-sm hover:underline">
+                        material.pdf
+                    </a>
+                    </div>
+                    <iconify-icon icon="mdi:arrow-up" width="24" height="24" class="text-gray-600"></iconify-icon>
+                </div>
+            </div>
+            <!-- Instructions -->
+            <div class="flex items-start gap-6">
+                <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Instructions</h3>
+                <p class="text-gray-600 text-base leading-relaxed flex-1 max-h-[400px] overflow-y-auto">
+                Read through the attached slides and summarize key concepts.
+            </div>
+            </div>
+        </div>
+        </div>
+
+
+        <!-- ANNOUNCEMENT DETAIL PAGE -->
+        <div id="announcementDetailPage" class="hidden px-10 py-6">
+        <div class="flex justify-between items-center mb-6">
+            <button 
+                onclick="goBack()" 
+                class="flex items-center gap-3 text-gray-600 hover:text-black hover:bg-main/10 p-2 rounded-full transition text-lg">
                 <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
             </button>
 
-            <div class="flex items-center gap-6 font-outfit text-lg -mt-2">
-                <button class="font-semibold text-black border-b-4 border-[#F9CADA] pb-0">Posts</button>
-                <button class="text-gray-500 hover:text-black transition">Assignments</button>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-4 -mt-2">
-            <button class="p-2 hover:bg-gray-100 rounded-full transition">
-                <iconify-icon 
-                    icon="mdi:account-group-outline" 
-                    width="26" 
-                    height="26" 
-                    class="text-black">
-                </iconify-icon>
-            </button>
-            <button class="p-2 hover:bg-gray-100 rounded-full transition">
-                <iconify-icon 
-                    icon="mdi:cog-outline" 
-                    width="26" 
-                    height="26" 
-                    class="text-black">
-                </iconify-icon>
+            <button class="bg-[#F9E8C9] text-black px-6 py-3 rounded-xl font-semibold hover:opacity-80 transition">
+            Mark As Read
             </button>
         </div>
-    </div>
 
-    <div 
-        id="classHeader"
-        class="relative rounded-2xl p-10 flex justify-between items-start mb-10 bg-pastel-pink shadow-sm overflow-visible">
+        <div class="relative bg-white w-[90%] max-w-5xl min-h-[80vh] mx-auto p-10 
+                    border-[3px] border-[#F9E8C9] 
+                    shadow-[12px_12px_0_0_#F9E8C9] 
+                    rounded-2xl z-10 flex flex-col">
 
-        <div class="z-10 ml-[240px] mt-[30px]">
-            <h1 id="classTitle" class="text-4xl font-bold font-outfit text-black mb-1">Class Name</h1>
-            <p id="classCreator" class="text-gray-700 font-outfit text-base mb-6">Creator Name</p>
-        </div>
+            <div class="flex flex-col">
+            <div class="flex gap-6 items-center">
+                <div class="relative w-[300px] h-[320px]">
+                <img 
+                    src="{{ asset('images/cat-mascot.png') }}" 
+                    alt="cat mascot" 
+                    class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
+                </div>
 
-        <div class="text-right z-10 mt-[25px]">
-            <span id="classCount" class="block text-5xl font-bold font-outfit text-black leading-none">00</span>
-            <p class="text-gray-800 font-outfit text-sm">New Posts</p>
-        </div>
-
-        <img 
-            src="{{ asset('images/cat-mascot.png') }}" 
-            alt="cat mascot" 
-            class="absolute -left-10 bottom-0 translate-y-[-60%] translate-x-[50%] w-[200px] h-[220px] z-[5] pointer-events-none select-none">
-    </div>
-
-    <div class="flex justify-between items-center mb-4">
-        <h2 class="font-semibold text-lg font-outfit">Posts</h2>
-        {{-- Sort by Dropdown --}}
-        <div class="relative flex items-center text-sm font-outfit text-gray-500 cursor-pointer group">
-            <span>Sort by Date</span>
-            <iconify-icon 
-                icon="mdi:chevron-down" 
-                class="ml-1 text-gray-500 group-hover:text-black transition">
-            </iconify-icon>
-
-            {{-- Hidden dropdown (appears on hover or can be toggled later) --}}
-            <div class="hidden absolute right-0 mt-6 bg-white border border-gray-200 rounded-lg shadow-md w-32 text-gray-600 text-sm group-hover:block">
-                <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Newest</p>
-                <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Oldest</p>
+                <div class="-mt-[140px] ml-[70px]">
+                <h2 class="font-semibold text-3xl leading-tight">Post Title</h2>
+                <p class="text-gray-500 text-base mt-1">Creator Name</p>
+                </div>
             </div>
-</div>
 
+            <div class="-mt-15 flex items-center justify-start">
+                <p class="text-gray-400 text-sm">Posted: Nov 2, 2025</p>
+                <div class="flex-1 ml-4 border-t-[5px] border-[#F9E8C9]"></div>
+            </div>
+            </div>
+
+            <div class="mt-6 flex-1">
+            <h3 class="font-semibold text-gray-700 text-lg text-center">Announcement</h3>
+            <p class="text-gray-600 text-base mt-3 leading-relaxed max-w-2xl mx-auto">
+                Please submit your essay before Friday. Make sure to review the grading rubric carefully and upload your file in PDF format only. 
+                Late submissions will not be accepted, so plan your time accordingly. If you have any questions, feel free to reach out via email 
+                or during our consultation hours this week. Thank you for your cooperation and best of luck with your work!
+            </p>
+            </div>
+        </div>
+        </div>
+
+
+        <!-- ASSIGNMENT DETAIL PAGE -->
+        <div id="assignmentDetailPage" class="hidden px-10 py-6">
+        <div class="flex justify-between items-center mb-6">
+            <button 
+                onclick="goBack()" 
+                class="flex items-center gap-3 text-gray-600 hover:text-black hover:bg-main/10 p-2 rounded-full transition text-lg">
+                <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
+            </button>
+
+            <button class="bg-[#F9CADA] text-black px-6 py-3 rounded-xl font-semibold hover:opacity-80 transition">
+            Mark As Done
+            </button>
+        </div>
+
+        <div class="relative bg-white w-[90%] max-w-5xl min-h-[80vh] mx-auto p-10 
+                    border-[3px] border-[#F9CADA] 
+                    shadow-[12px_12px_0_0_#F9CADA] 
+                    rounded-2xl z-10 flex flex-col">
+
+            <div class="flex flex-col">
+            <div class="flex gap-6 items-center">
+                <div class="relative w-[300px] h-[320px]">
+                <img 
+                    src="{{ asset('images/cat-mascot.png') }}" 
+                    alt="cat mascot" 
+                    class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
+                </div>
+
+                <div class="-mt-[140px] ml-[70px]">
+                <h2 class="font-semibold text-3xl leading-tight">Essay Submission</h2>
+                <p class="text-gray-500 text-base mt-1">Mr. Santos</p>
+                </div>
+            </div>
+
+            <div class="-mt-15 flex items-center justify-between">
+                <p class="text-gray-400 text-sm">Posted: Nov 2, 2025</p>
+                <div class="flex-1 ml-4 border-t-[5px] border-[#F9CADA]"></div>
+            </div>
+            </div>
+
+            <div class="mt-6 space-y-6 flex-1 overflow-y-auto">
+            <div class="flex items-start gap-6">
+            <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Not Turned In</h3>
+            <div class="relative border-[3px] border-[#F9CADA] rounded-xl p-3 flex-1 shadow-[5px_5px_0_0_#F9CADA] flex items-center gap-3">
+                <input 
+                type="file" 
+                id="essayFile"
+                class="border border-gray-300 rounded-xl p-3 flex-1 text-base focus:ring-2 focus:ring-[#F9CADA] outline-none transition" />
+                <button 
+                    class="bg-[#F9CADA] px-4 py-2 rounded-xl font-semibold hover:opacity-80 transition flex-shrink-0"
+                    onclick="submitEssay()">
+                    SUBMIT
+                </button>
+            </div>
+            </div>
+
+            <!-- Instructions -->
+            <div class="flex items-start gap-6">
+                <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Instructions</h3>
+                <p class="text-gray-600 text-base leading-relaxed flex-1 max-h-[400px] overflow-y-auto">
+                    Write your essay according to the prompt, format it in Times New Roman 12pt double-spaced with a title page, 
+                    save it as a PDF named Lastname_Firstname_Assignment.pdf, and upload it using the Choose File button before t
+                    he deadline. Make sure your work is original and sources are properly cited.       
+                </p>
+            </div>
+            </div>
+        </div>
+        </div>
+
+
+        <style>
+            #classHeader {
+                position: relative;
+                overflow: visible !important;
+                min-height: 220px;
+            }
+            #classHeader img {
+                position: absolute;
+                bottom: 0;
+                transform: translateY(50%);
+                left: -40px;
+            }
+
+            #copyMsg {
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+
+            #copyMsg.opacity-100 {
+                opacity: 1;
+            }
+
+        </style>
     </div>
 
-    <div class="flex flex-col gap-4">
-        
-        <div class="bg-white border-2 border-[#F9CADA] rounded-xl p-4 hover:shadow-md transition flex justify-between items-center">
+<script>
+const dbData = {
+    posts: 12,
+    assignments: 3,
+    members: 14
+};
+
+const pinnedClasses = [
+    { creator: 'Mr. Santos', name: 'Algebra 101', count: '01', color: 'pink', status: 'Pending Assignments', role: 'Member', code: 'ALG101' },
+    { creator: 'Ms. Lopez', name: 'Art Appreciation', count: '00', color: 'blue', status: 'No Pending Activities', role: 'Member', code: 'ART202' },
+    { creator: 'Prof. Cruz', name: 'Physics Lab', count: '10', color: 'yellow', status: 'Check Student Work', role: 'Member', code: 'PHY303' },
+    { creator: 'Dr. Reyes', name: 'English Composition', count: '01', color: 'purple', status: 'Pending Assignments', role: 'Member', code: 'ENG404' },
+];
+
+const allClasses = [
+    { creator: 'Prof. Diaz', name: 'World Literature', count: '01', color: 'pink', status: 'Pending', code: 'LIT505' },
+    { creator: 'Mr. Lim', name: 'Programming 2', count: '01', color: 'blue', status: 'Pending', code: 'PROG606' },
+    { creator: 'Ms. Bautista', name: 'Philosophy', count: '01', color: 'yellow', status: 'Pending', code: 'PHI707' },
+    { creator: 'Mr. Gomez', name: 'Multimedia Arts', count: '01', color: 'purple', status: 'Pending', code: 'MMA808' },
+];
+
+function generatePinnedCard(creatorName, className, count, color, role, code) {
+    return `
+        <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}', '${code}')"
+            class="bg-white border-2 border-pastel-${color} rounded-2xl p-6 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition duration-200 shadow-pastel-${color}">
+            <div class="flex justify-between items-start mb-3">
+                <p class="text-gray-500 text-sm font-outfit">${creatorName}</p>
+                <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
+            </div>
+            <h4 class="font-bold text-xl font-outfit mb-2">${className}</h4>
+
+            <div class="flex items-center gap-2 mb-4">
+                <p class="text-gray-600 text-sm font-outfit">Code:</p>
+                <span id="class-code-${code}" class="font-semibold text-main text-sm font-outfit">${code}</span>
+                <button 
+                    onclick="copyPinnedClassCode('${code}', event)" 
+                    class="text-gray-400 hover:text-black transition"
+                    title="Copy code">
+                    <iconify-icon icon="mdi:content-copy" width="16" height="16"></iconify-icon>
+                </button>
+            </div>
+
+            <div class="flex justify-between items-end">
+                <span class="bg-pastel-${color} text-black rounded-xl px-5 py-2 font-bold text-xl font-outfit shadow-sm">${count}</span>
+                <div class="text-right">
+                    <p class="text-gray-400 text-xs font-outfit">Joined as</p>
+                    <p class="font-semibold text-sm font-outfit text-main">${role}</p>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function generateAllClassRow(creatorName, className, count, color, status, code) {
+    return `
+        <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}', '${code}')"
+            class="flex justify-between items-center bg-white border-2 border-pastel-${color} rounded-xl px-6 py-4 hover:scale-[1.02] transition duration-200 cursor-pointer shadow-pastel-${color}">
             <div>
-                <h3 class="font-semibold text-lg font-outfit">Assignment #1</h3>
-                <p class="text-gray-600 text-sm font-outfit">Please submit your essay before Friday.</p>
-                <p class="text-xs text-gray-400 font-outfit mt-1">Posted: Nov 2, 2025</p>
+                <p class="text-sm text-gray-500 font-outfit">${creatorName}</p>
+                <h4 class="font-semibold text-lg font-outfit">${className}</h4>
             </div>
-            <iconify-icon 
-                icon="ic:round-more-vert" 
-                width="22" 
-                height="22" 
-                class="text-gray-400 hover:text-black transition cursor-pointer">
-            </iconify-icon>
-        </div>
-
-        <div class="bg-white border-2 border-[#CBE8E9] rounded-xl p-4 hover:shadow-md transition flex justify-between items-center">
-            <div>
-                <h3 class="font-semibold text-lg font-outfit">Quiz Reminder</h3>
-                <p class="text-gray-600 text-sm font-outfit">Quiz on Chapter 3 next meeting.</p>
-                <p class="text-xs text-gray-400 font-outfit mt-1">Posted: Nov 1, 2025</p>
+            <div class="flex items-center gap-3">
+                <div class="flex flex-col items-center">
+                    <p class="text-xs text-gray-500 font-outfit">${status}</p>
+                    <span class="font-bold text-xl text-pastel-${color} font-outfit">${count}</span>
+                </div>
+                <!-- Removed the copy icon button -->
+                <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
             </div>
-            <iconify-icon 
-                icon="ic:round-more-vert" 
-                width="22" 
-                height="22" 
-                class="text-gray-400 hover:text-black transition cursor-pointer">
-            </iconify-icon>
         </div>
+    `;
+}
 
-    </div>
+function renderPinnedClasses() {
+    document.getElementById('pinned-classes-container').innerHTML = pinnedClasses.map(c =>
+        generatePinnedCard(c.creator, c.name, c.count, c.color, c.role, c.code)
+    ).join('');
+}
 
-    <style>
-        #classHeader {
-            position: relative;
-            overflow: visible !important;
-            min-height: 220px;
+function renderAllClasses() {
+    document.getElementById('all-classes-container').innerHTML = allClasses.map(c =>
+        generateAllClassRow(c.creator, c.name, c.count, c.color, c.status, c.code)
+    ).join('');
+}
+
+function openClassView(name, creator, count, color, code) {
+    document.getElementById('classesPage').classList.add('hidden');
+    document.getElementById('classViewPage').classList.remove('hidden');
+    document.getElementById('classTitle').textContent = name;
+    document.getElementById('classCreator').textContent = creator;
+    document.getElementById('classCount').textContent = dbData.posts;
+    document.getElementById('classLabel').textContent = 'New Posts';
+    document.getElementById('classCodeText').textContent = code; 
+    document.getElementById('classHeader').className =
+        `relative rounded-2xl p-10 flex justify-between items-start mb-10 bg-pastel-${color} shadow-sm overflow-visible`;
+
+    showTab('posts');
+}
+
+function goBackToClasses() {
+    document.getElementById('classViewPage').classList.add('hidden');
+    document.getElementById('classesPage').classList.remove('hidden');
+}
+
+function hideAllTabs() {
+    ['postsSection', 'assignmentsSection', 'membersSection'].forEach(id =>
+        document.getElementById(id).classList.add('hidden')
+    );
+}
+
+function resetTabStyles() {
+    ['postsTab', 'assignmentsTab', 'membersTab'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.classList.remove('border-b-4', 'border-[#F9CADA]', 'font-semibold', 'text-main');
+            el.classList.add('text-gray-500');
         }
+    });
+}
 
-        #classHeader img {
-            position: absolute;
-            bottom: 0;
-            transform: translateY(50%);
-            left: -40px;
+function showTab(tab) {
+    hideAllTabs();
+    resetTabStyles();
+
+    const activeTab = document.getElementById(`${tab}Tab`);
+    const classCount = document.getElementById('classCount');
+    const classLabel = document.getElementById('classLabel');
+
+    document.getElementById(`${tab}Section`).classList.remove('hidden');
+    activeTab.classList.add('border-b-4', 'border-[#F9CADA]', 'font-semibold', 'text-main');
+    activeTab.classList.remove('text-gray-500');
+
+    if (tab === 'posts') {
+        classCount.textContent = dbData.posts;
+        classLabel.textContent = 'New Posts';
+    } else if (tab === 'assignments') {
+        classCount.textContent = dbData.assignments;
+        classLabel.textContent = 'Pending Assignments';
+    } else if (tab === 'members') {
+        classCount.textContent = dbData.members;
+        classLabel.textContent = 'Total Members';
+    }
+}
+
+function toggleClassCodePopup() {
+    const popup = document.getElementById('classCodePopup');
+    popup.classList.toggle('hidden');
+}
+
+function submitEssay() {
+    const fileInput = document.getElementById('essayFile');
+    
+    if (!fileInput.value) {
+      alert('Please select a file before submitting.');
+      return;
+    }
+
+    const confirmSubmit = confirm('Are you sure you want to submit your essay?');
+    if (!confirmSubmit) return;
+
+    alert('Your essay has been submitted successfully!');
+
+    fileInput.disabled = true;
+    document.querySelector('button[onclick="submitEssay()"]').disabled = true;
+}
+
+function copyClassCodePopup() {
+    const codeText = document.getElementById('classCodeText').textContent;
+
+    try {
+        if (navigator.clipboard && window.isSecureContext) {
+            navigator.clipboard.writeText(codeText)
+                .then(showCopyMessage)
+                .catch(err => {
+                    console.warn("Clipboard writeText failed, using fallback:", err);
+                    fallbackCopy(codeText);
+                });
+        } else {
+            fallbackCopy(codeText);
         }
-    </style>
-</div>
+    } catch (err) {
+        console.error("Clipboard API not supported:", err);
+        fallbackCopy(codeText);
+    }
+
+    function fallbackCopy(text) {
+        const textarea = document.createElement("textarea");
+        textarea.value = text;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+        showCopyMessage();
+    }
+
+function showCopyMessage() {
+    const toast = document.createElement('div');
+    toast.textContent = `Copied ${codeText}`;
+    toast.className = `
+        fixed bottom-5 right-5 bg-main text-white 
+        px-4 py-2 rounded-xl shadow-lg text-sm font-outfit 
+        z-[9999] opacity-0 transition-opacity duration-300
+    `;
+    document.body.appendChild(toast);
+
+    requestAnimationFrame(() => toast.classList.add('opacity-100'));
+
+    setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        setTimeout(() => toast.remove(), 300);
+    }, 1500);
+}
+}
+
+function copyPinnedClassCode(code, event) {
+    event.stopPropagation();
+
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(code).then(showToast);
+    } else {
+        const textarea = document.createElement("textarea");
+        textarea.value = code;
+        textarea.style.position = "fixed";
+        textarea.style.left = "-9999px";
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand("copy");
+        textarea.remove();
+        showToast();
+    }
+
+    function showToast() {
+        const toast = document.createElement('div');
+        toast.textContent = `Copied ${code}`;
+        toast.className = `
+            fixed bottom-5 right-5 bg-main text-white 
+            px-4 py-2 rounded-xl shadow-lg text-sm font-outfit 
+            z-[9999] opacity-0 transition-opacity duration-300
+        `;
+        document.body.appendChild(toast);
+
+        requestAnimationFrame(() => toast.classList.add('opacity-100'));
+        setTimeout(() => {
+            toast.classList.remove('opacity-100');
+            setTimeout(() => toast.remove(), 300);
+        }, 1500);
+    }
+}
+
+function toggleJoinPopup() {
+  console.log("Add button clicked!");
+  const popup = document.getElementById('joinClassPopup');
+  popup.classList.toggle('hidden');
+}
+
+function joinClassFromCode() {
+  const codeInput = document.getElementById('joinClassCodeInput');
+  const code = codeInput.value.trim().toUpperCase();
+
+  if (!code) {
+    alert('Please enter a class code.');
+    return;
+  }
+
+  const foundClass = allClasses.find(c => c.code === code) || pinnedClasses.find(c => c.code === code);
+
+  if (foundClass) {
+    alert(`You have joined ${foundClass.name} by ${foundClass.creator}!`);
+    toggleJoinPopup();
+    codeInput.value = '';
+  } else {
+    alert('Invalid class code. Please try again.');
+  }
+}
+
+function openDetailPage(type) {
+    document.getElementById('classViewPage').classList.add('hidden');
+
+    document.getElementById('assignmentDetailPage').classList.add('hidden');
+    document.getElementById('materialDetailPage').classList.add('hidden');
+    document.getElementById('announcementDetailPage').classList.add('hidden');
+
+    if (type === 'assignment') {
+        document.getElementById('assignmentDetailPage').classList.remove('hidden');
+    } else if (type === 'material') {
+        document.getElementById('materialDetailPage').classList.remove('hidden');
+    } else if (type === 'announcement') {
+        document.getElementById('announcementDetailPage').classList.remove('hidden');
+    }
+}
+
+function goBack() {
+    document.getElementById('assignmentDetailPage').classList.add('hidden');
+    document.getElementById('materialDetailPage').classList.add('hidden');
+    document.getElementById('announcementDetailPage').classList.add('hidden');
+    document.getElementById('classViewPage').classList.remove('hidden');
+}
+
+function showMembers() {
+    showTab('members');
+}
+
+window.onload = () => {
+    renderPinnedClasses();
+    renderAllClasses();
+};
+</script>
+
 
 </x-layouts.mainlayout>

@@ -15,7 +15,7 @@ class ClassModel extends Model
     // Relationships
     public function creator()
     {
-        return $this->belongsTo(UserAccount::class, 'creator_id', 'user_id');
+        return $this->belongsTo(AccountModel::class, 'creator_id', 'user_id');
     }
 
     public function members()

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('file_path');
             $table->timestamp('submitted_at')->useCurrent();
             $table->decimal('score', 5, 2)->nullable(); 
+            $table->integer('max_score')->nullable();
             $table->text('feedback')->nullable();
             $table->string('graded_by')->nullable();
             $table->dateTime('graded_at')->nullable();
