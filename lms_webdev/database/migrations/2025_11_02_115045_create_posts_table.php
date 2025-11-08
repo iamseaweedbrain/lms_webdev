@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id('post_id');
             $table->string('code');
             $table->string('user_id');
-            $table->string('avatar');
+            $table->string('post_title');
             $table->enum('post_type', ['material', 'assignment', 'announcement']);
             $table->text('content');
             $table->enum('color', ['pink', 'blue', 'purple', 'yellow'])->default('pink');

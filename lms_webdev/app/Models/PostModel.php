@@ -15,7 +15,7 @@ class PostModel extends Model
     protected $fillable = [
         'class_id',
         'user_id',
-        'avatar',
+        'post_title',
         'post_type',
         'content',
         'due_date',

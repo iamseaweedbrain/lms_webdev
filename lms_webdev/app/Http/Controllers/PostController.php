@@ -4,71 +4,50 @@ namespace App\Http\Controllers;
 
 use App\Models\PostModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return PostModel::with('useraccount', 'attachments')->get();
+        $posts = PostModel::with('user')->get();
+        return view('new_post', compact('posts'));
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
-        //
+        return view('new_post'); 
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'class_id' => 'required|exists:classes,class_id',
-            'user_id' => 'required|exists:user_accounts,user_id',
             'post_type' => 'required|in:material,assignment,announcement',
-            'content' => 'required|string',
-            'due_date' => 'nullable|date',
-            'max_score' => 'nullable|integer',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'code' => 'required|string|exists:classes,code',
         ]);
+        
+        $classId = DB::table('classes')->where('code', $validated['code'])->value('class_id');
 
-        return PostModel::create($validated);
-    }
+        if (!$classId) {
+            return back()->withErrors(['code' => 'Class with provided code not found.'])->withInput();
+        }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        
+        $postData = [
+            'user_id' => Auth::id(),
+            'class_id' => $classId,
+            'post_title' => $validated['title'],     // Match the field name from form
+            'post_type' => $validated['post_type'],
+            'content' => $validated['description'],   // Match the field name from form
+        ];
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        PostModel::create($postData);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->back()->with('success', 'Post created successfully!');
     }
 }
