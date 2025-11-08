@@ -132,7 +132,7 @@ class SubmissionController extends Controller
      */
     public function show(string $id)
     {
-        //
+        return view('students_grade', ['id' => $id]);
     }
 
     /**

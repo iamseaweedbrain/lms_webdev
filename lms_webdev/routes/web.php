@@ -25,9 +25,6 @@ Route::view('/settings', 'settings')->name('settings');
 Route::view('/student', 'student')->name('student');
 Route::view('/notification', 'notification')->name('notification');
 Route::view('/settings-edit', 'settings-edit')->name('settings-edit');
-Route::get('/student_grade/{id}', function($id) {
-    // You can replace this closure with a controller if needed
-    return view('students_grade', ['id' => $id]);
-})->name('student_grade');
+Route::get('/student_grade/{id}', [SubmissionController::class, 'show'])->name('student_grade');
 
 
