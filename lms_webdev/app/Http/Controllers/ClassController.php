@@ -47,7 +47,7 @@ class ClassController extends Controller
             'color'=> 'nullable|string',
         ]);
 
-        $creatorId = Auth::user()->user_id ?? Auth::id();
+        $creatorId = Auth::user();
 
         $allowedColors = ['pink', 'blue', 'purple', 'yellow'];
         $color = in_array($validated['color'] ?? '', $allowedColors) ? $validated['color'] : 'pink';

@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\PinnedClassesController;
 use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/signup', [AccountController::class, 'store'])->name('storeSignUp');
@@ -29,7 +30,7 @@ Route::post('/classes', [ClassController::class, 'store'])->name('classes.store'
 Route::get('/grades/{class?}', [SubmissionController::class, 'index'])->name('grades');
 Route::view('/settings', 'settings')->name('settings');
 Route::view('/student', 'student')->name('student');
-Route::view('/notification', 'notification')->name('notification');
+Route::get('/notification', [NotificationController::class, 'index'])->name('notification');
 Route::view('/settings-edit', 'settings-edit')->name('settings-edit');
 Route::get('/student_grade/{id}', [SubmissionController::class, 'show'])->name('student_grade');
 

@@ -29,10 +29,10 @@
                 @forelse ($pinnedClassesDetails as $class)
                     <x-class-card 
                         :creatorName="$class->creator->name ?? 'N/A'"
-                        :className="$class->name"
-                        :count="$class->pending_count ?? 0" 
-                        :colorPrefix="$class->color_prefix ?? 'default'"
-                        :role="$class->user_role ?? 'student'"
+                        :className="$class->classname"
+                        :count="0" 
+                        :colorPrefix="$class->color ?? 'default'"
+                        :role="'student'"
                     />
                 @empty
                     <p class="text-gray-500 col-span-full ml-5">You haven't pinned any classes yet.</p>
@@ -64,12 +64,14 @@
         <div id="all-classes-container" class="flex flex-col gap-4 mb-10">
             @forelse ($yourClasses as $class)
             @php
-            $color = data_get($class, 'color_prefix', 'gray');
-            $borderColor = "border-pastel-{$class}";
-            $textColor = "text-pastel-{$class}";
-            $shadowColor = "shadow-pastel-{$class}";
-            $bgColor = "bg-pastel-{$class}";
-            $className = data_get($class, 'class_name', 'Class Name');
+            $color = data_get($class, 'color', 'gray'); 
+            
+            $className = data_get($class, 'classname', 'Class Name'); 
+            
+            $borderColor = "border-pastel-{$color}";
+            $textColor = "text-pastel-{$color}";
+            $shadowColor = "shadow-pastel-{$color}";
+            
             $creatorName = data_get($class, 'creator_name', 'Unknown Creator');
             $count = data_get($class, 'post_count', 0);
             @endphp
@@ -78,13 +80,12 @@
             onclick="openClassView('{{ $className }}', '{{ $creatorName }}', '{{ $count }}', '{{ $color }}', '{{ $class->code }}')" 
             class="flex justify-between items-center bg-white border-3 {{ $borderColor }} rounded-[20px] px-6 py-4 hover:scale-[1.03] transition cursor-pointer {{ $shadowColor }}"
             >
-            {{-- Left Section: Avatar + text --}}
             <div class="flex items-center gap-4">
                 <div class="flex flex-col justify-center min-w-0">
                     <p class="text-sm text-gray-500 font-outfit truncate">{{ $creatorName }}</p>
                     <h4 class="font-semibold text-lg font-outfit truncate">{{ $className }}</h4>
                     <p class="text-[13px] text-gray-400 font-outfit truncate">
-                        {{ data_get($post, 'content', 'No recent updates.') }}
+                        {{ data_get($post, 'content', 'No recent updates.') }} 
                     </p>
                 </div>
             </div>
