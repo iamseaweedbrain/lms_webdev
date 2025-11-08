@@ -20,7 +20,6 @@
                             <select id="post_type" name="post_type" required
                                     class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
                                 <option value="material" {{ old('post_type') == 'material' ? 'selected' : '' }}>Material</option>
-                                <option value="assignment" {{ old('post_type') == 'assignment' ? 'selected' : '' }}>Assignment</option>
                                 <option value="announcement" {{ old('post_type') == 'announcement' ? 'selected' : '' }}>Announcement</option>
                             </select>
                             @error('post_type') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
