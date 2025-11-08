@@ -153,11 +153,11 @@
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <img src="c:\Users\USER\Downloads\Rectangle 19.png" alt="Logo" />
-    <img src="c:\Users\USER\Downloads\material-symbols_dashboard-rounded.png" alt="Dashboard Icon" />
-    <img src="c:\Users\USER\Downloads\fluent_class-24-filled.png" alt="Class Icon" />
-    <img src="c:\Users\USER\Downloads\Group 17.png" alt="Calendar and events icon showing monthly schedule" />
-    <img src="c:\Users\USER\Downloads\material-symbols_settings-rounded.png" alt="Settings Icon" />
+    <i>🏠</i>
+    <i>📊</i>
+    <i>📘</i>
+    <i>🎓</i>
+    <i>⚙️</i>
   </div>
 
   <!-- Main Content -->
