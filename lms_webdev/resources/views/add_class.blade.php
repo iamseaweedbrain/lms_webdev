@@ -1,5 +1,5 @@
 <x-layouts.mainlayout>
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 px-6">
+    <div class="min-h-screen flex items-center justify-center bg-[#FAF8F5] px-6">
         <div class="w-full max-w-4xl">
             <form action="{{ route('classes.store') }}" method="POST" class="bg-white border-2 border-black shadow-[8px_8px_0_0_#000] rounded-2xl overflow-hidden">
                 @csrf
