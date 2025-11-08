@@ -1,8 +1,8 @@
 <x-layouts.mainlayout>
     <!-- CLASSES PAGE -->
-    <div class="p-6" id="classesPage">
+    <div class="p-6 mr-10" id="classesPage">
         <div class="flex justify-between items-center mb-10">
-            <h1 class="text-3xl font-bold font-outfit">Your Classes</h1>
+            <h1 class="text-3xl font-bold font-poppins">Your Classes</h1>
 
             <div class="flex items-center gap-3">
                 <button 
@@ -11,18 +11,9 @@
                     <iconify-icon icon="ic:round-add" width="26" height="26" class="text-black"></iconify-icon>
                 </button>
 
-                <div class="relative">
-                    <input 
-                        type="text" 
-                        placeholder="Search class..." 
-                        class="px-5 py-2 rounded-full shadow-md focus:outline-none pr-10 w-[250px] h-10"
-                    >
-                    <iconify-icon 
-                        icon="mingcute:search-line" 
-                        width="22" 
-                        height="22" 
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                    </iconify-icon>
+                <div class="relative flex items-center">
+                    <input type="text" placeholder="Search class..." class="pl-8 py-2 focus:outline-none pr-10 shadow-md rounded-[15px] w-[250px] h-[50px]">
+                    <iconify-icon icon="mingcute:search-line" width="20" height="20" class="absolute right-4 text-gray-500"></iconify-icon>
                 </div>
             </div>
         </div>

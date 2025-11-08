@@ -7,9 +7,9 @@
             <input type="email" name="email" placeholder="Enter Email" class="rounded-full bg-gray-200 px-4 py-2 focus:outline-none">
             <div class="relative">
                 <input type="password" name="password" id="password" placeholder="Enter Password" 
-                    class="rounded-full bg-gray-200 px-4 py-2 w-full focus:outline-none">
+                    class="w-full py-[0.9rem] px-4 bg-[#e9e9e9] border-none rounded-full text-[0.95rem] outline-none font-[Poppins,sans-serif]">
                 <button type="button" id="togglePassword" 
-                    class="absolute right-4 top-2.5 text-gray-500 hover:text-black transition">
+                    class="w-full py-[0.9rem] px-4 bg-[#e9e9e9] border-none rounded-full text-[0.95rem] outline-none font-[Poppins,sans-serif]">
                     <iconify-icon icon="grommet-icons:form-view-hide" width="24" height="24"></iconify-icon>
                 </button>
             </div>

@@ -52,7 +52,7 @@ class DashboardController extends Controller
                 'classes.classname as class_name'
             )
             ->whereIn('posts.class_id', $classIds)
-            ->whereIn('posts.post_type', ['material', 'assignment', 'announcement'])
+            ->whereIn('posts.post_type', ['announcement'])
             ->orderBy('posts.created_at', 'desc') 
             ->limit(3)
             ->get();

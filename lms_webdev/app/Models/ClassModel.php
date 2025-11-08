@@ -10,7 +10,7 @@ class ClassModel extends Model
     use HasFactory;
 
     protected $table = 'classes';
-    protected $fillable = ['creator_id', 'classname', 'description', 'code'];
+    protected $fillable = ['creator_id', 'classname', 'description', 'code', 'color'];
 
     // Relationships
     public function creator()
