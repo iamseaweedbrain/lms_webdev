@@ -87,4 +87,64 @@ class PostController extends Controller
         return redirect()->route('assignments.index')
                          ->with('success', 'Assignment created successfully!');
     }
+
+    public function update(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'post_id' => 'required|exists:posts,post_id',
+                'post_title' => 'required|string|max:255',
+                'content' => 'required|string',
+                'post_type' => 'required|in:material,assignment,announcement',
+                'due_date' => 'nullable|date',
+            ]);
+
+            // Find the post
+            $post = PostModel::where('post_id', $validated['post_id'])->first();
+
+            if (!$post) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Post not found'
+                ], 404);
+            }
+
+            // Check if user is authorized to edit (must be the creator)
+            if ($post->user_id !== Auth::id()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized to edit this post'
+                ], 403);
+            }
+
+            // Update the post
+            $post->post_title = $validated['post_title'];
+            $post->content = $validated['content'];
+
+            // Update due_date for assignments
+            if ($validated['post_type'] === 'assignment' && isset($validated['due_date'])) {
+                $post->due_date = $validated['due_date'];
+            }
+
+            $post->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Post updated successfully',
+                'post' => $post
+            ]);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
