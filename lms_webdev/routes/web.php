@@ -16,6 +16,7 @@ Route::post('/settings-update', [AccountController::class, 'updateSettings'])->n
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/classes', [ClassController::class, 'index'])->name('classes');
+Route::post('/classes/join', [ClassController::class, 'join'])->name('classes.join');
 Route::post('/classes/{code}/pin', [PinnedClassesController::class, 'togglePin'])->name('classes.pin');
 
 Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
@@ -25,7 +26,6 @@ Route::post('/submissions/{id}/grade', [SubmissionController::class, 'grade'])->
 Route::view('/', 'landingpage')->name('landingpage');
 Route::view('/login', 'auth.login')->name('login');
 Route::view('/signup', 'auth.signup')->name('signup');
-Route::view('/classes', 'classes')->name('classes');
 Route::view('/add-class', 'add_class')->name('add_class');
 Route::post('/classes', [ClassController::class, 'store'])->name('classes.store');
 Route::get('/grades/{class?}', [SubmissionController::class, 'index'])->name('grades');

@@ -8,17 +8,16 @@ use Illuminate\Database\Eloquent\Model;
 class PinnedClassesModel extends Model
 {
     use HasFactory;
-    protected $table = 'useraccount';
-    protected $fillable = ["user_id","code"];
+    protected $table = 'pinned_classes';
+    protected $fillable = ['user_id', 'code'];
 
     public function class()
     {
-        return $this->belongsTo(ClassModel::class, 'class_id', 'id');
+        return $this->belongsTo(ClassModel::class, 'code', 'code');
     }
 
-    public function creator()
+    public function user()
     {
-        return $this->class->creator();
+        return $this->belongsTo(AccountModel::class, 'user_id', 'user_id');
     }
-
 }

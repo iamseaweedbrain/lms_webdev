@@ -17,6 +17,12 @@ class AccountModel extends Authenticatable
     protected $fillable = ['firstname', 'lastname', 'email', 'password', 'avatar'];
     protected $hidden = ['password'];
 
+    // Accessor for full name
+    public function getNameAttribute()
+    {
+        return $this->firstname . ' ' . $this->lastname;
+    }
+
     public function classesCreated()
     {
         return $this->hasMany(ClassModel::class, 'creator_id', 'user_id');

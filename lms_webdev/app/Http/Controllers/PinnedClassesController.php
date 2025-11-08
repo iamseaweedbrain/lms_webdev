@@ -36,19 +36,15 @@ class PinnedClassesController extends Controller
 
         if ($pin) {
             $pin->delete();
-            $message = 'Class unpinned.';
+            $message = 'Class unpinned successfully!';
         } else {
             PinnedClassesModel::create([
                 'user_id' => $userId,
                 'code' => $code,
-                'is_pinned' => 1,
             ]);
-            $message = 'Class pinned!';
+            $message = 'Class pinned successfully!';
         }
 
-        return response()->json([
-            'message' => $message,
-            'is_pinned' => (bool)!$pin
-        ]);
+        return redirect()->route('classes')->with('success', $message);
     }
 }

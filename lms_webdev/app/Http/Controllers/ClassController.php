@@ -16,23 +16,33 @@ class ClassController extends Controller
         $userId = Auth::id();
 
         $pinnedClassCodes = PinnedClassesModel::where('user_id', $userId)
-            ->pluck('class_code')
+            ->pluck('code')
             ->toArray();
 
         $pinnedClassesDetails = ClassModel::whereIn('code', $pinnedClassCodes)
-            ->with('creator') 
-            ->get();
+            ->with('creator')
+            ->get()
+            ->map(function ($class) use ($userId) {
+                // Get the user's role in this class
+                $membership = ClassMember::where('code', $class->code)
+                    ->where('user_id', $userId)
+                    ->first();
+
+                $class->user_role = $membership ? $membership->role : 'member';
+                return $class;
+            });
 
         $yourClasses = DB::table('classmembers')
-            ->join('classes', 'classmembers.code', '=', 'classes.code') 
+            ->join('classes', 'classmembers.code', '=', 'classes.code')
             ->leftJoin('useraccount', 'classes.creator_id', '=', 'useraccount.user_id')
             ->where('classmembers.user_id', $userId)
             ->select(
                 'classes.code',
                 'classes.classname',
                 'classes.color',
-                DB::raw('COALESCE(useraccount.name, "Unknown") as creator_name'),
-                DB::raw('(SELECT COUNT(*) FROM posts WHERE posts.class_code = classes.code) as post_count')
+                'classmembers.role as user_role',
+                DB::raw('COALESCE(CONCAT(useraccount.firstname, " ", useraccount.lastname), "Unknown") as creator_name'),
+                DB::raw('(SELECT COUNT(*) FROM posts WHERE posts.code = classes.code) as post_count')
             )
             ->get();
 
@@ -47,7 +57,7 @@ class ClassController extends Controller
             'color'=> 'nullable|string',
         ]);
 
-        $creatorId = Auth::user();
+        $creatorId = Auth::id();
 
         $allowedColors = ['pink', 'blue', 'purple', 'yellow'];
         $color = in_array($validated['color'] ?? '', $allowedColors) ? $validated['color'] : 'pink';
