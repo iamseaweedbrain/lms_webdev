@@ -23,7 +23,7 @@ class PostSeeder extends Seeder
             $posts[] = [
                 'code' => $classId,
                 'user_id' => $teacherId,
-                'avatar' => $teacherAvatar,
+                'post_title' => 'Announcement',
                 'post_type' => 'announcement',
                 'content' => fake()->sentence(8) . '. Remember to check the course outline!',
                 'due_date' => null, 
@@ -33,7 +33,7 @@ class PostSeeder extends Seeder
             $posts[] = [
                 'code' => $classId,
                 'user_id' => $teacherId,
-                'avatar' => 'avatars/active-cat.jpg',
+                'post_title' => 'Material',
                 'post_type' => 'material',
                 'content' => 'Lecture slides for the first module: ' . fake()->paragraph(2),
                 'due_date' => null, 
@@ -43,7 +43,7 @@ class PostSeeder extends Seeder
             $posts[] = [
                 'code' => $classId,
                 'user_id' => $teacherId,
-                'avatar' => 'avatars/active-cat.jpg',
+                'post_title' => 'Assignment',
                 'post_type' => 'assignment',
                 'content' => 'Term Project: Create a full-stack web application based on the principles discussed in class.',
                 'due_date' => now()->addDays(rand(7, 30)),

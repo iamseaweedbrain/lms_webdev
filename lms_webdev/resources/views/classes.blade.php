@@ -29,10 +29,10 @@
                 @forelse ($pinnedClassesDetails as $class)
                     <x-class-card 
                         :creatorName="$class->creator->name ?? 'N/A'"
-                        :className="$class->name"
-                        :count="$class->pending_count ?? 0" 
-                        :colorPrefix="$class->color_prefix ?? 'default'"
-                        :role="$class->user_role ?? 'student'"
+                        :className="$class->classname"
+                        :count="0" 
+                        :colorPrefix="$class->color ?? 'default'"
+                        :role="'student'"
                     />
                 @empty
                     <p class="text-gray-500 col-span-full ml-5">You haven't pinned any classes yet.</p>
@@ -61,11 +61,58 @@
             </div>
         </div>
 
-        <div id="all-classes-container" class="flex flex-col gap-4 mb-10"></div>
+        <div id="all-classes-container" class="flex flex-col gap-4 mb-10">
+            @forelse ($yourClasses as $class)
+            @php
+            $color = data_get($class, 'color', 'gray'); 
+            
+            $className = data_get($class, 'classname', 'Class Name'); 
+            
+            $borderColor = "border-pastel-{$color}";
+            $textColor = "text-pastel-{$color}";
+            $shadowColor = "shadow-pastel-{$color}";
+            
+            $creatorName = data_get($class, 'creator_name', 'Unknown Creator');
+            $count = data_get($class, 'post_count', 0);
+            @endphp
+
+            <div 
+            onclick="openClassView('{{ $className }}', '{{ $creatorName }}', '{{ $count }}', '{{ $color }}', '{{ $class->code }}')" 
+            class="flex justify-between items-center bg-white border-3 {{ $borderColor }} rounded-[20px] px-6 py-4 hover:scale-[1.03] transition cursor-pointer {{ $shadowColor }}"
+            >
+            <div class="flex items-center gap-4">
+                <div class="flex flex-col justify-center min-w-0">
+                    <p class="text-sm text-gray-500 font-outfit truncate">{{ $creatorName }}</p>
+                    <h4 class="font-semibold text-lg font-outfit truncate">{{ $className }}</h4>
+                    <p class="text-[13px] text-gray-400 font-outfit truncate">
+                        {{ data_get($post, 'content', 'No recent updates.') }} 
+                    </p>
+                </div>
+            </div>
+
+            {{-- Right Section: count + menu --}}
+            <div class="flex items-center gap-3">
+                <div class="flex flex-col items-center">
+                    <p class="text-xs text-gray-500 font-outfit">Posts</p>
+                    <span class="font-bold text-xl {{ $textColor }} font-outfit">{{ $count }}</span>
+                </div>
+
+                <iconify-icon 
+                    icon="ic:round-more-vert" 
+                    width="22" 
+                    height="22" 
+                    class="text-gray-400"
+                ></iconify-icon>
+            </div>
+            </div>
+            @empty
+            <p class="text-gray-500 italic p-4">No recent posts found in your classes.</p>
+            @endforelse
+        </div>
     </div>
 
             <!-- Join Class Popup -->
-        <div id="joinClassPopup" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+    <div id="joinClassPopup" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50">
         <div class="bg-white rounded-2xl shadow-xl w-[380px] p-6 text-center relative font-outfit">
             <button 
             onclick="toggleJoinPopup()" 
@@ -89,7 +136,7 @@
             Join Class
             </button>
         </div>
-        </div>
+    </div>
 
     <!-- CLASS VIEW PAGE -->
     <div id="classViewPage" class="hidden p-6 relative overflow-visible">
@@ -516,41 +563,6 @@ const dbData = {
     assignments: 3,
     members: 14
 };
-
-const allClasses = [
-    { creator: 'Prof. Diaz', name: 'World Literature', count: '01', color: 'pink', status: 'Pending', code: 'LIT505' },
-    { creator: 'Mr. Lim', name: 'Programming 2', count: '01', color: 'blue', status: 'Pending', code: 'PROG606' },
-    { creator: 'Ms. Bautista', name: 'Philosophy', count: '01', color: 'yellow', status: 'Pending', code: 'PHI707' },
-    { creator: 'Mr. Gomez', name: 'Multimedia Arts', count: '01', color: 'purple', status: 'Pending', code: 'MMA808' },
-];
-
-
-function generateAllClassRow(creatorName, className, count, color, status, code) {
-    return `
-        <div onclick="openClassView('${className}', '${creatorName}', '${count}', '${color}', '${code}')"
-            class="flex justify-between items-center bg-white border-2 border-pastel-${color} rounded-xl px-6 py-4 hover:scale-[1.02] transition duration-200 cursor-pointer shadow-pastel-${color}">
-            <div>
-                <p class="text-sm text-gray-500 font-outfit">${creatorName}</p>
-                <h4 class="font-semibold text-lg font-outfit">${className}</h4>
-            </div>
-            <div class="flex items-center gap-3">
-                <div class="flex flex-col items-center">
-                    <p class="text-xs text-gray-500 font-outfit">${status}</p>
-                    <span class="font-bold text-xl text-pastel-${color} font-outfit">${count}</span>
-                </div>
-                <!-- Removed the copy icon button -->
-                <iconify-icon icon="ic:round-more-vert" width="22" height="22" class="text-gray-400"></iconify-icon>
-            </div>
-        </div>
-    `;
-}
-
-
-function renderAllClasses() {
-    document.getElementById('all-classes-container').innerHTML = allClasses.map(c =>
-        generateAllClassRow(c.creator, c.name, c.count, c.color, c.status, c.code)
-    ).join('');
-}
 
 function openClassView(name, creator, count, color, code) {
     document.getElementById('classesPage').classList.add('hidden');

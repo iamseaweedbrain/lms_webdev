@@ -29,14 +29,14 @@
                             <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Post Title</label>
                             <input id="title" name="title" type="text" value="{{ old('title') }}" required
                                    class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black" />
-                            @error('title') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+                            @error('post_title') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
                         <div class="mb-4">
                             <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Post Description</label>
                             <textarea id="description" name="description" rows="8"
                                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">{{ old('description') }}</textarea>
-                            @error('description') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+                            @error('content') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </div>

@@ -10,9 +10,27 @@ class NotificationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index($user_id)
+    public function index()
     {
-        return NotificationModel::where('user_id', $user_id)->get();
+        $notifications = [
+            [
+                'title' => 'New Assignment: WEB SYSTEM AND TECHNOLOGIES 2',
+                'date' => 'Posted: Nov 8, 2025',
+                'icon' => 'mdi:book-open-variant',
+                'bgColor' => '#F9CADA',
+                'url' => '/grades-overview'
+            ],
+            [
+                'title' => 'Class Announcement: ALGORITHM AND COMPLEXITY',
+                'date' => 'Posted: Nov 7, 2025',
+                'icon' => 'mdi:bullhorn-outline',
+                'bgColor' => '#D9CCF1',
+                'url' => '/announcements'
+            ],
+            // add other notifications
+        ];
+
+        return view('notification', compact('notifications'));
     }
 
     /**

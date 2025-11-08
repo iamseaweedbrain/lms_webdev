@@ -4,6 +4,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ClassController;
 use App\Http\Controllers\PinnedClassesController;
 use App\Http\Controllers\SubmissionController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\PostController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/signup', [AccountController::class, 'store'])->name('storeSignUp');
@@ -13,6 +15,8 @@ Route::post('/change-password', [AccountController::class, 'changePassword'])->n
 Route::post('/settings-update', [AccountController::class, 'updateSettings'])->name('settings-update');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/classes', [ClassController::class, 'index'])->name('classes');
+Route::post('/classes/{code}/pin', [PinnedClassesController::class, 'togglePin'])->name('classes.pin');
 
 Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
 Route::post('/submissions', [SubmissionController::class, 'store'])->name('submissions.store');
@@ -27,10 +31,18 @@ Route::post('/classes', [ClassController::class, 'store'])->name('classes.store'
 Route::get('/grades/{class?}', [SubmissionController::class, 'index'])->name('grades');
 Route::view('/settings', 'settings')->name('settings');
 Route::view('/student', 'student')->name('student');
-Route::view('/notification', 'notification')->name('notification');
+Route::get('/notification', [NotificationController::class, 'index'])->name('notification');
 Route::view('/settings-edit', 'settings-edit')->name('settings-edit');
 Route::get('/student_grade/{id}', [SubmissionController::class, 'show'])->name('student_grade');
 
+Route::prefix('posts')->group(function () {
+    Route::get('/', [PostController::class, 'index'])->name('posts.index');
+    Route::get('/create', [PostController::class, 'create'])->name('posts.create');
+    Route::post('/', [PostController::class, 'newPost'])->name('posts.store');
+});
 
-Route::get('/classes', [PinnedClassesController::class, 'index'])->name('classes');
-
+Route::prefix('assignments')->group(function () {
+    Route::get('/', [PostController::class, 'index'])->name('assignments.index');
+    Route::get('/create', [PostController::class, 'create'])->name('assignments.create');
+    Route::post('/', [PostController::class, 'newAssignment'])->name('assignments.store');
+});

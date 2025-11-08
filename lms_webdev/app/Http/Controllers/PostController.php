@@ -4,71 +4,87 @@ namespace App\Http\Controllers;
 
 use App\Models\PostModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function create(Request $request)
     {
-        return PostModel::with('useraccount', 'attachments')->get();
+        $routeName = $request->route()->getName();
+        
+        if ($routeName === 'posts.create') {
+            return view('new_post');
+        } elseif ($routeName === 'assignments.create') {
+            return view('new_assignment');
+        }
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function index(Request $request)
     {
-        //
+        $routeName = $request->route()->getName();
+        
+        if ($routeName === 'posts.index') {
+            $posts = PostModel::with('user')
+                ->whereIn('post_type', ['material', 'announcement'])
+                ->get();
+            return view('posts.index', compact('posts'));
+        } elseif ($routeName === 'assignments.index') {
+            $assignments = PostModel::with('user')
+                ->where('post_type', 'assignment')
+                ->get();
+            return view('assignments.index', compact('assignments'));
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function newPost(Request $request)
     {
         $validated = $request->validate([
-            'class_id' => 'required|exists:classes,class_id',
-            'user_id' => 'required|exists:user_accounts,user_id',
             'post_type' => 'required|in:material,assignment,announcement',
-            'content' => 'required|string',
-            'due_date' => 'nullable|date',
-            'max_score' => 'nullable|integer',
+            'title' => 'required|string|max:255',
+            'description' => 'required|string',
+            'code' => 'required|string|exists:classes,code',
+            'color' => 'nullable|string', // Add color validation if needed
+        ]);
+        
+        $classId = DB::table('classes')->where('code', $validated['code'])->value('class_id');
+
+        if (!$classId) {
+            return back()->withErrors(['code' => 'Class with provided code not found.'])->withInput();
+        }
+
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+        
+        $postData = [
+            'user_id' => Auth::id(),
+            'class_id' => $classId,
+            'post_title' => $validated['title'], 
+            'post_type' => $validated['post_type'],
+            'content' => $validated['description'],
+        ];
+
+        // Only add color if it's present in the request
+        if (isset($validated['color'])) {
+            $postData['color'] = $validated['color'];
+        }
+
+        PostModel::create($postData);
+
+        return redirect()->route('posts.index')->with('success', 'Post created successfully!');
+    }
+    public function newAssignment(Request $request)
+    {
+        $validatedData = $request->validate([
+            'due_date' => ['required', 'date', 'after_or_equal:' . now()->format('Y-m-d H:i')],
+            'title' => 'required|max:255',
+            'instructions' => 'nullable|string',
         ]);
 
-        return PostModel::create($validated);
-    }
+        PostModel::create($validatedData);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return redirect()->route('assignments.index')
+                         ->with('success', 'Assignment created successfully!');
     }
 }
