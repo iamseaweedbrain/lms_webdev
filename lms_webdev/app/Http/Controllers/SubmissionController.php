@@ -27,6 +27,7 @@ class SubmissionController extends Controller
                 return [
                     'id' => $cm->class->id,
                     'classname' => $cm->class->classname,
+                    'code' => $cm->class->code ?? null,
                     'color' => $colors[$index % count($colors)],
                 ];
             })->values();
@@ -63,11 +64,18 @@ class SubmissionController extends Controller
         $currentPage = max(1, (int)request('page', 1));
         $perPage = 10;
         if ($selectedClassId) {
+            // posts are linked to classes by 'code' (see posts migration). Find the code for the selected class id.
+            $selectedClassRecord = $allClasses->firstWhere('id', $selectedClassId);
+            $selectedClassCode = $selectedClassRecord['code'] ?? null;
+
             $query = \App\Models\SubmissionModel::with(['post'])
                 ->where('user_id', $userId)
-                ->whereHas('post', function($q) use ($selectedClassId) {
-                    $q->where('class_id', $selectedClassId);
+                ->whereHas('post', function($q) use ($selectedClassCode) {
+                    if ($selectedClassCode) {
+                        $q->where('code', $selectedClassCode);
+                    }
                 });
+
             $total = $query->count();
             $pageCount = (int) ceil($total / $perPage);
             $submissions = $query->skip(($currentPage-1)*$perPage)->take($perPage)->get();
