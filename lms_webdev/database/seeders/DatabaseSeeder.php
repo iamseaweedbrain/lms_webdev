@@ -16,18 +16,10 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
-
-        $this->call([
-            AccountSeeder::class, 
-            ClassesSeeder::class,
-            ClassMemberSeeder::class,
-            PostSeeder::class,
-            AttachmentSeeder::class,
-            CommentSeeder::class,
-            SubmissionSeeder::class,
-            NotificationSeeder::class,
-        ]);
-
+        $this->call(AccountSeeder::class);
+        $this->call(ClassesSeeder::class);
+        $this->call(ClassMemberSeeder::class);
+        $this->call(PostSeeder::class);
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

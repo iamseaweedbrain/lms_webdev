@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ClassController;
+use App\Http\Controllers\PinnedClassesController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/signup', [AccountController::class, 'store'])->name('storeSignUp');
@@ -22,4 +24,6 @@ Route::view('/student', 'student')->name('student');
 Route::view('/notification', 'notification')->name('notification');
 Route::view('/settings-edit', 'settings-edit')->name('settings-edit');
 Route::post('/settings-update', [AccountController::class, 'updateSettings'])->name('settings-update');
+
+Route::get('/classes', [PinnedClassesController::class, 'index'])->name('classes');
 

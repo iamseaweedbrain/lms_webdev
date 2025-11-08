@@ -1,42 +1,32 @@
 <x-layouts.landinglayout>
 
-    <section class="flex flex-col items-center justify-center min-h-[80vh] space-y-6">
-        <h1 class="text-2xl font-bold">LOGIN</h1>
+    <section class="flex flex-col items-center justify-center min-h-[80vh] space-y-6 font-poppins text-gray-900 bg-[#FAF8F5]">
+        <h1 class="text-2xl font-bold font-outfit">LOGIN</h1>
+
         <form action="{{ route('retrieveLogIn') }}" method="POST" class="flex flex-col space-y-4 w-80">
             @csrf
-            <input type="email" name="email" placeholder="Enter Email" class="rounded-full bg-gray-200 px-4 py-2 focus:outline-none">
+            <input type="email" name="email" placeholder="Enter Email" 
+                class="w-full py-3 px-4 bg-[#e9e9e9] rounded-full text-[0.95rem] outline-none font-light">
+
             <div class="relative">
                 <input type="password" name="password" id="password" placeholder="Enter Password" 
-                    class="w-full py-[0.9rem] px-4 bg-[#e9e9e9] border-none rounded-full text-[0.95rem] outline-none font-[Poppins,sans-serif]">
+                    class="w-full py-3 px-4 bg-[#e9e9e9] rounded-full text-[0.95rem] outline-none font-light">
                 <button type="button" id="togglePassword" 
-                    class="w-full py-[0.9rem] px-4 bg-[#e9e9e9] border-none rounded-full text-[0.95rem] outline-none font-[Poppins,sans-serif]">
-                    <iconify-icon icon="grommet-icons:form-view-hide" width="24" height="24"></iconify-icon>
+                    class="absolute right-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-black">
+                    <!-- icon or text here -->
                 </button>
             </div>
-            <a href="#" class="text-right text-sm underline">Forgot Password</a>
-            <button type="submit" class="bg-black text-white py-2 rounded-full hover:bg-gray-800 transition">LOGIN</button>
+
+            <a href="#" class="text-right text-sm underline text-gray-500 hover:text-black">Forgot Password</a>
+            <button type="submit" class="bg-black text-white py-3 rounded-full font-semibold hover:translate-y-[-2px] hover:shadow-lg transition-all">
+                LOGIN
+            </button>
         </form>
 
-        <p class="text-sm">
+        <p class="text-sm text-gray-500">
             Doesn’t have an account?
-            <a href="{{ route('signup') }}" class="text-placeholder hover:underline">Sign Up</a>
+            <a href="{{ route('signup') }}" class="text-gray-400 hover:text-black underline">Sign Up</a>
         </p>
     </section>
 
-    <script>
-        const togglePassword = document.getElementById("togglePassword");
-        const passwordInput = document.getElementById("password");
-        let isHidden = true;
-
-        togglePassword.addEventListener("click", () => {
-            isHidden = !isHidden;
-            passwordInput.type = isHidden ? "password" : "text";
-
-            togglePassword.innerHTML = isHidden 
-                ? '<iconify-icon icon="grommet-icons:form-view-hide" width="24" height="24"></iconify-icon>'
-                : '<iconify-icon icon="grommet-icons:form-view" width="24" height="24"></iconify-icon>';
-        });
-    </script>
-
 </x-layouts.landinglayout>
-

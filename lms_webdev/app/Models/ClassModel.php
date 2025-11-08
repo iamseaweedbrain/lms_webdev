@@ -22,5 +22,10 @@ class ClassModel extends Model
     {
         return $this->hasMany(ClassMember::class, 'class_id', 'id');
     }
+    public function pinnedBy()
+    {
+        return $this->belongsToMany(User::class, 'pinned_classes', 'code', 'user_id');
+    }
+
 }
 

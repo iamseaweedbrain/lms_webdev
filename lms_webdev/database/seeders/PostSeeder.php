@@ -14,14 +14,14 @@ class PostSeeder extends Seeder
     {
         DB::table('posts')->truncate();
 
-        $classIds = DB::table('classes')->pluck('id');
+        $classIds = DB::table('classes')->pluck('code');
         $teacherId = DB::table('useraccount')->where('email', 'teacher@example.com')->value('user_id');
         $teacherAvatar = DB::table('useraccount')->where('email', 'teacher@example.com')->value('avatar');
 
         $posts = [];
         foreach ($classIds as $classId) {
             $posts[] = [
-                'class_id' => $classId,
+                'code' => $classId,
                 'user_id' => $teacherId,
                 'avatar' => $teacherAvatar,
                 'post_type' => 'announcement',
@@ -31,7 +31,7 @@ class PostSeeder extends Seeder
             ];
 
             $posts[] = [
-                'class_id' => $classId,
+                'code' => $classId,
                 'user_id' => $teacherId,
                 'avatar' => 'avatars/active-cat.jpg',
                 'post_type' => 'material',
@@ -41,7 +41,7 @@ class PostSeeder extends Seeder
             ];
 
             $posts[] = [
-                'class_id' => $classId,
+                'code' => $classId,
                 'user_id' => $teacherId,
                 'avatar' => 'avatars/active-cat.jpg',
                 'post_type' => 'assignment',

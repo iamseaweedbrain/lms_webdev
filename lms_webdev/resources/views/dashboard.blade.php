@@ -113,7 +113,9 @@
                     :role="data_get($class, 'role')" 
                 />
             @empty
-                <p class="text-gray-500 col-span-full italic">You haven't joined any classes yet.</p>
+                <div class="text-center">
+                    <p class="text-gray-500 col-span-full italic">You haven't joined any classes yet.</p>
+                </div>
             @endforelse
         </div>
     </div>

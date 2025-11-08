@@ -19,7 +19,7 @@ class DashboardController extends Controller
         $managedClasses = DB::table('classes')
             ->select(
                 'classes.classname as name',
-                'classes.id as class_id',
+                'classes.code as code',
                 DB::raw("'You' as creator"),
                 DB::raw("'admin' as role")
             )
@@ -27,11 +27,11 @@ class DashboardController extends Controller
             ->get();
             
         $yourClasses = DB::table('classmembers')
-            ->join('classes', 'classmembers.class_id', '=', 'classes.id')
+            ->join('classes', 'classmembers.code', '=', 'classes.code')
             ->join('useraccount', 'classes.creator_id', '=', 'useraccount.user_id')
             ->select(
                 'classes.classname as name',
-                'classes.id as class_id',
+                'classes.code as code',
                 DB::raw("CONCAT(useraccount.firstname, ' ', useraccount.lastname) as creator"),
                 'classmembers.role as role'
             )
@@ -39,35 +39,36 @@ class DashboardController extends Controller
             ->where('classes.creator_id', '!=', $currentUserId)
             ->get();
             
-        $classIds = $managedClasses->pluck('class_id')->merge($yourClasses->pluck('class_id'))->unique()->toArray();
+        $classIds = $managedClasses->pluck('code')->merge($yourClasses->pluck('code'))->unique()->toArray();
         
         $recentPostsRaw = DB::table('posts')
-            ->join('classes', 'posts.class_id', '=', 'classes.id')
+            ->join('classes', 'posts.code', '=', 'classes.code')
             ->select(
                 'posts.post_id',
-                'posts.class_id',
+                'posts.code',
                 'posts.content',
                 'posts.post_type',
                 'posts.created_at',
                 'classes.classname as class_name'
             )
-            ->whereIn('posts.class_id', $classIds)
+            ->whereIn('posts.code', $classIds)
             ->whereIn('posts.post_type', ['announcement'])
             ->orderBy('posts.created_at', 'desc') 
             ->limit(3)
             ->get();
 
-        $recentPosts = $recentPostsRaw->map(function ($post) use ($pastelColors) {
-            $post->color_prefix = $pastelColors[$post->class_id % count($pastelColors)];
+        $recentPosts = $recentPostsRaw->map(function ($post, $key) use ($pastelColors) {
+            $color = $pastelColors[$key % count($pastelColors)];
+            $post->color_prefix = $color;
             return $post;
         });
 
         $classData = $managedClasses->merge($yourClasses);
         
-        $allClasses = $classData->map(function ($class) use ($pastelColors) {
-            $memberCount = DB::table('classmembers')->where('class_id', $class->class_id)->count() + 1;
+        $allClasses = $classData->map(function ($class, $key) use ($pastelColors) {
+            $memberCount = DB::table('classmembers')->where('code', $class->code)->count() + 1;
 
-            $color = $pastelColors[$class->class_id % count($pastelColors)];
+            $color = $pastelColors[$key % count($pastelColors)];
 
             return [
                 'creator' => $class->creator,

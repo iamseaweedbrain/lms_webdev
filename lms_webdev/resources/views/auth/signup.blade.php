@@ -1,28 +1,35 @@
 <x-layouts.landinglayout>
 
-    <section class="flex flex-col items-center justify-center min-h-[80vh] space-y-6">
-        <h1 class="text-2xl font-bold">SIGN UP</h1>
+    <section class="flex flex-col items-center justify-center min-h-[80vh] space-y-6 font-poppins text-gray-900 bg-[#FAF8F5]">
+        <h1 class="text-2xl font-bold font-outfit">SIGN UP</h1>
 
         @if (session('success'))
-            <div class="bg-page text-main p-2 rounded-md">
+            <div class="bg-[#FAF8F5] text-[#111] p-2 rounded-md">
                 {{ session('success') }}
             </div>
         @endif
 
         <form action="{{ route('storeSignUp') }}" method="POST" class="flex flex-col space-y-4 w-80">
             @csrf
-            <input type="text" name="firstname" placeholder="Enter First Name" class="w-full py-[0.9rem] px-4 bg-[#e9e9e9] border-none rounded-full text-[0.95rem] outline-none font-[Poppins,sans-serif]">
-            <input type="text" name="lastname" placeholder="Enter Last Name" class="w-full py-[0.9rem] px-4 bg-[#e9e9e9] border-none rounded-full text-[0.95rem] outline-none font-[Poppins,sans-serif]">
-            <input type="email" name="email" placeholder="Enter Email" class="w-full py-[0.9rem] px-4 bg-[#e9e9e9] border-none rounded-full text-[0.95rem] outline-none font-[Poppins,sans-serif]">
-            <input type="password" name="password" placeholder="Enter Password" class="w-full py-[0.9rem] px-4 bg-[#e9e9e9] border-none rounded-full text-[0.95rem] outline-none font-[Poppins,sans-serif]">
-            <input type="password" name="password_confirmation" placeholder="Re-enter Password" class="w-full py-[0.9rem] px-4 bg-[#e9e9e9] border-none rounded-full text-[0.95rem] outline-none font-[Poppins,sans-serif]">
-            <button type="submit" class="bg-black text-white py-2 rounded-full hover:bg-gray-800 transition">SIGN UP</button>
+            <input type="text" name="firstname" placeholder="Enter First Name" 
+                class="w-full py-3 px-4 bg-[#e9e9e9] rounded-full text-[0.95rem] outline-none font-light">
+            <input type="text" name="lastname" placeholder="Enter Last Name" 
+                class="w-full py-3 px-4 bg-[#e9e9e9] rounded-full text-[0.95rem] outline-none font-light">
+            <input type="email" name="email" placeholder="Enter Email" 
+                class="w-full py-3 px-4 bg-[#e9e9e9] rounded-full text-[0.95rem] outline-none font-light">
+            <input type="password" name="password" placeholder="Enter Password" 
+                class="w-full py-3 px-4 bg-[#e9e9e9] rounded-full text-[0.95rem] outline-none font-light">
+            <input type="password" name="password_confirmation" placeholder="Re-enter Password" 
+                class="w-full py-3 px-4 bg-[#e9e9e9] rounded-full text-[0.95rem] outline-none font-light">
+            <button type="submit" class="bg-black text-white py-3 rounded-full font-semibold hover:translate-y-[-2px] hover:shadow-lg transition-all">
+                SIGN UP
+            </button>
         </form>
-        <p class="text-sm">
+
+        <p class="text-sm text-gray-500">
             Already have an account?
-            <a href="{{ route('login') }}" class="text-placeholder hover:underline">Login</a>
+            <a href="{{ route('login') }}" class="text-gray-400 hover:text-black underline">Login</a>
         </p>
     </section>
 
 </x-layouts.landinglayout>
-
