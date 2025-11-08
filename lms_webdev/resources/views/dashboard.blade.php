@@ -39,7 +39,7 @@
                             </div>
                             <div class="h-10 border-l border-pastel-yellow"></div>
                             <div class="grid gap-2">
-                                <a href="#" class="text-main hover:underline hover:text-pastel-yellow flex items-center gap-1">
+                                <a href="{{ route('add_class') }}" class="text-main hover:underline hover:text-pastel-yellow flex items-center gap-1">
                                     <iconify-icon icon="ic:twotone-arrow-right" width="24" height="24" class="text-pastel-yellow"></iconify-icon>
                                     Create Class
                                 </a>

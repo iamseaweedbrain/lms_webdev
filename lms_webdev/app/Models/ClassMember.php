@@ -10,8 +10,8 @@ class ClassMember extends Model
     use HasFactory;
 
     protected $table = 'classmembers';
-    protected $fillable = ['class_id', 'user_id', 'role', 'joined_at'];
-    public $timestamps = false; // since you’re only using joined_at manually
+    protected $fillable = ['code', 'user_id', 'role', 'joined_at'];
+    public $timestamps = false;
 
     // Relationships
     public function user()

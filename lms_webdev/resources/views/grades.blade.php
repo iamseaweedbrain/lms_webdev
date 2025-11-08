@@ -21,6 +21,7 @@
             </div>
         </div>
 
+        @if(isset($allClasses) && $allClasses->isNotEmpty())
         <div class="absolute right-28 top-40 z-50" x-data="{ open: false }">
             <div class="relative">
                 <button 
@@ -52,6 +53,7 @@
                 </div>
             </div>
         </div>
+        @endif
 
         <section class="pl-4 pr-0 py-8 -space-y-2 flex flex-col relative overflow-hidden z-10">
             <div class="flex justify-between items-center flex-wrap gap-3">
@@ -74,22 +76,28 @@
             </div>
 
             <div class="overflow-x-auto relative z-10 -mt-6">
-                <table class="bg-white min-w-full rounded-xl overflow-hidden">
+                <table class="bg-white min-w-full rounded-xl overflow-hidden table-fixed">
+                    <colgroup>
+                        <col style="width:45%" />
+                        <col style="width:20%" />
+                        <col style="width:25%" />
+                        <col style="width:10%" />
+                    </colgroup>
                     <thead>
                         <tr class="bg-pastel-{{ $activeColor }} text-main">
                             <th class="px-6 py-8 text-left font-bold text-lg">Assignment Name</th>
-                            <th class="px-6 py-8 text-left font-bold text-lg w-24">Score</th>
+                            <th class="px-6 py-8 text-left font-bold text-lg">Score</th>
                             <th class="px-6 py-8 text-left font-bold text-lg">Feedback</th>
-                            <th class="px-6 py-8 text-center font-bold text-lg w-20">Details</th>
+                            <th class="px-6 py-8 text-center font-bold text-lg">Details</th>
                         </tr>
                     </thead>
                     <tbody>
                         @forelse($assignments as $assignment)
                             <tr class="border-b border-gray-200 hover:bg-pastel-{{ $activeColor }}/30 transition">
-                                <td class="px-6 py-4 text-gray-700">{{ $assignment['name'] }}</td>
-                                <td class="px-6 py-4 text-green-600 font-medium">{{ $assignment['score'] ?? '-' }}</td>
-                                <td class="px-6 py-4 text-gray-600 truncate max-w-xs">{{ $assignment['feedback'] ?? '-' }}</td>
-                                <td class="px-6 py-4 text-center">
+                                <td class="px-6 py-4 text-gray-700 align-top">{{ $assignment['name'] }}</td>
+                                <td class="px-6 py-4 text-green-600 font-medium text-center align-top">{{ $assignment['score'] ?? '-' }}</td>
+                                <td class="px-6 py-4 text-gray-600 truncate align-top">{{ $assignment['feedback'] ?? '-' }}</td>
+                                <td class="px-6 py-4 text-center align-top">
                                     <a href="{{ route('student_grade', ['id' => $assignment['submission_id']]) }}"
                                        class="inline-block p-2 rounded-full hover:bg-pastel-{{ $activeColor }}/60 transition">
                                         <iconify-icon icon="ic:round-chevron-right" width="24" height="24"></iconify-icon>
