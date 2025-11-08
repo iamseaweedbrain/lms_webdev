@@ -22,6 +22,8 @@ Route::view('/', 'landingpage')->name('landingpage');
 Route::view('/login', 'auth.login')->name('login');
 Route::view('/signup', 'auth.signup')->name('signup');
 Route::view('/classes', 'classes')->name('classes');
+Route::view('/add-class', 'add_class')->name('add_class');
+Route::post('/classes', [ClassController::class, 'store'])->name('classes.store');
 Route::get('/grades/{class?}', [SubmissionController::class, 'index'])->name('grades');
 Route::view('/settings', 'settings')->name('settings');
 Route::view('/student', 'student')->name('student');
