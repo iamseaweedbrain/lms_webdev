@@ -13,6 +13,8 @@ Route::post('/change-password', [AccountController::class, 'changePassword'])->n
 Route::post('/settings-update', [AccountController::class, 'updateSettings'])->name('settings-update');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+Route::get('/classes', [ClassController::class, 'index'])->name('classes');
+Route::post('/classes/{code}/pin', [PinnedClassesController::class, 'togglePin'])->name('classes.pin');
 
 Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
 Route::post('/submissions', [SubmissionController::class, 'store'])->name('submissions.store');
@@ -28,7 +30,4 @@ Route::view('/student', 'student')->name('student');
 Route::view('/notification', 'notification')->name('notification');
 Route::view('/settings-edit', 'settings-edit')->name('settings-edit');
 Route::get('/student_grade/{id}', [SubmissionController::class, 'show'])->name('student_grade');
-
-
-Route::get('/classes', [PinnedClassesController::class, 'index'])->name('classes');
 

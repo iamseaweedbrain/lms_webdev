@@ -4,30 +4,41 @@ namespace App\Http\Controllers;
 
 use App\Models\ClassModel;
 use App\Models\ClassMember;
+use App\Models\PinnedClassesModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ClassController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
-        return ClassModel::with('classes')->get();
-    }
+        $userId = Auth::id();
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+        $pinnedClassCodes = PinnedClassesModel::where('user_id', $userId)
+            ->pluck('class_code')
+            ->toArray();
 
-    /**
-     * Store a newly created resource in storage.
-     */
+        $pinnedClassesDetails = ClassModel::whereIn('code', $pinnedClassCodes)
+            ->with('creator') 
+            ->get();
+
+        $yourClasses = DB::table('classmembers')
+            ->join('classes', 'classmembers.code', '=', 'classes.code') 
+            ->leftJoin('useraccount', 'classes.creator_id', '=', 'useraccount.user_id')
+            ->where('classmembers.user_id', $userId)
+            ->select(
+                'classes.code',
+                'classes.classname',
+                'classes.color',
+                DB::raw('COALESCE(useraccount.name, "Unknown") as creator_name'),
+                DB::raw('(SELECT COUNT(*) FROM posts WHERE posts.class_code = classes.code) as post_count')
+            )
+            ->get();
+
+        // 4. Pass data to the view
+        return view('classes', compact('pinnedClassesDetails', 'yourClasses'));
+    }
     public function store(Request $request)
     {
         $validated = $request->validate([
@@ -37,38 +48,6 @@ class ClassController extends Controller
         ]);
 
         return ClassModel::create($validated);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
     }
     public function join(Request $request)
     {
