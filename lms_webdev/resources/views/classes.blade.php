@@ -5,8 +5,8 @@
             <h1 class="text-3xl font-bold font-poppins">Your Classes</h1>
 
             <div class="flex items-center gap-3">
-                <button 
-                    onclick="toggleJoinPopup()" 
+                <button
+                    onclick="handleAddButtonClick()"
                     class="flex items-center justify-center w-10 h-10 rounded-full hover:bg-gray-100 transition">
                     <iconify-icon icon="ic:round-add" width="26" height="26" class="text-black"></iconify-icon>
                 </button>
@@ -27,15 +27,17 @@
             
             <div id="pinned-classes-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 @forelse ($pinnedClassesDetails as $class)
-                    <x-class-card 
-                        :creatorName="$class->creator->name ?? 'N/A'"
-                        :className="$class->classname"
-                        :count="0" 
-                        :colorPrefix="$class->color ?? 'default'"
-                        :role="'student'"
-                    />
+                    <div class="pinned-class-item" data-role="{{ $class->user_role ?? 'member' }}">
+                        <x-class-card
+                            :creatorName="$class->creator->name ?? 'N/A'"
+                            :className="$class->classname"
+                            :count="0"
+                            :colorPrefix="$class->color ?? 'default'"
+                            :role="$class->user_role ?? 'member'"
+                        />
+                    </div>
                 @empty
-                    <p class="text-gray-500 col-span-full ml-5">You haven't pinned any classes yet.</p>
+                    <p class="text-gray-500 col-span-full ml-5" id="pinned-empty-message">You haven't pinned any classes yet.</p>
                 @endforelse
             </div>
         </div>
@@ -64,28 +66,30 @@
         <div id="all-classes-container" class="flex flex-col gap-4 mb-10">
             @forelse ($yourClasses as $class)
             @php
-            $color = data_get($class, 'color', 'gray'); 
-            
-            $className = data_get($class, 'classname', 'Class Name'); 
-            
+            $color = data_get($class, 'color', 'gray');
+
+            $className = data_get($class, 'classname', 'Class Name');
+
             $borderColor = "border-pastel-{$color}";
             $textColor = "text-pastel-{$color}";
             $shadowColor = "shadow-pastel-{$color}";
-            
+
             $creatorName = data_get($class, 'creator_name', 'Unknown Creator');
             $count = data_get($class, 'post_count', 0);
+            $userRole = data_get($class, 'user_role', 'member');
             @endphp
 
-            <div 
-            onclick="openClassView('{{ $className }}', '{{ $creatorName }}', '{{ $count }}', '{{ $color }}', '{{ $class->code }}')" 
-            class="flex justify-between items-center bg-white border-3 {{ $borderColor }} rounded-[20px] px-6 py-4 hover:scale-[1.03] transition cursor-pointer {{ $shadowColor }}"
+            <div
+            data-role="{{ $userRole }}"
+            class="class-item flex justify-between items-center bg-white border-3 {{ $borderColor }} rounded-[20px] px-6 py-4 hover:scale-[1.03] transition cursor-pointer {{ $shadowColor }}"
+            onclick="openClassView('{{ $className }}', '{{ $creatorName }}', '{{ $count }}', '{{ $color }}', '{{ $class->code }}')"
             >
             <div class="flex items-center gap-4">
                 <div class="flex flex-col justify-center min-w-0">
                     <p class="text-sm text-gray-500 font-outfit truncate">{{ $creatorName }}</p>
                     <h4 class="font-semibold text-lg font-outfit truncate">{{ $className }}</h4>
                     <p class="text-[13px] text-gray-400 font-outfit truncate">
-                        {{ data_get($post, 'content', 'No recent updates.') }} 
+                        No recent updates.
                     </p>
                 </div>
             </div>
@@ -97,12 +101,24 @@
                     <span class="font-bold text-xl {{ $textColor }} font-outfit">{{ $count }}</span>
                 </div>
 
-                <iconify-icon 
-                    icon="ic:round-more-vert" 
-                    width="22" 
-                    height="22" 
-                    class="text-gray-400"
-                ></iconify-icon>
+                <div class="relative">
+                    <iconify-icon
+                        icon="ic:round-more-vert"
+                        width="22"
+                        height="22"
+                        class="text-gray-400 hover:text-black cursor-pointer"
+                        onclick="toggleClassMenu(event, '{{ $class->code }}')"
+                    ></iconify-icon>
+
+                    <div id="menu-{{ $class->code }}" class="hidden absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-40 z-50">
+                        <button
+                            onclick="togglePin(event, '{{ $class->code }}')"
+                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg font-outfit flex items-center gap-2">
+                            <iconify-icon icon="f7:pin" width="16" height="16"></iconify-icon>
+                            Pin Class
+                        </button>
+                    </div>
+                </div>
             </div>
             </div>
             @empty
@@ -730,6 +746,18 @@ function copyPinnedClassCode(code, event) {
     }
 }
 
+function handleAddButtonClick() {
+  const currentMode = localStorage.getItem('viewMode') || 'student';
+
+  if (currentMode === 'teacher') {
+    // Redirect to add-class page for teachers
+    window.location.href = "{{ route('add_class') }}";
+  } else {
+    // Show join class popup for students
+    toggleJoinPopup();
+  }
+}
+
 function toggleJoinPopup() {
   console.log("Add button clicked!");
   const popup = document.getElementById('joinClassPopup');
@@ -745,15 +773,28 @@ function joinClassFromCode() {
     return;
   }
 
-  const foundClass = allClasses.find(c => c.code === code) || pinnedClasses.find(c => c.code === code);
+  // Create a form and submit it
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = "{{ route('classes.join') }}";
 
-  if (foundClass) {
-    alert(`You have joined ${foundClass.name} by ${foundClass.creator}!`);
-    toggleJoinPopup();
-    codeInput.value = '';
-  } else {
-    alert('Invalid class code. Please try again.');
-  }
+  // Add CSRF token
+  const csrfInput = document.createElement('input');
+  csrfInput.type = 'hidden';
+  csrfInput.name = '_token';
+  csrfInput.value = "{{ csrf_token() }}";
+  form.appendChild(csrfInput);
+
+  // Add class code
+  const codeInput2 = document.createElement('input');
+  codeInput2.type = 'hidden';
+  codeInput2.name = 'code';
+  codeInput2.value = code;
+  form.appendChild(codeInput2);
+
+  // Append form to body and submit
+  document.body.appendChild(form);
+  form.submit();
 }
 
 function openDetailPage(type) {
@@ -783,9 +824,153 @@ function showMembers() {
     showTab('members');
 }
 
+// Listen for view mode changes from sidebar toggle
+window.addEventListener('viewModeChanged', function(event) {
+    const newMode = event.detail.mode;
+    filterClassesByRole(newMode);
+});
+
+// Filter classes based on user role
+function filterClassesByRole(mode) {
+    // Filter "All Classes" section
+    const allClassItems = document.querySelectorAll('.class-item');
+    let visibleClassCount = 0;
+
+    allClassItems.forEach(item => {
+        const role = item.dataset.role;
+
+        if (mode === 'teacher') {
+            // Show only admin/coadmin classes
+            if (role === 'admin' || role === 'coadmin') {
+                item.style.display = 'flex';
+                visibleClassCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        } else {
+            // Show only member classes
+            if (role === 'member') {
+                item.style.display = 'flex';
+                visibleClassCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        }
+    });
+
+    // Show/hide empty message for all classes
+    const allClassesContainer = document.getElementById('all-classes-container');
+    const existingEmptyMsg = allClassesContainer.querySelector('.empty-message');
+
+    if (visibleClassCount === 0) {
+        if (!existingEmptyMsg) {
+            const emptyMsg = document.createElement('p');
+            emptyMsg.className = 'text-gray-500 italic p-4 empty-message';
+            emptyMsg.textContent = mode === 'teacher'
+                ? "You don't have any classes as a teacher."
+                : "You're not enrolled in any classes as a student.";
+            allClassesContainer.appendChild(emptyMsg);
+        }
+    } else if (existingEmptyMsg) {
+        existingEmptyMsg.remove();
+    }
+
+    // Filter "Pinned Classes" section
+    const pinnedItems = document.querySelectorAll('.pinned-class-item');
+    const emptyMessage = document.getElementById('pinned-empty-message');
+    let visiblePinnedCount = 0;
+
+    pinnedItems.forEach(item => {
+        const role = item.dataset.role;
+
+        if (mode === 'teacher') {
+            // Show only admin/coadmin classes
+            if (role === 'admin' || role === 'coadmin') {
+                item.style.display = 'block';
+                visiblePinnedCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        } else {
+            // Show only member classes
+            if (role === 'member') {
+                item.style.display = 'block';
+                visiblePinnedCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        }
+    });
+
+    // Update empty message for pinned classes
+    if (emptyMessage) {
+        if (visiblePinnedCount === 0 && pinnedItems.length > 0) {
+            const newMessage = mode === 'teacher'
+                ? "You haven't pinned any classes where you're a teacher."
+                : "You haven't pinned any classes where you're a student.";
+            emptyMessage.textContent = newMessage;
+            emptyMessage.style.display = 'block';
+        } else if (visiblePinnedCount > 0) {
+            emptyMessage.style.display = 'none';
+        }
+    }
+}
+
+// Toggle class menu dropdown
+function toggleClassMenu(event, code) {
+    event.stopPropagation(); // Prevent opening the class view
+
+    const menu = document.getElementById(`menu-${code}`);
+
+    // Close all other menus
+    document.querySelectorAll('[id^="menu-"]').forEach(m => {
+        if (m.id !== `menu-${code}`) {
+            m.classList.add('hidden');
+        }
+    });
+
+    // Toggle current menu
+    menu.classList.toggle('hidden');
+}
+
+// Close menus when clicking outside
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('[id^="menu-"]') && !event.target.closest('iconify-icon[icon="ic:round-more-vert"]')) {
+        document.querySelectorAll('[id^="menu-"]').forEach(m => {
+            m.classList.add('hidden');
+        });
+    }
+});
+
+// Toggle pin status for a class
+function togglePin(event, code) {
+    event.stopPropagation(); // Prevent opening the class view
+
+    // Create form and submit
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = `/classes/${code}/pin`;
+
+    // Add CSRF token
+    const csrfInput = document.createElement('input');
+    csrfInput.type = 'hidden';
+    csrfInput.name = '_token';
+    csrfInput.value = "{{ csrf_token() }}";
+    form.appendChild(csrfInput);
+
+    // Append form to body and submit
+    document.body.appendChild(form);
+    form.submit();
+}
+
+// Initialize on page load
 window.onload = () => {
     renderPinnedClasses();
     renderAllClasses();
+
+    // Apply initial filter based on saved mode
+    const currentMode = localStorage.getItem('viewMode') || 'student';
+    filterClassesByRole(currentMode);
 };
 </script>
 
