@@ -47,7 +47,38 @@ class ClassController extends Controller
             'color'=> 'nullable|string',
         ]);
 
-        return ClassModel::create($validated);
+        $creatorId = Auth::user()->user_id ?? Auth::id();
+
+        $allowedColors = ['pink', 'blue', 'purple', 'yellow'];
+        $color = in_array($validated['color'] ?? '', $allowedColors) ? $validated['color'] : 'pink';
+
+        do {
+            $code = strtoupper(substr(bin2hex(random_bytes(3)), 0, 6));
+        } while (ClassModel::where('code', $code)->exists());
+
+        $class = ClassModel::create([
+            'creator_id' => $creatorId,
+            'classname' => $validated['class_name'],
+            'description' => $validated['description'] ?? null,
+            'code' => $code,
+            'color' => $color,
+        ]);
+
+        try {
+            ClassMember::create([
+                'code' => $code,
+                'user_id' => $creatorId,
+                'role' => 'admin',
+            ]);
+        } catch (\Exception $e) {
+
+        }
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json($class, 201);
+        }
+
+        return redirect()->route('dashboard')->with('success', 'Class created successfully.');
     }
     public function join(Request $request)
     {
