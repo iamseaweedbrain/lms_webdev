@@ -1,4 +1,4 @@
-<body class="font-poppins bg-page m-0">
+<section class="font-poppins bg-page m-0">
     <div class="w-[120px] h-screen bg-white shadow-[2px_0_10px_rgba(0,0,0,0.05)] 
                 flex flex-col justify-between items-center fixed top-0 left-0 gap-[60px]">
 
@@ -74,4 +74,4 @@
     <div class="ml-[120px] p-10">
         {{ $slot }}
     </div>
-</body>
+</section>
