@@ -13,11 +13,12 @@ class PostModel extends Model
     protected $primaryKey = 'post_id';
     public $timestamps = false; // since we’re manually using created_at
     protected $fillable = [
-        'class_id',
+        'code',
         'user_id',
         'post_title',
         'post_type',
         'content',
+        'color',
         'due_date',
         'max_score',
         'created_at'

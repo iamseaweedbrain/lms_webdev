@@ -35,6 +35,14 @@ Route::get('/notification', [NotificationController::class, 'index'])->name('not
 Route::view('/settings-edit', 'settings-edit')->name('settings-edit');
 Route::get('/student_grade/{id}', [SubmissionController::class, 'show'])->name('student_grade');
 
-Route::get('/posts', [PostController::class, 'index'])->name('posts.index');
-Route::get('/posts/create', [PostController::class, 'create'])->name('posts.create');
-Route::post('/posts', [PostController::class, 'store'])->name('posts.store');
+Route::prefix('posts')->group(function () {
+    Route::get('/', [PostController::class, 'index'])->name('posts.index');
+    Route::get('/create', [PostController::class, 'create'])->name('posts.create');
+    Route::post('/', [PostController::class, 'newPost'])->name('posts.store');
+});
+
+Route::prefix('assignments')->group(function () {
+    Route::get('/', [PostController::class, 'index'])->name('assignments.index');
+    Route::get('/create', [PostController::class, 'create'])->name('assignments.create');
+    Route::post('/', [PostController::class, 'newAssignment'])->name('assignments.store');
+});
