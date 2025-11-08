@@ -1,4 +1,23 @@
 <x-layouts.mainlayout>
+    <!-- Flash Messages -->
+    @if(session('success'))
+        <div class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in" id="successToast">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="fixed top-5 right-5 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in" id="errorToast">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    @if(session('info'))
+        <div class="fixed top-5 right-5 bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in" id="infoToast">
+            {{ session('info') }}
+        </div>
+    @endif
+
     <!-- CLASSES PAGE -->
     <div class="p-6 mr-10" id="classesPage">
         <div class="flex justify-between items-center mb-10">
@@ -12,7 +31,12 @@
                 </button>
 
                 <div class="relative flex items-center">
-                    <input type="text" placeholder="Search class..." class="pl-8 py-2 focus:outline-none pr-10 shadow-md rounded-[15px] w-[250px] h-[50px]">
+                    <input
+                        type="text"
+                        id="searchClassInput"
+                        placeholder="Search class..."
+                        class="pl-8 py-2 focus:outline-none pr-10 shadow-md rounded-[15px] w-[250px] h-[50px]"
+                        oninput="searchClasses()">
                     <iconify-icon icon="mingcute:search-line" width="20" height="20" class="absolute right-4 text-gray-500"></iconify-icon>
                 </div>
             </div>
@@ -27,13 +51,18 @@
             
             <div id="pinned-classes-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 @forelse ($pinnedClassesDetails as $class)
-                    <div class="pinned-class-item" data-role="{{ $class->user_role ?? 'member' }}">
+                    <div class="pinned-class-item"
+                         data-role="{{ $class->user_role ?? 'member' }}"
+                         data-classname="{{ strtolower($class->classname) }}"
+                         data-creator="{{ strtolower($class->creator->name ?? 'N/A') }}"
+                         data-created="{{ $class->created_at ?? '' }}">
                         <x-class-card
                             :creatorName="$class->creator->name ?? 'N/A'"
                             :className="$class->classname"
-                            :count="0"
+                            :count="$class->pending_count ?? 0"
                             :colorPrefix="$class->color ?? 'default'"
                             :role="$class->user_role ?? 'member'"
+                            :code="$class->code"
                         />
                     </div>
                 @empty
@@ -48,17 +77,17 @@
                 <iconify-icon icon="si:book-fill" width="20" height="20"></iconify-icon>
                 <p class="font-bold text-[26px] font-outfit">All Classes</p>
             </div>
-            <div class="relative flex items-center text-sm font-outfit text-gray-500 cursor-pointer group">
-                <span>Sort by Name</span>
-                <iconify-icon 
-                    icon="mdi:chevron-down" 
-                    class="ml-1 text-gray-500 group-hover:text-black transition">
+            <div class="relative flex items-center text-sm font-outfit text-gray-500 cursor-pointer" onclick="toggleSortDropdown()">
+                <span id="sortLabel">Sort by Name</span>
+                <iconify-icon
+                    icon="mdi:chevron-down"
+                    class="ml-1 text-gray-500 transition">
                 </iconify-icon>
-                <div class="hidden absolute right-0 mt-6 bg-white border border-gray-200 rounded-lg shadow-md w-32 text-gray-600 text-sm group-hover:block">
-                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Name</p>
-                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Creator</p>
-                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Newest</p>
-                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer">Oldest</p>
+                <div id="sortDropdown" class="hidden absolute right-0 mt-6 bg-white border border-gray-200 rounded-lg shadow-md w-32 text-gray-600 text-sm z-10">
+                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer rounded-t-lg" onclick="event.stopPropagation(); sortClasses('name')">Name</p>
+                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer" onclick="event.stopPropagation(); sortClasses('creator')">Creator</p>
+                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer" onclick="event.stopPropagation(); sortClasses('newest')">Newest</p>
+                    <p class="px-3 py-2 hover:bg-gray-100 cursor-pointer rounded-b-lg" onclick="event.stopPropagation(); sortClasses('oldest')">Oldest</p>
                 </div>
             </div>
         </div>
@@ -77,19 +106,22 @@
             $creatorName = data_get($class, 'creator_name', 'Unknown Creator');
             $count = data_get($class, 'post_count', 0);
             $userRole = data_get($class, 'user_role', 'member');
+            $latestUpdate = data_get($class, 'latest_update', null);
             @endphp
 
-            <div
+            <a href="{{ route('classes.show', $class->code) }}"
             data-role="{{ $userRole }}"
-            class="class-item flex justify-between items-center bg-white border-3 {{ $borderColor }} rounded-[20px] px-6 py-4 hover:scale-[1.03] transition cursor-pointer {{ $shadowColor }}"
-            onclick="openClassView('{{ $className }}', '{{ $creatorName }}', '{{ $count }}', '{{ $color }}', '{{ $class->code }}')"
+            data-classname="{{ strtolower($className) }}"
+            data-creator="{{ strtolower($creatorName) }}"
+            data-created="{{ $class->created_at ?? '' }}"
+            class="class-item flex justify-between items-center bg-white border-3 {{ $borderColor }} rounded-[20px] px-6 py-4 hover:scale-[1.03] transition cursor-pointer {{ $shadowColor }} no-underline"
             >
             <div class="flex items-center gap-4">
                 <div class="flex flex-col justify-center min-w-0">
                     <p class="text-sm text-gray-500 font-outfit truncate">{{ $creatorName }}</p>
                     <h4 class="font-semibold text-lg font-outfit truncate">{{ $className }}</h4>
-                    <p class="text-[13px] text-gray-400 font-outfit truncate">
-                        No recent updates.
+                    <p class="text-[13px] text-gray-400 font-outfit truncate capitalize">
+                        {{ $latestUpdate ?? 'No recent updates.' }}
                     </p>
                 </div>
             </div>
@@ -117,10 +149,26 @@
                             <iconify-icon icon="f7:pin" width="16" height="16"></iconify-icon>
                             Pin Class
                         </button>
+
+                        @if($userRole === 'admin' || $userRole === 'coadmin')
+                        <button
+                            onclick="deleteClass(event, '{{ $class->code }}', '{{ $className }}')"
+                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg font-outfit flex items-center gap-2">
+                            <iconify-icon icon="mdi:delete-outline" width="16" height="16"></iconify-icon>
+                            Delete Class
+                        </button>
+                        @else
+                        <button
+                            onclick="leaveClass(event, '{{ $class->code }}', '{{ $className }}')"
+                            class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-b-lg font-outfit flex items-center gap-2">
+                            <iconify-icon icon="mdi:exit-to-app" width="16" height="16"></iconify-icon>
+                            Leave Class
+                        </button>
+                        @endif
                     </div>
                 </div>
             </div>
-            </div>
+            </a>
             @empty
             <p class="text-gray-500 italic p-4">No recent posts found in your classes.</p>
             @endforelse
@@ -139,11 +187,12 @@
             <h2 class="text-xl font-bold mb-3">Join a Class</h2>
             <p class="text-gray-600 text-sm mb-6">Enter the class code provided by your teacher.</p>
 
-            <input 
+            <input
             id="joinClassCodeInput"
-            type="text" 
-            placeholder="Enter class code (e.g., ALG101)" 
+            type="text"
+            placeholder="Enter class code (e.g., ALG101)"
             class="border border-gray-300 rounded-lg w-full py-2 px-4 text-sm mb-5 focus:outline-none focus:ring-2 focus:ring-main"
+            onkeypress="if(event.key==='Enter') joinClassFromCode()"
             >
 
             <button 
@@ -361,192 +410,6 @@
         </div>
         </div>
     </div>
-    
-        <!-- MATERIAL DETAIL PAGE -->
-        <div id="materialDetailPage" class="hidden px-10 py-6">
-        <div class="flex justify-between items-center mb-6">
-            <button 
-            onclick="goBack()" 
-            class="flex items-center gap-3 text-gray-600 hover:text-black hover:bg-main/10 p-2 rounded-full transition text-lg">
-            <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
-            </button>
-            <button class="bg-[#CBE8E9] text-black px-6 py-3 rounded-xl font-semibold hover:opacity-80 transition">
-            Mark As Read
-            </button>
-        </div>
-
-        <div class="relative bg-white w-[90%] max-w-5xl min-h-[80vh] mx-auto p-10 
-                    border-[3px] border-[#CBE8E9] 
-                    shadow-[12px_12px_0_0_#CBE8E9] 
-                    rounded-2xl z-10 flex flex-col">
-
-            <div class="flex flex-col">
-            <div class="flex gap-6 items-center">
-                <div class="relative w-[300px] h-[320px]">
-                <img 
-                    src="{{ asset('images/cat-mascot.png') }}" 
-                    alt="cat mascot" 
-                    class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
-                </div>
-
-                <div class="-mt-[140px] ml-[70px]">
-                <h2 class="font-semibold text-3xl leading-tight">Post Title</h2>
-                <p class="text-gray-500 text-base mt-1">Creator Name</p>
-                </div>
-            </div>
-
-            <div class="-mt-15 flex items-center justify-between">
-                <p class="text-gray-400 text-sm">Posted: Nov 1, 2025</p>
-                <div class="flex-1 ml-4 border-t-[5px] border-[#CBE8E9]"></div>
-            </div>
-            </div>
-
-            <div class="mt-10 space-y-4 flex-1 overflow-y-auto">
-                <!-- Material -->
-                <div class="flex items-start gap-6">
-                <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Material</h3>
-                <div class="relative border-[3px] border-[#CBE8E9] rounded-xl p-3 flex-1 shadow-[5px_5px_0_0_#CBE8E9] flex justify-between items-center">
-                    <div>
-                    <p class="font-bold text-normal text-gray-500">Final Exam File</p>
-                    <a href="#" class="text-blue-600 text-sm hover:underline">
-                        material.pdf
-                    </a>
-                    </div>
-                    <iconify-icon icon="mdi:arrow-up" width="24" height="24" class="text-gray-600"></iconify-icon>
-                </div>
-            </div>
-            <!-- Instructions -->
-            <div class="flex items-start gap-6">
-                <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Instructions</h3>
-                <p class="text-gray-600 text-base leading-relaxed flex-1 max-h-[400px] overflow-y-auto">
-                Read through the attached slides and summarize key concepts.
-            </div>
-            </div>
-        </div>
-        </div>
-
-
-        <!-- ANNOUNCEMENT DETAIL PAGE -->
-        <div id="announcementDetailPage" class="hidden px-10 py-6">
-        <div class="flex justify-between items-center mb-6">
-            <button 
-                onclick="goBack()" 
-                class="flex items-center gap-3 text-gray-600 hover:text-black hover:bg-main/10 p-2 rounded-full transition text-lg">
-                <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
-            </button>
-
-            <button class="bg-[#F9E8C9] text-black px-6 py-3 rounded-xl font-semibold hover:opacity-80 transition">
-            Mark As Read
-            </button>
-        </div>
-
-        <div class="relative bg-white w-[90%] max-w-5xl min-h-[80vh] mx-auto p-10 
-                    border-[3px] border-[#F9E8C9] 
-                    shadow-[12px_12px_0_0_#F9E8C9] 
-                    rounded-2xl z-10 flex flex-col">
-
-            <div class="flex flex-col">
-            <div class="flex gap-6 items-center">
-                <div class="relative w-[300px] h-[320px]">
-                <img 
-                    src="{{ asset('images/cat-mascot.png') }}" 
-                    alt="cat mascot" 
-                    class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
-                </div>
-
-                <div class="-mt-[140px] ml-[70px]">
-                <h2 class="font-semibold text-3xl leading-tight">Post Title</h2>
-                <p class="text-gray-500 text-base mt-1">Creator Name</p>
-                </div>
-            </div>
-
-            <div class="-mt-15 flex items-center justify-start">
-                <p class="text-gray-400 text-sm">Posted: Nov 2, 2025</p>
-                <div class="flex-1 ml-4 border-t-[5px] border-[#F9E8C9]"></div>
-            </div>
-            </div>
-
-            <div class="mt-6 flex-1">
-            <h3 class="font-semibold text-gray-700 text-lg text-center">Announcement</h3>
-            <p class="text-gray-600 text-base mt-3 leading-relaxed max-w-2xl mx-auto">
-                Please submit your essay before Friday. Make sure to review the grading rubric carefully and upload your file in PDF format only. 
-                Late submissions will not be accepted, so plan your time accordingly. If you have any questions, feel free to reach out via email 
-                or during our consultation hours this week. Thank you for your cooperation and best of luck with your work!
-            </p>
-            </div>
-        </div>
-        </div>
-
-
-        <!-- ASSIGNMENT DETAIL PAGE -->
-        <div id="assignmentDetailPage" class="hidden px-10 py-6">
-        <div class="flex justify-between items-center mb-6">
-            <button 
-                onclick="goBack()" 
-                class="flex items-center gap-3 text-gray-600 hover:text-black hover:bg-main/10 p-2 rounded-full transition text-lg">
-                <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
-            </button>
-
-            <button class="bg-[#F9CADA] text-black px-6 py-3 rounded-xl font-semibold hover:opacity-80 transition">
-            Mark As Done
-            </button>
-        </div>
-
-        <div class="relative bg-white w-[90%] max-w-5xl min-h-[80vh] mx-auto p-10 
-                    border-[3px] border-[#F9CADA] 
-                    shadow-[12px_12px_0_0_#F9CADA] 
-                    rounded-2xl z-10 flex flex-col">
-
-            <div class="flex flex-col">
-            <div class="flex gap-6 items-center">
-                <div class="relative w-[300px] h-[320px]">
-                <img 
-                    src="{{ asset('images/cat-mascot.png') }}" 
-                    alt="cat mascot" 
-                    class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
-                </div>
-
-                <div class="-mt-[140px] ml-[70px]">
-                <h2 class="font-semibold text-3xl leading-tight">Essay Submission</h2>
-                <p class="text-gray-500 text-base mt-1">Mr. Santos</p>
-                </div>
-            </div>
-
-            <div class="-mt-15 flex items-center justify-between">
-                <p class="text-gray-400 text-sm">Posted: Nov 2, 2025</p>
-                <div class="flex-1 ml-4 border-t-[5px] border-[#F9CADA]"></div>
-            </div>
-            </div>
-
-            <div class="mt-6 space-y-6 flex-1 overflow-y-auto">
-            <div class="flex items-start gap-6">
-            <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Not Turned In</h3>
-            <div class="relative border-[3px] border-[#F9CADA] rounded-xl p-3 flex-1 shadow-[5px_5px_0_0_#F9CADA] flex items-center gap-3">
-                <input 
-                type="file" 
-                id="essayFile"
-                class="border border-gray-300 rounded-xl p-3 flex-1 text-base focus:ring-2 focus:ring-[#F9CADA] outline-none transition" />
-                <button 
-                    class="bg-[#F9CADA] px-4 py-2 rounded-xl font-semibold hover:opacity-80 transition flex-shrink-0"
-                    onclick="submitEssay()">
-                    SUBMIT
-                </button>
-            </div>
-            </div>
-
-            <!-- Instructions -->
-            <div class="flex items-start gap-6">
-                <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Instructions</h3>
-                <p class="text-gray-600 text-base leading-relaxed flex-1 max-h-[400px] overflow-y-auto">
-                    Write your essay according to the prompt, format it in Times New Roman 12pt double-spaced with a title page, 
-                    save it as a PDF named Lastname_Firstname_Assignment.pdf, and upload it using the Choose File button before t
-                    he deadline. Make sure your work is original and sources are properly cited.       
-                </p>
-            </div>
-            </div>
-        </div>
-        </div>
-
 
         <style>
             #classHeader {
@@ -765,8 +628,11 @@ function toggleJoinPopup() {
 }
 
 function joinClassFromCode() {
+  console.log('Join class function called');
   const codeInput = document.getElementById('joinClassCodeInput');
   const code = codeInput.value.trim().toUpperCase();
+
+  console.log('Entered code:', code);
 
   if (!code) {
     alert('Please enter a class code.');
@@ -792,6 +658,7 @@ function joinClassFromCode() {
   codeInput2.value = code;
   form.appendChild(codeInput2);
 
+  console.log('Submitting form to join class');
   // Append form to body and submit
   document.body.appendChild(form);
   form.submit();
@@ -916,8 +783,176 @@ function filterClassesByRole(mode) {
     }
 }
 
+// Search classes by name or creator
+function searchClasses() {
+    const searchTerm = document.getElementById('searchClassInput').value.toLowerCase().trim();
+    const currentMode = localStorage.getItem('viewMode') || 'student';
+
+    // Search in "All Classes" section
+    const allClassItems = document.querySelectorAll('.class-item');
+    let visibleClassCount = 0;
+
+    allClassItems.forEach(item => {
+        const role = item.dataset.role;
+        const className = item.dataset.classname || '';
+        const creator = item.dataset.creator || '';
+
+        // Check if item matches current mode
+        const matchesMode = (currentMode === 'teacher' && (role === 'admin' || role === 'coadmin')) ||
+                           (currentMode === 'student' && role === 'member');
+
+        // Check if item matches search term
+        const matchesSearch = className.includes(searchTerm) || creator.includes(searchTerm);
+
+        // Show item only if it matches both mode and search
+        if (matchesMode && matchesSearch) {
+            item.style.display = 'flex';
+            visibleClassCount++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // Update empty message for all classes
+    const allClassesContainer = document.getElementById('all-classes-container');
+    const existingEmptyMsg = allClassesContainer.querySelector('.empty-message');
+
+    if (visibleClassCount === 0) {
+        if (!existingEmptyMsg) {
+            const emptyMsg = document.createElement('p');
+            emptyMsg.className = 'text-gray-500 italic p-4 empty-message';
+            emptyMsg.textContent = searchTerm
+                ? `No classes found matching "${searchTerm}".`
+                : (currentMode === 'teacher'
+                    ? "You don't have any classes as a teacher."
+                    : "You're not enrolled in any classes as a student.");
+            allClassesContainer.appendChild(emptyMsg);
+        }
+    } else if (existingEmptyMsg) {
+        existingEmptyMsg.remove();
+    }
+
+    // Search in "Pinned Classes" section
+    const pinnedItems = document.querySelectorAll('.pinned-class-item');
+    const emptyMessage = document.getElementById('pinned-empty-message');
+    let visiblePinnedCount = 0;
+
+    pinnedItems.forEach(item => {
+        const role = item.dataset.role;
+        const className = item.dataset.classname || '';
+        const creator = item.dataset.creator || '';
+
+        const matchesMode = (currentMode === 'teacher' && (role === 'admin' || role === 'coadmin')) ||
+                           (currentMode === 'student' && role === 'member');
+        const matchesSearch = className.includes(searchTerm) || creator.includes(searchTerm);
+
+        if (matchesMode && matchesSearch) {
+            item.style.display = 'block';
+            visiblePinnedCount++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+
+    // Update empty message for pinned classes
+    if (emptyMessage) {
+        if (visiblePinnedCount === 0 && pinnedItems.length > 0) {
+            const newMessage = searchTerm
+                ? `No pinned classes found matching "${searchTerm}".`
+                : (currentMode === 'teacher'
+                    ? "You haven't pinned any classes where you're a teacher."
+                    : "You haven't pinned any classes where you're a student.");
+            emptyMessage.textContent = newMessage;
+            emptyMessage.style.display = 'block';
+        } else if (visiblePinnedCount > 0) {
+            emptyMessage.style.display = 'none';
+        }
+    }
+}
+
+// Toggle sort dropdown
+function toggleSortDropdown() {
+    const dropdown = document.getElementById('sortDropdown');
+    dropdown.classList.toggle('hidden');
+}
+
+// Sort classes by selected criteria
+function sortClasses(sortBy) {
+    console.log('Sorting by:', sortBy);
+
+    const container = document.getElementById('all-classes-container');
+    const classItems = Array.from(container.querySelectorAll('.class-item'));
+    const emptyMessage = container.querySelector('.empty-message');
+
+    console.log('Found class items:', classItems.length);
+
+    if (classItems.length > 0) {
+        console.log('First item data:', {
+            classname: classItems[0].dataset.classname,
+            creator: classItems[0].dataset.creator,
+            created: classItems[0].dataset.created
+        });
+    }
+
+    // Update sort label
+    const sortLabel = document.getElementById('sortLabel');
+    const sortLabels = {
+        'name': 'Sort by Name',
+        'creator': 'Sort by Creator',
+        'newest': 'Sort by Newest',
+        'oldest': 'Sort by Oldest'
+    };
+    sortLabel.textContent = sortLabels[sortBy] || 'Sort by Name';
+
+    // Close dropdown
+    document.getElementById('sortDropdown').classList.add('hidden');
+
+    // Sort the items
+    classItems.sort((a, b) => {
+        switch(sortBy) {
+            case 'name':
+                const nameA = a.dataset.classname || '';
+                const nameB = b.dataset.classname || '';
+                return nameA.localeCompare(nameB);
+
+            case 'creator':
+                const creatorA = a.dataset.creator || '';
+                const creatorB = b.dataset.creator || '';
+                return creatorA.localeCompare(creatorB);
+
+            case 'newest':
+                const dateA = new Date(a.dataset.created || 0);
+                const dateB = new Date(b.dataset.created || 0);
+                return dateB - dateA; // Newest first
+
+            case 'oldest':
+                const dateAOld = new Date(a.dataset.created || 0);
+                const dateBOld = new Date(b.dataset.created || 0);
+                return dateAOld - dateBOld; // Oldest first
+
+            default:
+                return 0;
+        }
+    });
+
+    console.log('Sorted, re-appending items...');
+
+    // Re-append items in sorted order
+    classItems.forEach(item => {
+        container.appendChild(item);
+    });
+
+    // Re-append empty message if it exists
+    if (emptyMessage) {
+        container.appendChild(emptyMessage);
+    }
+
+    console.log('Sort complete!');
+}
+
 // Toggle class menu dropdown
 function toggleClassMenu(event, code) {
+    event.preventDefault(); // Prevent link navigation
     event.stopPropagation(); // Prevent opening the class view
 
     const menu = document.getElementById(`menu-${code}`);
@@ -928,6 +963,30 @@ function toggleClassMenu(event, code) {
             m.classList.add('hidden');
         }
     });
+    document.querySelectorAll('[id^="pinned-menu-"]').forEach(m => {
+        m.classList.add('hidden');
+    });
+
+    // Toggle current menu
+    menu.classList.toggle('hidden');
+}
+
+// Toggle pinned class menu dropdown
+function togglePinnedClassMenu(event, code) {
+    event.preventDefault(); // Prevent link navigation
+    event.stopPropagation(); // Prevent opening the class view
+
+    const menu = document.getElementById(`pinned-menu-${code}`);
+
+    // Close all other menus
+    document.querySelectorAll('[id^="pinned-menu-"]').forEach(m => {
+        if (m.id !== `pinned-menu-${code}`) {
+            m.classList.add('hidden');
+        }
+    });
+    document.querySelectorAll('[id^="menu-"]').forEach(m => {
+        m.classList.add('hidden');
+    });
 
     // Toggle current menu
     menu.classList.toggle('hidden');
@@ -935,15 +994,27 @@ function toggleClassMenu(event, code) {
 
 // Close menus when clicking outside
 document.addEventListener('click', function(event) {
-    if (!event.target.closest('[id^="menu-"]') && !event.target.closest('iconify-icon[icon="ic:round-more-vert"]')) {
+    if (!event.target.closest('[id^="menu-"]') &&
+        !event.target.closest('[id^="pinned-menu-"]') &&
+        !event.target.closest('iconify-icon[icon="ic:round-more-vert"]')) {
         document.querySelectorAll('[id^="menu-"]').forEach(m => {
             m.classList.add('hidden');
         });
+        document.querySelectorAll('[id^="pinned-menu-"]').forEach(m => {
+            m.classList.add('hidden');
+        });
+    }
+
+    // Close sort dropdown when clicking outside
+    const sortDropdown = document.getElementById('sortDropdown');
+    if (sortDropdown && !event.target.closest('#sortDropdown') && !event.target.closest('[onclick*="toggleSortDropdown"]')) {
+        sortDropdown.classList.add('hidden');
     }
 });
 
 // Toggle pin status for a class
 function togglePin(event, code) {
+    event.preventDefault(); // Prevent link navigation
     event.stopPropagation(); // Prevent opening the class view
 
     // Create form and submit
@@ -963,15 +1034,79 @@ function togglePin(event, code) {
     form.submit();
 }
 
+// Leave a class (for students)
+function leaveClass(event, code, className) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (confirm(`Are you sure you want to leave "${className}"? You will need the class code to rejoin.`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/classes/${code}/leave`;
+
+        // Add CSRF token
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = "{{ csrf_token() }}";
+        form.appendChild(csrfInput);
+
+        // Append form to body and submit
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
+// Delete a class (for teachers/admins)
+function deleteClass(event, code, className) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    if (confirm(`Are you sure you want to DELETE "${className}"? This action cannot be undone. All posts, assignments, and member data will be permanently removed.`)) {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = `/classes/${code}/delete`;
+
+        // Add CSRF token
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = "{{ csrf_token() }}";
+        form.appendChild(csrfInput);
+
+        // Append form to body and submit
+        document.body.appendChild(form);
+        form.submit();
+    }
+}
+
 // Initialize on page load
-window.onload = () => {
-    renderPinnedClasses();
-    renderAllClasses();
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all toast elements
+    const successToast = document.getElementById('successToast');
+    const errorToast = document.getElementById('errorToast');
+    const infoToast = document.getElementById('infoToast');
+
+    // If user just joined a class or already a member, switch to student mode to show it
+    if ((successToast && successToast.textContent.includes('joined')) || infoToast) {
+        localStorage.setItem('viewMode', 'student');
+    }
 
     // Apply initial filter based on saved mode
     const currentMode = localStorage.getItem('viewMode') || 'student';
     filterClassesByRole(currentMode);
-};
+
+    // Auto-hide flash messages after 5 seconds
+    [successToast, errorToast, infoToast].forEach(toast => {
+        if (toast) {
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 300ms';
+                setTimeout(() => toast.remove(), 300);
+            }, 5000);
+        }
+    });
+});
 </script>
 
 

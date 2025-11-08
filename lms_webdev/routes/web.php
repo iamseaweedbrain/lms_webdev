@@ -6,6 +6,7 @@ use App\Http\Controllers\PinnedClassesController;
 use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\PostReadController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/signup', [AccountController::class, 'store'])->name('storeSignUp');
@@ -16,12 +17,18 @@ Route::post('/settings-update', [AccountController::class, 'updateSettings'])->n
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::get('/classes', [ClassController::class, 'index'])->name('classes');
+Route::get('/classes/{code}', [ClassController::class, 'show'])->name('classes.show');
 Route::post('/classes/join', [ClassController::class, 'join'])->name('classes.join');
 Route::post('/classes/{code}/pin', [PinnedClassesController::class, 'togglePin'])->name('classes.pin');
+Route::post('/classes/{code}/leave', [ClassController::class, 'leave'])->name('classes.leave');
+Route::post('/classes/{code}/delete', [ClassController::class, 'delete'])->name('classes.delete');
 
 Route::get('/submissions', [SubmissionController::class, 'index'])->name('submissions.index');
 Route::post('/submissions', [SubmissionController::class, 'store'])->name('submissions.store');
 Route::post('/submissions/{id}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
+
+Route::post('/posts/mark-read', [PostReadController::class, 'toggleRead'])->name('posts.mark-read');
+Route::post('/posts/update', [PostController::class, 'update'])->name('posts.update');
 
 Route::view('/', 'landingpage')->name('landingpage');
 Route::view('/login', 'auth.login')->name('login');

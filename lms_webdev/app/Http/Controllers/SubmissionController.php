@@ -112,14 +112,59 @@ class SubmissionController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'post_id' => 'required|exists:posts,post_id',
-            'user_id' => 'required|exists:user_accounts,user_id',
-            'file_type' => 'required|in:image,file,link',
-            'file_path' => 'required|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'post_id' => 'required|exists:posts,post_id',
+                'assignment_file' => 'required|file|max:10240', // Max 10MB
+            ]);
 
-        return SubmissionModel::create($validated);
+            $userId = Auth::id();
+
+            // Handle file upload
+            if ($request->hasFile('assignment_file')) {
+                $file = $request->file('assignment_file');
+                $fileName = time() . '_' . $userId . '_' . $file->getClientOriginalName();
+                $filePath = $file->storeAs('submissions', $fileName, 'public');
+
+                // Determine file type
+                $mimeType = $file->getMimeType();
+                $fileType = 'file'; // default
+                if (str_starts_with($mimeType, 'image/')) {
+                    $fileType = 'image';
+                }
+
+                // Create submission record
+                $submission = SubmissionModel::create([
+                    'post_id' => $validated['post_id'],
+                    'user_id' => $userId,
+                    'file_type' => $fileType,
+                    'file_path' => $filePath,
+                ]);
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Assignment submitted successfully',
+                    'submission' => $submission
+                ]);
+            }
+
+            return response()->json([
+                'success' => false,
+                'message' => 'No file uploaded'
+            ], 400);
+
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validation failed',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function grade(Request $request, $id)
