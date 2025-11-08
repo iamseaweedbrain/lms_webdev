@@ -37,12 +37,12 @@ Route::get('/student_grade/{id}', [SubmissionController::class, 'show'])->name('
 
 Route::prefix('posts')->group(function () {
     Route::get('/', [PostController::class, 'index'])->name('posts.index');
-    Route::get('/create', [PostController::class, 'create'])->name('posts.create');
-    Route::post('/', [PostController::class, 'newPost'])->name('posts.store');
+    Route::get('/{code}/create', [PostController::class, 'create'])->name('posts.create');
+    Route::post('/{code}/create', [PostController::class, 'newPost'])->name('posts.store');
 });
 
 Route::prefix('assignments')->group(function () {
     Route::get('/', [PostController::class, 'index'])->name('assignments.index');
-    Route::get('/create', [PostController::class, 'create'])->name('assignments.create');
-    Route::post('/', [PostController::class, 'newAssignment'])->name('assignments.store');
+    Route::get('/{code}/create', [PostController::class, 'create'])->name('assignments.create');
+    Route::post('/{code}/create', [PostController::class, 'newAssignment'])->name('assignments.store');
 });

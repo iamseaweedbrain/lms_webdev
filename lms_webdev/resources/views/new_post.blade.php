@@ -1,7 +1,7 @@
 <x-layouts.mainlayout>
     <div class="min-h-screen flex items-center justify-center bg-[#FAF8F5] px-6">
         <div class="w-full max-w-4xl">
-            <form action="{{ route('posts.store') }}" method="POST" class="bg-white border-2 border-black shadow-[8px_8px_0_0_#000] rounded-2xl overflow-hidden">
+            <form action="{{ route('posts.store', ['code' => $class->code]) }}" method="POST" class="bg-white border-2 border-black shadow-[8px_8px_0_0_#000] rounded-2xl overflow-hidden">
                 @csrf
                 <div class="grid grid-cols-1 md:grid-cols-2">
                     <div class="relative bg-white p-6 flex flex-col justify-between items-center">
@@ -37,6 +37,13 @@
                             <textarea id="description" name="description" rows="8"
                                       class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">{{ old('description') }}</textarea>
                             @error('content') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="code" class="block text-sm font-medium text-gray-700 mb-2">Class Code</label>
+                            <input type="text" id="code" name="code" value="{{ old('code') }}" required
+                                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black">
+                            @error('code') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </div>
