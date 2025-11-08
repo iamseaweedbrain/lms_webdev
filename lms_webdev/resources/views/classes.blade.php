@@ -11,19 +11,21 @@
                     <iconify-icon icon="ic:round-add" width="26" height="26" class="text-black"></iconify-icon>
                 </button>
 
-                <div class="relative">
-                    <input 
-                        type="text" 
-                        placeholder="Search class..." 
-                        class="px-5 py-2 rounded-full shadow-md focus:outline-none pr-10 w-[250px] h-10"
-                    >
-                    <iconify-icon 
-                        icon="mingcute:search-line" 
-                        width="22" 
-                        height="22" 
-                        class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500">
-                    </iconify-icon>
-                </div>
+        <div class="relative w-[250px]">
+        <input 
+            type="text" 
+            placeholder="Search class..." 
+            class="w-full h-10 pl-5 pr-10 rounded-full shadow-md focus:outline-none"
+        >
+        <div class="absolute inset-y-0 right-3 flex items-center">
+            <iconify-icon 
+            icon="mingcute:search-line" 
+            width="22" 
+            height="22" 
+            class="text-gray-500">
+            </iconify-icon>
+        </div>
+        </div>
             </div>
         </div>
 
