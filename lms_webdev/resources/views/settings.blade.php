@@ -1,5 +1,5 @@
 <x-layouts.mainlayout title="Account Settings">
-    <section class="min-h-screen w-full font-poppins text-main bg-page flex flex-col">
+    <section class="min-h-screen w-full font-poppins text-main bg-page flex flex-col mt-8">
         <h2 class="text-3xl md:text-4xl font-semibold p-8">Account Settings</h2>
 
         <div class="flex flex-col md:flex-row items-stretch gap-16 flex-1 p-9">

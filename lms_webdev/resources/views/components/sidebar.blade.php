@@ -1,8 +1,12 @@
-Side bar.blade
-
 <section class="font-poppins bg-page m-0">
-    <div class="w-[120px] h-screen bg-white shadow-[2px_0_10px_rgba(0,0,0,0.05)] 
-                flex flex-col justify-between items-center fixed top-0 left-0 gap-[60px]">
+    <div id="sidebarPanel" class="w-[120px] h-screen bg-white shadow-[2px_0_10px_rgba(0,0,0,0.05)] 
+                flex flex-col justify-between items-center fixed top-0 left-0 gap-[60px] z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
+
+        <button type="button" id="sidebarClose" class="md:hidden absolute top-4 right-3 flex items-center justify-center w-8 h-8 rounded-full border border-pastel-yellow text-main shadow-sm focus:outline-none focus:ring-2 focus:ring-pastel-yellow" aria-label="Close navigation">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24">
+                <path fill="currentColor" d="M18.3 5.7a1 1 0 0 0-1.4-1.4L12 9.17L7.11 4.29A1 1 0 0 0 5.7 5.7L10.59 10.6L5.7 15.49a1 1 0 1 0 1.41 1.41L12 12l4.89 4.9a1 1 0 0 0 1.41-1.41L13.41 10.6z"/>
+            </svg>
+        </button>
 
         {{-- Top Icon --}}
         <a href="{{ route('notification') }}" 
@@ -76,7 +80,9 @@ Side bar.blade
         </button>
     </div>
 
-    <div class="ml-[120px] p-10">
+    <div id="sidebarOverlay" class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 hidden md:hidden"></div>
+
+    <div class="ml-0 md:ml-[120px]">
         {{ $slot }}
     </div>
 </section>
@@ -164,6 +170,63 @@ function showViewModeToast(mode) {
 document.addEventListener('DOMContentLoaded', function() {
     const currentMode = localStorage.getItem('viewMode') || 'student';
     updateToggleButton(currentMode);
+
+    const sidebarPanel = document.getElementById('sidebarPanel');
+    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    const openButton = document.getElementById('sidebarToggle');
+    const closeButton = document.getElementById('sidebarClose');
+
+    if (!sidebarPanel) {
+        return;
+    }
+
+    const closeSidebar = () => {
+        sidebarPanel.classList.add('-translate-x-full');
+        sidebarOverlay?.classList.add('hidden');
+        document.body.classList.remove('overflow-hidden');
+        if (openButton) {
+            openButton.classList.remove('invisible');
+            openButton.setAttribute('aria-expanded', 'false');
+        }
+    };
+
+    const openSidebar = () => {
+        if (window.innerWidth >= 768) {
+            return;
+        }
+        sidebarPanel.classList.remove('-translate-x-full');
+        sidebarOverlay?.classList.remove('hidden');
+        document.body.classList.add('overflow-hidden');
+        if (openButton) {
+            openButton.classList.add('invisible');
+            openButton.setAttribute('aria-expanded', 'true');
+        }
+    };
+
+    openButton?.addEventListener('click', openSidebar);
+    closeButton?.addEventListener('click', closeSidebar);
+    sidebarOverlay?.addEventListener('click', closeSidebar);
+
+    window.addEventListener('keydown', (event) => {
+        const overlayVisible = sidebarOverlay ? !sidebarOverlay.classList.contains('hidden') : false;
+        if (event.key === 'Escape' && window.innerWidth < 768 && overlayVisible) {
+            closeSidebar();
+        }
+    });
+
+    window.addEventListener('resize', () => {
+        if (window.innerWidth >= 768) {
+            sidebarPanel.classList.remove('-translate-x-full');
+            sidebarOverlay?.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+            if (openButton) {
+                openButton.classList.remove('invisible');
+                openButton.setAttribute('aria-expanded', 'false');
+            }
+        } else {
+            closeSidebar();
+        }
+    });
 });
 </script>
 
