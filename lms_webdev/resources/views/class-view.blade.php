@@ -1,4 +1,17 @@
 <x-layouts.mainlayout>
+    <!-- Flash Messages -->
+    @if(session('success'))
+        <div class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in" id="successToast">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    @if(session('error'))
+        <div class="fixed top-5 right-5 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in" id="errorToast">
+            {{ session('error') }}
+        </div>
+    @endif
+
     <div id="classViewPage" class="p-6 mr-10" data-user-role="{{ $membership->role ?? 'member' }}">
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center gap-6">
@@ -62,7 +75,16 @@
 
         <!-- POSTS TAB -->
         <div id="postsSection" class="flex flex-col gap-4">
-            <h2 class="font-semibold text-lg font-outfit mb-2">Posts</h2>
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="font-semibold text-lg font-outfit">Posts</h2>
+                @if(($membership->role ?? 'member') === 'admin' || ($membership->role ?? 'member') === 'coadmin')
+                <a href="{{ route('posts.create', ['code' => $class->code]) }}"
+                   class="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition font-outfit text-sm">
+                    <iconify-icon icon="ic:round-add" width="20" height="20"></iconify-icon>
+                    Add New Post
+                </a>
+                @endif
+            </div>
 
             @forelse ($posts as $post)
                 @php
@@ -105,7 +127,16 @@
 
         <!-- ASSIGNMENTS TAB -->
         <div id="assignmentsSection" class="hidden flex flex-col gap-4">
-            <h2 class="font-semibold text-lg font-outfit mb-2">Assignments</h2>
+            <div class="flex justify-between items-center mb-2">
+                <h2 class="font-semibold text-lg font-outfit">Assignments</h2>
+                @if(($membership->role ?? 'member') === 'admin' || ($membership->role ?? 'member') === 'coadmin')
+                <a href="{{ route('assignments.create', ['code' => $class->code]) }}"
+                   class="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800 transition font-outfit text-sm">
+                    <iconify-icon icon="ic:round-add" width="20" height="20"></iconify-icon>
+                    Add New Assignment
+                </a>
+                @endif
+            </div>
 
             @forelse ($assignments as $assignment)
                 @php
@@ -284,6 +315,14 @@
                         Read through the attached slides and summarize key concepts.
                     </p>
                 </div>
+
+                <!-- File/Link Section -->
+                <div id="materialFileSection" class="flex items-start gap-6 hidden">
+                    <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Attached File</h3>
+                    <div id="materialFileContent" class="flex-1">
+                        <!-- File or link will be displayed here -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -322,17 +361,19 @@
                     </div>
                 </div>
 
-                <div class="-mt-15 flex items-center justify-start">
+                <div class="-mt-15 flex items-center justify-between">
                     <p id="announcementDate" class="text-gray-400 text-sm">Posted: Nov 2, 2025</p>
                     <div class="flex-1 ml-4 border-t-[5px] border-[#F9E8C9]"></div>
                 </div>
             </div>
 
-            <div class="mt-6 flex-1">
-                <h3 class="font-semibold text-gray-700 text-lg text-center">Announcement</h3>
-                <p id="announcementContent" class="text-gray-600 text-base mt-3 leading-relaxed max-w-2xl mx-auto">
-                    Please submit your essay before Friday.
-                </p>
+            <div class="mt-10 space-y-4 flex-1 overflow-y-auto">
+                <div class="flex items-start gap-6">
+                    <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Announcement</h3>
+                    <p id="announcementContent" class="text-gray-600 text-base leading-relaxed flex-1 max-h-[400px] overflow-y-auto">
+                        Please submit your essay before Friday.
+                    </p>
+                </div>
             </div>
         </div>
     </div>
@@ -418,6 +459,14 @@
                         Write your essay according to the prompt.
                     </p>
                 </div>
+
+                <!-- Assignment File/Link Section -->
+                <div id="assignmentFileSection" class="flex items-start gap-6 hidden">
+                    <h3 class="font-semibold text-gray-700 text-lg w-[150px]">Attached File</h3>
+                    <div id="assignmentFileContent" class="flex-1">
+                        <!-- File or link will be displayed here -->
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -473,6 +522,32 @@
                         class="w-full border-2 border-gray-300 rounded-xl p-3 text-base focus:ring-2 focus:ring-[#F9CADA] focus:border-[#F9CADA] outline-none transition resize-none"></textarea>
                 </div>
 
+                <!-- File/Link Fields (only for materials) -->
+                <div id="editMaterialFileContainer" class="hidden">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Attached File or Link</label>
+
+                    <!-- Current file/link display -->
+                    <div id="currentFileDisplay" class="mb-3"></div>
+
+                    <!-- New file upload -->
+                    <input
+                        type="file"
+                        id="editMaterialFile"
+                        name="material_file"
+                        accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.zip"
+                        class="w-full px-4 py-2 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-[#F9CADA] focus:border-[#F9CADA] outline-none transition file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800">
+
+                    <p class="text-xs text-gray-500 mt-2 mb-2">Or update the link below</p>
+
+                    <!-- Link input -->
+                    <input
+                        type="url"
+                        id="editMaterialLink"
+                        name="material_link"
+                        placeholder="https://example.com/resource"
+                        class="w-full border-2 border-gray-300 rounded-xl p-3 text-base focus:ring-2 focus:ring-[#F9CADA] focus:border-[#F9CADA] outline-none transition">
+                </div>
+
                 <!-- Due Date Field (only for assignments) -->
                 <div id="editDueDateContainer" class="hidden">
                     <label for="editDueDate" class="block text-sm font-semibold text-gray-700 mb-2">Due Date</label>
@@ -502,7 +577,6 @@
     </div>
 
     <script>
-    // Store current post/assignment ID for marking as read/done
     let currentPostId = null;
     let currentAssignmentId = null;
 
@@ -547,12 +621,10 @@
     }
 
     function showTab(tab) {
-        // Hide all sections
         document.getElementById('postsSection').classList.add('hidden');
         document.getElementById('assignmentsSection').classList.add('hidden');
         document.getElementById('membersSection').classList.add('hidden');
 
-        // Remove active styling from all tabs
         ['postsTab', 'assignmentsTab', 'membersTab'].forEach(id => {
             const el = document.getElementById(id);
             if (el) {
@@ -561,15 +633,12 @@
             }
         });
 
-        // Show selected section
         document.getElementById(`${tab}Section`).classList.remove('hidden');
 
-        // Add active styling to selected tab
         const activeTab = document.getElementById(`${tab}Tab`);
         activeTab.classList.add('border-b-4', 'border-[#F9CADA]', 'font-semibold', 'text-main');
         activeTab.classList.remove('text-gray-500');
 
-        // Update count
         const classCountElement = document.getElementById('classCount');
         const classLabel = document.getElementById('classLabel');
         const countContainer = classCountElement.parentElement;
@@ -590,7 +659,6 @@
         classLabel.textContent = labels[tab];
     }
 
-    // Wrapper function to read from data attribute
     function openPostPopupById(element) {
         const postData = element.dataset.post;
         if (postData) {
@@ -599,7 +667,6 @@
         }
     }
 
-    // Wrapper function to read from data attribute
     function openAssignmentPopupById(element) {
         const assignmentData = element.dataset.assignment;
         const submissionData = element.dataset.submission;
@@ -610,27 +677,22 @@
         }
     }
 
-    // Open post detail page
     function openPostPopup(post) {
         const postType = post.post_type || 'material';
         const userRole = document.getElementById('classViewPage').dataset.userRole;
         const isTeacher = userRole === 'admin' || userRole === 'coadmin';
 
-        // Store current post ID
         currentPostId = post.post_id;
 
-        // Hide class view
         document.getElementById('classViewPage').classList.add('hidden');
 
         if (postType === 'announcement') {
-            // Show announcement detail page
             const page = document.getElementById('announcementDetailPage');
             document.getElementById('announcementTitle').textContent = post.post_title || 'Announcement';
             document.getElementById('announcementAuthor').textContent = post.author_name || 'Unknown';
             document.getElementById('announcementDate').textContent = post.created_at ? 'Posted: ' + new Date(post.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Posted: Unknown date';
             document.getElementById('announcementContent').textContent = post.content || 'No content available.';
 
-            // Update button based on role
             const btn = document.getElementById('announcementActionBtn');
             if (isTeacher) {
                 btn.textContent = 'Edit';
@@ -644,14 +706,41 @@
 
             page.classList.remove('hidden');
         } else {
-            // Show material detail page
             const page = document.getElementById('materialDetailPage');
             document.getElementById('materialTitle').textContent = post.post_title || 'Material';
             document.getElementById('materialAuthor').textContent = post.author_name || 'Unknown';
             document.getElementById('materialDate').textContent = post.created_at ? 'Posted: ' + new Date(post.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Posted: Unknown date';
             document.getElementById('materialContent').textContent = post.content || 'No content available.';
 
-            // Update button based on role
+            const fileSection = document.getElementById('materialFileSection');
+            const fileContent = document.getElementById('materialFileContent');
+
+            if (post.file_path || post.file_link) {
+                fileSection.classList.remove('hidden');
+
+                if (post.file_link) {
+                    fileContent.innerHTML = `
+                        <a href="${post.file_link}" target="_blank"
+                           class="inline-flex items-center gap-3 px-6 py-3 bg-[#CBE8E9] text-black rounded-xl font-semibold hover:opacity-80 transition">
+                            <iconify-icon icon="mdi:link" width="24" height="24"></iconify-icon>
+                            Open Link
+                        </a>
+                    `;
+                } else if (post.file_path) {
+                    const fileName = post.file_path.split('/').pop();
+                    fileContent.innerHTML = `
+                        <a href="/storage/${post.file_path}" target="_blank" download
+                           class="inline-flex items-center gap-3 px-6 py-3 bg-[#CBE8E9] text-black rounded-xl font-semibold hover:opacity-80 transition">
+                            <iconify-icon icon="mdi:file-download" width="24" height="24"></iconify-icon>
+                            Download File
+                        </a>
+                        <p class="text-sm text-gray-500 mt-2">File: ${fileName}</p>
+                    `;
+                }
+            } else {
+                fileSection.classList.add('hidden');
+            }
+
             const btn = document.getElementById('materialActionBtn');
             if (isTeacher) {
                 btn.textContent = 'Edit';
@@ -667,18 +756,14 @@
         }
     }
 
-    // Open assignment detail page
     function openAssignmentPopup(assignment, submission = null) {
         const userRole = document.getElementById('classViewPage').dataset.userRole;
         const isTeacher = userRole === 'admin' || userRole === 'coadmin';
 
-        // Store current assignment ID
         currentAssignmentId = assignment.post_id;
 
-        // Hide class view
         document.getElementById('classViewPage').classList.add('hidden');
 
-        // Show assignment detail page
         const page = document.getElementById('assignmentDetailPage');
         document.getElementById('assignmentTitle').textContent = assignment.post_title || 'Untitled Assignment';
         document.getElementById('assignmentAuthor').textContent = assignment.author_name || 'Unknown';
@@ -686,61 +771,87 @@
         document.getElementById('assignmentDueDate').textContent = assignment.due_date ? 'Due: ' + new Date(assignment.due_date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Due: No due date';
         document.getElementById('assignmentContent').textContent = assignment.content || 'No content available.';
 
-        // Update submission UI based on whether user has already submitted
+        const fileSection = document.getElementById('assignmentFileSection');
+        const fileContent = document.getElementById('assignmentFileContent');
+
+        if (assignment.file_path || assignment.file_link) {
+            fileSection.classList.remove('hidden');
+
+            if (assignment.file_link) {
+                fileContent.innerHTML = `
+                    <a href="${assignment.file_link}" target="_blank"
+                       class="inline-flex items-center gap-3 px-6 py-3 bg-[#F9CADA] text-black rounded-xl font-semibold hover:opacity-80 transition">
+                        <iconify-icon icon="mdi:link" width="24" height="24"></iconify-icon>
+                        Open Link
+                    </a>
+                `;
+            } else if (assignment.file_path) {
+                const fileName = assignment.file_path.split('/').pop();
+                fileContent.innerHTML = `
+                    <a href="/storage/${assignment.file_path}" target="_blank" download
+                       class="inline-flex items-center gap-3 px-6 py-3 bg-[#F9CADA] text-black rounded-xl font-semibold hover:opacity-80 transition">
+                        <iconify-icon icon="mdi:file-download" width="24" height="24"></iconify-icon>
+                        Download File
+                    </a>
+                    <p class="text-sm text-gray-500 mt-2">File: ${fileName}</p>
+                `;
+            }
+        } else {
+            fileSection.classList.add('hidden');
+        }
+
         const submissionStatus = document.getElementById('submissionStatus');
         const notSubmittedState = document.getElementById('notSubmittedState');
         const submittedState = document.getElementById('submittedState');
         const assetBase = '{{ asset("") }}';
 
         if (submission) {
-            // Show submitted state
             submissionStatus.textContent = 'Turned In';
             notSubmittedState.classList.add('hidden');
             submittedState.classList.remove('hidden');
 
-            // Update submitted file info
             const fileName = submission.file_path.split('/').pop();
             document.getElementById('submittedFileName').textContent = fileName;
             document.getElementById('submittedDate').textContent = 'Submitted on ' + new Date(submission.submitted_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
             document.getElementById('downloadSubmissionLink').href = assetBase + 'storage/' + submission.file_path;
         } else {
-            // Show not submitted state
             submissionStatus.textContent = 'Not Turned In';
             notSubmittedState.classList.remove('hidden');
             submittedState.classList.add('hidden');
         }
 
-        // Update button based on role
         const btn = document.getElementById('assignmentActionBtn');
+        const submissionSection = document.querySelector('#assignmentDetailPage .mt-6.space-y-6 > div:first-child');
+
         if (isTeacher) {
             btn.textContent = 'Edit';
             btn.onclick = function() {
                 openEditModal(assignment);
             };
+            if (submissionSection) {
+                submissionSection.style.display = 'none';
+            }
         } else {
             btn.textContent = 'Mark As Done';
             btn.onclick = markAsDone;
+            if (submissionSection) {
+                submissionSection.style.display = 'flex';
+            }
         }
 
         page.classList.remove('hidden');
     }
 
-    // Go back to class view from detail pages
     function goBackToClassView() {
-        // Hide all detail pages
         document.getElementById('materialDetailPage').classList.add('hidden');
         document.getElementById('announcementDetailPage').classList.add('hidden');
         document.getElementById('assignmentDetailPage').classList.add('hidden');
 
-        // Show class view
         document.getElementById('classViewPage').classList.remove('hidden');
     }
 
-    // Mark as read function for students
     function markAsRead() {
-        // Update the indicator for this post
         if (currentPostId) {
-            // Send AJAX request to persist the read status
             fetch('{{ route("posts.mark-read") }}', {
                 method: 'POST',
                 headers: {
@@ -769,7 +880,6 @@
             .catch(error => console.error('Error marking as read:', error));
         }
 
-        // Show success message
         const toast = document.createElement('div');
         toast.textContent = 'Marked as read!';
         toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in';
@@ -779,15 +889,11 @@
             toast.remove();
         }, 2000);
 
-        // Go back to class view
         goBackToClassView();
     }
 
-    // Mark as done function for students
     function markAsDone() {
-        // Update the indicator for this assignment
         if (currentAssignmentId) {
-            // Send AJAX request to persist the done status
             fetch('{{ route("posts.mark-read") }}', {
                 method: 'POST',
                 headers: {
@@ -816,7 +922,6 @@
             .catch(error => console.error('Error marking as done:', error));
         }
 
-        // Show success message
         const toast = document.createElement('div');
         toast.textContent = 'Marked as done!';
         toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in';
@@ -826,11 +931,9 @@
             toast.remove();
         }, 2000);
 
-        // Go back to class view
         goBackToClassView();
     }
 
-    // Submit assignment function
     function submitAssignment() {
         const fileInput = document.getElementById('assignmentFile');
         const file = fileInput.files[0];
@@ -845,19 +948,16 @@
             return;
         }
 
-        // Create form data
         const formData = new FormData();
         formData.append('post_id', currentAssignmentId);
         formData.append('assignment_file', file);
 
-        // Show loading toast
         const loadingToast = document.createElement('div');
         loadingToast.textContent = 'Submitting...';
         loadingToast.className = 'fixed top-5 right-5 bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit';
         loadingToast.id = 'loadingToast';
         document.body.appendChild(loadingToast);
 
-        // Submit via AJAX
         fetch('{{ route("submissions.store") }}', {
             method: 'POST',
             headers: {
@@ -867,11 +967,9 @@
         })
         .then(response => response.json())
         .then(data => {
-            // Remove loading toast
             document.getElementById('loadingToast')?.remove();
 
             if (data.success) {
-                // Show success toast
                 const toast = document.createElement('div');
                 toast.textContent = 'Assignment submitted successfully!';
                 toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit';
@@ -881,7 +979,6 @@
                     toast.remove();
                 }, 3000);
 
-                // Update UI to show submitted file
                 const submissionStatus = document.getElementById('submissionStatus');
                 const notSubmittedState = document.getElementById('notSubmittedState');
                 const submittedState = document.getElementById('submittedState');
@@ -891,19 +988,16 @@
                 notSubmittedState.classList.add('hidden');
                 submittedState.classList.remove('hidden');
 
-                // Update submitted file info
                 const submission = data.submission;
                 const fileName = submission.file_path.split('/').pop();
                 document.getElementById('submittedFileName').textContent = fileName;
                 document.getElementById('submittedDate').textContent = 'Submitted on ' + new Date(submission.submitted_at).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
                 document.getElementById('downloadSubmissionLink').href = assetBase + 'storage/' + submission.file_path;
 
-                // Update assignment card in the background
                 const assignmentCard = document.querySelector(`[data-assignment-id="${currentAssignmentId}"]`);
                 if (assignmentCard) {
                     assignmentCard.dataset.submission = JSON.stringify(submission);
 
-                    // Update visual indicator
                     const uploadIcon = assignmentCard.querySelector('iconify-icon[icon="ic:round-upload"]');
                     if (uploadIcon) {
                         uploadIcon.setAttribute('icon', 'mdi:check-circle');
@@ -912,7 +1006,6 @@
                         uploadIcon.className = 'text-green-500';
                     }
 
-                    // Add "Turned In" text to card
                     const cardContent = assignmentCard.querySelector('.flex-1');
                     let turnedInText = cardContent.querySelector('.text-green-600');
                     if (!turnedInText) {
@@ -933,14 +1026,12 @@
         });
     }
 
-    // Open member profile modal (show large avatar only)
     function openMemberProfile(element) {
         const memberData = element.dataset.member;
         if (!memberData) return;
 
         const member = JSON.parse(memberData);
 
-        // Set avatar - show large version
         const avatarContainer = document.getElementById('profileAvatarContainer');
         const assetBase = '{{ asset("") }}';
         const defaultAvatar = '{{ asset("images/default-avatar.png") }}';
@@ -964,27 +1055,22 @@
             `;
         }
 
-        // Show modal
         document.getElementById('memberProfileModal').classList.remove('hidden');
     }
 
-    // Close member profile modal
     function closeMemberProfile() {
         document.getElementById('memberProfileModal').classList.add('hidden');
     }
 
-    // Open edit modal for posts/assignments
     function openEditModal(postData) {
         const modal = document.getElementById('editPostModal');
         const form = document.getElementById('editPostForm');
 
-        // Populate form fields
         document.getElementById('editPostId').value = postData.post_id;
         document.getElementById('editPostType').value = postData.post_type;
         document.getElementById('editPostTitle').value = postData.post_title || '';
         document.getElementById('editPostContent').value = postData.content || '';
 
-        // Update labels based on post type
         const postTypeLabel = document.getElementById('editPostTypeLabel');
         const contentLabel = document.getElementById('editContentLabel');
         const dueDateContainer = document.getElementById('editDueDateContainer');
@@ -995,7 +1081,6 @@
             contentLabel.textContent = 'Instructions';
             dueDateContainer.classList.remove('hidden');
 
-            // Format due date for datetime-local input
             if (postData.due_date) {
                 const dueDate = new Date(postData.due_date);
                 const year = dueDate.getFullYear();
@@ -1006,71 +1091,111 @@
                 dueDateInput.value = `${year}-${month}-${day}T${hours}:${minutes}`;
             }
             dueDateInput.required = true;
+
+            const materialFileContainer = document.getElementById('editMaterialFileContainer');
+            materialFileContainer.classList.remove('hidden');
+
+            const currentFileDisplay = document.getElementById('currentFileDisplay');
+            const editMaterialLink = document.getElementById('editMaterialLink');
+
+            if (postData.file_path || postData.file_link) {
+                let displayHtml = '<p class="text-sm text-gray-600 mb-2">Current:</p>';
+
+                if (postData.file_link) {
+                    displayHtml += `<a href="${postData.file_link}" target="_blank" class="text-blue-600 hover:underline text-sm flex items-center gap-2">
+                        <iconify-icon icon="mdi:link" width="16"></iconify-icon>
+                        ${postData.file_link}
+                    </a>`;
+                    editMaterialLink.value = postData.file_link;
+                } else if (postData.file_path) {
+                    const fileName = postData.file_path.split('/').pop();
+                    displayHtml += `<a href="/storage/${postData.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm flex items-center gap-2">
+                        <iconify-icon icon="mdi:file" width="16"></iconify-icon>
+                        ${fileName}
+                    </a>`;
+                }
+
+                currentFileDisplay.innerHTML = displayHtml;
+            } else {
+                currentFileDisplay.innerHTML = '';
+                editMaterialLink.value = '';
+            }
         } else if (postData.post_type === 'announcement') {
             postTypeLabel.textContent = 'Announcement';
             contentLabel.textContent = 'Content';
             dueDateContainer.classList.add('hidden');
             dueDateInput.required = false;
+            document.getElementById('editMaterialFileContainer').classList.add('hidden');
         } else {
             postTypeLabel.textContent = 'Material';
             contentLabel.textContent = 'Content';
             dueDateContainer.classList.add('hidden');
             dueDateInput.required = false;
+
+            const materialFileContainer = document.getElementById('editMaterialFileContainer');
+            materialFileContainer.classList.remove('hidden');
+
+            const currentFileDisplay = document.getElementById('currentFileDisplay');
+            const editMaterialLink = document.getElementById('editMaterialLink');
+
+            if (postData.file_path || postData.file_link) {
+                let displayHtml = '<p class="text-sm text-gray-600 mb-2">Current:</p>';
+
+                if (postData.file_link) {
+                    displayHtml += `<a href="${postData.file_link}" target="_blank" class="text-blue-600 hover:underline text-sm flex items-center gap-2">
+                        <iconify-icon icon="mdi:link" width="16"></iconify-icon>
+                        ${postData.file_link}
+                    </a>`;
+                    editMaterialLink.value = postData.file_link;
+                } else if (postData.file_path) {
+                    const fileName = postData.file_path.split('/').pop();
+                    displayHtml += `<a href="/storage/${postData.file_path}" target="_blank" class="text-blue-600 hover:underline text-sm flex items-center gap-2">
+                        <iconify-icon icon="mdi:file" width="16"></iconify-icon>
+                        ${fileName}
+                    </a>`;
+                    editMaterialLink.value = '';
+                }
+
+                currentFileDisplay.innerHTML = displayHtml;
+            } else {
+                currentFileDisplay.innerHTML = '<p class="text-sm text-gray-500">No file or link attached</p>';
+                editMaterialLink.value = '';
+            }
         }
 
-        // Show modal
         modal.classList.remove('hidden');
     }
 
-    // Close edit modal
     function closeEditModal() {
         document.getElementById('editPostModal').classList.add('hidden');
         document.getElementById('editPostForm').reset();
     }
 
-    // Handle edit form submission
     document.getElementById('editPostForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
         const formData = new FormData(this);
-        const postId = formData.get('post_id');
-        const postType = formData.get('post_type');
 
-        // Prepare data object
-        const data = {
-            post_id: postId,
-            post_title: formData.get('post_title'),
-            content: formData.get('content'),
-            post_type: postType
-        };
+        formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
 
-        // Add due_date for assignments
-        if (postType === 'assignment') {
-            data.due_date = formData.get('due_date');
-        }
-
-        // Show loading toast
         const loadingToast = document.createElement('div');
         loadingToast.textContent = 'Updating...';
         loadingToast.className = 'fixed top-5 right-5 bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit';
         loadingToast.id = 'editLoadingToast';
         document.body.appendChild(loadingToast);
 
-        // Submit via AJAX
         fetch('{{ route("posts.update") }}', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
-            body: JSON.stringify(data)
+            body: formData
         })
         .then(response => response.json())
         .then(result => {
             document.getElementById('editLoadingToast')?.remove();
 
             if (result.success) {
-                // Show success toast
                 const toast = document.createElement('div');
                 toast.textContent = 'Post updated successfully!';
                 toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit';
@@ -1078,10 +1203,8 @@
 
                 setTimeout(() => toast.remove(), 3000);
 
-                // Close modal
                 closeEditModal();
 
-                // Reload page to show updated data
                 setTimeout(() => {
                     location.reload();
                 }, 1500);
@@ -1096,12 +1219,16 @@
         });
     });
 
-    // Close popup when clicking outside
     document.addEventListener('click', function(event) {
         const classCodePopup = document.getElementById('classCodePopup');
         if (classCodePopup && !event.target.closest('#classCodePopup') && !event.target.closest('button[onclick="toggleClassCodePopup()"]')) {
             classCodePopup.classList.add('hidden');
         }
     });
+
+    setTimeout(() => {
+        document.getElementById('successToast')?.remove();
+        document.getElementById('errorToast')?.remove();
+    }, 3000);
     </script>
 </x-layouts.mainlayout>

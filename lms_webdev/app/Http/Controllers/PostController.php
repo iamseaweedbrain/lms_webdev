@@ -19,9 +19,9 @@ class PostController extends Controller
             abort(404, 'Class not found');
         }
         if ($routeName === 'posts.create') {
-            return view('new_post', ['code' => $code]);
+            return view('new_post', ['code' => $code, 'class' => $class]);
         } elseif ($routeName === 'assignments.create') {
-            return view('new_assignment', ['code' => $code]);
+            return view('new_assignment', ['code' => $code, 'class' => $class]);
         }
 
         abort(404);
@@ -51,29 +51,30 @@ class PostController extends Controller
         }
 
         $validated = $request->validate([
-            'post_type'   => 'required|in:material,assignment,announcement',
-            'title'       => 'required|string|max:255',
-            'description' => 'required|string',
-            'color'       => 'nullable|in:pink,blue,purple,yellow',
-            'due_date'    => 'nullable|date',
+            'post_type'      => 'required|in:material,assignment,announcement',
+            'title'          => 'required|string|max:255',
+            'description'    => 'required|string',
+            'color'          => 'nullable|in:pink,blue,purple,yellow',
+            'due_date'       => 'nullable|date',
+            'material_file'  => 'nullable|file|max:10240', 
+            'material_link'  => 'nullable|url',
         ]);
 
         $title = $validated['title'];
         $content = $validated['description'];
 
-        // Optional: verify that class with this code exists
         $classExists = DB::table('classes')->where('code', $code)->exists();
         if (! $classExists) {
             return back()->withErrors(['code' => 'Class not found.'])->withInput();
         }
 
-        // Build the post data
         $postData = [
             'user_id'    => Auth::id(),
-            'code'       => $code, // from the URL
+            'code'       => $code, 
             'post_title' => $title,
             'post_type'  => $validated['post_type'],
             'content'    => $content,
+            'avatar'     => '', 
         ];
 
         if (!empty($validated['color'])) {
@@ -84,10 +85,21 @@ class PostController extends Controller
             $postData['due_date'] = $validated['due_date'];
         }
 
+        if ($validated['post_type'] === 'material' && $request->hasFile('material_file')) {
+            $file = $request->file('material_file');
+            $fileName = time() . '_' . Auth::id() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('materials', $fileName, 'public');
+            $postData['file_path'] = $filePath;
+        }
+
+        if ($validated['post_type'] === 'material' && !empty($validated['material_link'])) {
+            $postData['file_link'] = $validated['material_link'];
+        }
+
         try {
             $post = PostModel::create($postData);
 
-            return redirect()->route('posts.index')
+            return redirect()->route('classes.show', ['code' => $code])
                             ->with('success', 'Post created successfully!');
         } catch (\Throwable $e) {
             Log::error('Error creating post', ['exception' => $e->getMessage(), 'data' => $postData]);
@@ -100,6 +112,8 @@ class PostController extends Controller
             'due_date' => ['required', 'date', 'after_or_equal:' . now()->format('Y-m-d H:i')],
             'title' => 'required|max:255',
             'instructions' => 'nullable|string',
+            'assignment_file' => 'nullable|file|max:10240',
+            'assignment_link' => 'nullable|url',
         ]);
 
         $assignmentData = [
@@ -109,11 +123,23 @@ class PostController extends Controller
             'post_type'  => 'assignment',
             'content'    => $validatedData['instructions'] ?? null,
             'due_date'   => $validatedData['due_date'],
+            'avatar'     => '', 
         ];
-                
+
+        if ($request->hasFile('assignment_file')) {
+            $file = $request->file('assignment_file');
+            $fileName = time() . '_' . Auth::id() . '_' . $file->getClientOriginalName();
+            $filePath = $file->storeAs('assignments', $fileName, 'public');
+            $assignmentData['file_path'] = $filePath;
+        }
+
+        if (!empty($validatedData['assignment_link'])) {
+            $assignmentData['file_link'] = $validatedData['assignment_link'];
+        }
+
         PostModel::create($assignmentData);
 
-        return redirect()->route('assignments.index')
+        return redirect()->route('classes.show', ['code' => $code])
                          ->with('success', 'Assignment created successfully!');
     }
 
@@ -126,9 +152,10 @@ class PostController extends Controller
                 'content' => 'required|string',
                 'post_type' => 'required|in:material,assignment,announcement',
                 'due_date' => 'nullable|date',
+                'material_file' => 'nullable|file|max:10240',
+                'material_link' => 'nullable|url',
             ]);
 
-            // Find the post
             $post = PostModel::where('post_id', $validated['post_id'])->first();
 
             if (!$post) {
@@ -138,7 +165,6 @@ class PostController extends Controller
                 ], 404);
             }
 
-            // Check if user is authorized to edit (must be the creator)
             if ($post->user_id !== Auth::id()) {
                 return response()->json([
                     'success' => false,
@@ -146,13 +172,24 @@ class PostController extends Controller
                 ], 403);
             }
 
-            // Update the post
             $post->post_title = $validated['post_title'];
             $post->content = $validated['content'];
 
-            // Update due_date for assignments
             if ($validated['post_type'] === 'assignment' && isset($validated['due_date'])) {
                 $post->due_date = $validated['due_date'];
+            }
+
+            if (in_array($validated['post_type'], ['material', 'assignment']) && $request->hasFile('material_file')) {
+                $file = $request->file('material_file');
+                $fileName = time() . '_' . Auth::id() . '_' . $file->getClientOriginalName();
+                $folder = $validated['post_type'] === 'material' ? 'materials' : 'assignments';
+                $filePath = $file->storeAs($folder, $fileName, 'public');
+                $post->file_path = $filePath;
+                $post->file_link = null;
+            }
+            elseif (in_array($validated['post_type'], ['material', 'assignment']) && !empty($validated['material_link'])) {
+                $post->file_link = $validated['material_link'];
+                $post->file_path = null; 
             }
 
             $post->save();
