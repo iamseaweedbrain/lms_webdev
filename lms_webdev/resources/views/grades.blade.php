@@ -1,5 +1,5 @@
 <x-layouts.mainlayout title="Grades Overview">
-    <div class="flex flex-col gap-12 pr-28 pt-9 font-poppins relative">
+    <div class="flex flex-col gap-10 px-4 mt-8 mr-10 sm:px-5 lg:px-8 xl:px-10 2xl:px-20 pt-9 font-poppins relative w-full max-w-20xl mx-auto">
         @php
             $activeColor = 'yellow';
             if(isset($selectedClass)) {
@@ -7,7 +7,7 @@
             }
         @endphp
 
-        <div class="flex justify-between items-center">
+        <div class="flex flex-wrap items-center gap-6 justify-between">
             <div>
                 <h1 class="text-4xl font-bold text-main font-outfit">Grades Overview</h1>
             </div>
@@ -22,8 +22,8 @@
         </div>
 
         @if(isset($allClasses) && $allClasses->isNotEmpty())
-        <div class="absolute right-28 top-40 z-50" x-data="{ open: false }">
-            <div class="relative">
+        <div class="self-end" x-data="{ open: false }">
+            <div class="relative inline-block">
                 <button 
                     @click="open = !open"
                     class="relative flex items-center justify-between gap-2 w-56 bg-white border-2 text-gray-800 text-lg font-semibold px-8 py-3 rounded-2xl hover:bg-gray-50 transition z-10 border-pastel-{{ $activeColor }} shadow-[3px_3px_0_0_theme(colors.pastel-{{ $activeColor }}.DEFAULT)]"
@@ -55,7 +55,7 @@
         </div>
         @endif
 
-        <section class="pl-4 pr-0 py-8 -space-y-2 flex flex-col relative overflow-hidden z-10">
+    <section class="px-3 sm:px-5 md:px-7 lg:px-9 xl:px-10 2xl:px-12 py-8 -space-y-2 flex flex-col relative overflow-hidden z-10 bg-transparent">
             <div class="flex justify-between items-center flex-wrap gap-3">
               <div class="flex flex-wrap -space-x-2">
               @foreach($recentClasses as $class)

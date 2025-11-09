@@ -19,7 +19,7 @@
     @endif
 
     <!-- CLASSES PAGE -->
-    <div class="p-6 mr-10" id="classesPage">
+    <div class="pt-6 pb-10 pl-6 pr-5 md:pl-8 md:pr-11 lg:pl-10 lg:pr-15 xl:pl-12 xl:pr-19 mt-8" id="classesPage">
         <div class="flex justify-between items-center mb-10">
             <h1 class="text-3xl font-bold font-poppins">Your Classes</h1>
 

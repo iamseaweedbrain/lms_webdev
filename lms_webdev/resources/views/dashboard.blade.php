@@ -1,5 +1,5 @@
 <x-layouts.mainlayout>
-    <div class="p-6 mr-10">
+    <div class="pt-6 pb-10 pl-6 pr-5 md:pl-8 md:pr-11 lg:pl-10 lg:pr-15 xl:pl-12 xl:pr-19 mt-8">
         @php
             $today = now();
             $formattedDay = $today->format('l'); 
@@ -15,18 +15,18 @@
             </div>
         </div>
 
-        <div class="flex justify-between items-start mb-5">
-            <div class="relative overflow-visible w-fit">
-                <p class="font-outfit font-regular text-[48px] text-main px-10">It’s a brand new day!</p>
-                <p class="font-outfit font-regular text-[20px] text-main px-10 mb-6">{{ $formattedDay }}, {{ $formattedDate }}</p>
+        <div class="flex flex-col xl:flex-row justify-between items-start gap-6 xl:gap-8 mb-5">
+            <div class="relative overflow-visible w-full xl:flex-1">
+                <p class="font-outfit font-regular text-[36px] md:text-[48px] text-main px-6 md:px-10 xl:px-12">It’s a brand new day!</p>
+                <p class="font-outfit font-regular text-[18px] md:text-[20px] text-main px-6 md:px-10 xl:px-12 mb-6">{{ $formattedDay }}, {{ $formattedDate }}</p>
 
-                <div class="relative bg-white w-[947px] h-[342px] px-[78px] py-[51px] border-5 border-pastel-yellow shadow-[12px_12px_0_0_#FBE7A1] rounded-[45px] z-10">
-                    <div class="grid grid-rows-2 gap-10">
+                <div class="relative bg-white w-full xl:max-w-none md:min-h-80 px-6 md:px-10 lg:px-[78px] py-8 md:py-10 lg:py-[51px] border-5 border-pastel-yellow shadow-[12px_12px_0_0_#FBE7A1] rounded-[35px] md:rounded-[45px] z-10">
+                    <div class="grid gap-8 md:grid-rows-2 md:gap-10">
                         <div>
-                            <p class="font-outfit font-bold text-[64px] text-main leading-none">Hi, {{ $userFirstName }}!</p>
-                            <p class="font-outfit font-light text-[24px] text-main mt-2">What are we gonna do today?</p>
+                            <p class="font-outfit font-bold text-[42px] md:text-[64px] text-main leading-tight md:leading-none">Hi, {{ $userFirstName }}!</p>
+                            <p class="font-outfit font-light text-[20px] md:text-[24px] text-main mt-2">What are we gonna do today?</p>
                         </div>
-                        <div class="flex items-center space-x-6">
+                        <div class="flex flex-col md:flex-row md:items-center md:space-x-6 gap-4 md:gap-0">
                             <div class="grid gap-2 font-outfit font-light">
                                 <a href="#" class="text-main hover:underline hover:text-pastel-yellow flex items-center gap-1">
                                     <iconify-icon icon="ic:twotone-arrow-right" width="24" height="24" class="text-pastel-yellow"></iconify-icon>
@@ -37,7 +37,7 @@
                                     View Grades
                                 </a>
                             </div>
-                            <div class="h-10 border-l border-pastel-yellow"></div>
+                            <div class="hidden md:block h-10 border-l border-pastel-yellow"></div>
                             <div class="grid gap-2">
                                 <a href="{{ route('add_class') }}" class="text-main hover:underline hover:text-pastel-yellow flex items-center gap-1">
                                     <iconify-icon icon="ic:twotone-arrow-right" width="24" height="24" class="text-pastel-yellow"></iconify-icon>
@@ -53,12 +53,12 @@
 
                     <img src="{{ asset('images/cat-mascot.png') }}" 
                         alt="cat-mascot" 
-                        class="absolute right-[50px] -top-[130px] w-[293px] h-[342px] z-20">
+                        class="hidden lg:block absolute right-6 xl:right--50 -top-[50px] w-44 xl:w-56 h-auto z-20">
                 </div>
             </div>
 
-            <div class="w-auto justify-center pt-10 mr-10"> 
-                <div class="flex items-center gap-5 pl-5 mb-6">
+            <div class="w-full xl:w-[420px] justify-center xl:pt-10"> 
+                <div class="flex items-center gap-5 pl-3 md:pl-5 mb-6">
                     <iconify-icon icon="mingcute:horn-2-fill" width="24" height="24"></iconify-icon>
                     <p class="font-bold text-[26px] font-outfit">Recent Announcements</p>
                 </div>
@@ -74,7 +74,7 @@
                         @endphp
                         
                         <a href="{{ data_get($post, 'post_link', '#') }}" 
-                            class="flex items-center gap-5 bg-white border-3 {{ $borderColor }} p-6 w-[483px] h-[116px] rounded-[25px] {{ $shadowColor }} hover:scale-[1.03] transition">
+                            class="flex items-center gap-5 bg-white border-3 {{ $borderColor }} p-6 w-full max-w-[480px] min-h-[116px] rounded-[25px] {{ $shadowColor }} hover:scale-[1.03] transition">
                             
                             <img src="{{ data_get($post, 'avatar', 'avatars/active-cat.jpg') }}" 
                                 alt="avatar" 
