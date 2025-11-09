@@ -21,7 +21,7 @@ class SubmissionController extends Controller
             ->where('user_id', $userId)
             ->get();
         $allClasses = $joinedClassMembers
-            ->filter(fn($cm) => $cm->class && $cm->class->creator_id !== $userId)
+            ->filter(fn($cm) => $cm->class)
             ->map(function($cm, $index) {
                 $colors = ['blue', 'pink', 'yellow', 'purple'];
                 return [

@@ -613,10 +613,8 @@ function handleAddButtonClick() {
   const currentMode = localStorage.getItem('viewMode') || 'student';
 
   if (currentMode === 'teacher') {
-    // Redirect to add-class page for teachers
     window.location.href = "{{ route('add_class') }}";
   } else {
-    // Show join class popup for students
     toggleJoinPopup();
   }
 }
@@ -639,19 +637,16 @@ function joinClassFromCode() {
     return;
   }
 
-  // Create a form and submit it
   const form = document.createElement('form');
   form.method = 'POST';
   form.action = "{{ route('classes.join') }}";
 
-  // Add CSRF token
   const csrfInput = document.createElement('input');
   csrfInput.type = 'hidden';
   csrfInput.name = '_token';
   csrfInput.value = "{{ csrf_token() }}";
   form.appendChild(csrfInput);
 
-  // Add class code
   const codeInput2 = document.createElement('input');
   codeInput2.type = 'hidden';
   codeInput2.name = 'code';
@@ -659,7 +654,6 @@ function joinClassFromCode() {
   form.appendChild(codeInput2);
 
   console.log('Submitting form to join class');
-  // Append form to body and submit
   document.body.appendChild(form);
   form.submit();
 }
@@ -691,41 +685,47 @@ function showMembers() {
     showTab('members');
 }
 
-// Listen for view mode changes from sidebar toggle
 window.addEventListener('viewModeChanged', function(event) {
     const newMode = event.detail.mode;
     filterClassesByRole(newMode);
 });
 
-// Filter classes based on user role
 function filterClassesByRole(mode) {
-    // Filter "All Classes" section
     const allClassItems = document.querySelectorAll('.class-item');
     let visibleClassCount = 0;
 
+    console.log('Filter mode:', mode);
+    console.log('Total class items:', allClassItems.length);
+
     allClassItems.forEach(item => {
         const role = item.dataset.role;
+        const classname = item.dataset.classname;
+
+        console.log('Class:', classname, 'Role:', role);
 
         if (mode === 'teacher') {
-            // Show only admin/coadmin classes
             if (role === 'admin' || role === 'coadmin') {
                 item.style.display = 'flex';
                 visibleClassCount++;
+                console.log('  -> SHOWING (teacher mode, role is admin/coadmin)');
             } else {
                 item.style.display = 'none';
+                console.log('  -> HIDING (teacher mode, role is', role + ')');
             }
         } else {
-            // Show only member classes
             if (role === 'member') {
                 item.style.display = 'flex';
                 visibleClassCount++;
+                console.log('  -> SHOWING (student mode, role is member)');
             } else {
                 item.style.display = 'none';
+                console.log('  -> HIDING (student mode, role is', role + ')');
             }
         }
     });
 
-    // Show/hide empty message for all classes
+    console.log('Visible classes:', visibleClassCount);
+
     const allClassesContainer = document.getElementById('all-classes-container');
     const existingEmptyMsg = allClassesContainer.querySelector('.empty-message');
 
@@ -742,7 +742,6 @@ function filterClassesByRole(mode) {
         existingEmptyMsg.remove();
     }
 
-    // Filter "Pinned Classes" section
     const pinnedItems = document.querySelectorAll('.pinned-class-item');
     const emptyMessage = document.getElementById('pinned-empty-message');
     let visiblePinnedCount = 0;
@@ -751,7 +750,6 @@ function filterClassesByRole(mode) {
         const role = item.dataset.role;
 
         if (mode === 'teacher') {
-            // Show only admin/coadmin classes
             if (role === 'admin' || role === 'coadmin') {
                 item.style.display = 'block';
                 visiblePinnedCount++;
@@ -759,7 +757,6 @@ function filterClassesByRole(mode) {
                 item.style.display = 'none';
             }
         } else {
-            // Show only member classes
             if (role === 'member') {
                 item.style.display = 'block';
                 visiblePinnedCount++;
@@ -769,7 +766,6 @@ function filterClassesByRole(mode) {
         }
     });
 
-    // Update empty message for pinned classes
     if (emptyMessage) {
         if (visiblePinnedCount === 0 && pinnedItems.length > 0) {
             const newMessage = mode === 'teacher'
@@ -783,12 +779,10 @@ function filterClassesByRole(mode) {
     }
 }
 
-// Search classes by name or creator
 function searchClasses() {
     const searchTerm = document.getElementById('searchClassInput').value.toLowerCase().trim();
     const currentMode = localStorage.getItem('viewMode') || 'student';
 
-    // Search in "All Classes" section
     const allClassItems = document.querySelectorAll('.class-item');
     let visibleClassCount = 0;
 
@@ -797,14 +791,11 @@ function searchClasses() {
         const className = item.dataset.classname || '';
         const creator = item.dataset.creator || '';
 
-        // Check if item matches current mode
         const matchesMode = (currentMode === 'teacher' && (role === 'admin' || role === 'coadmin')) ||
                            (currentMode === 'student' && role === 'member');
 
-        // Check if item matches search term
         const matchesSearch = className.includes(searchTerm) || creator.includes(searchTerm);
 
-        // Show item only if it matches both mode and search
         if (matchesMode && matchesSearch) {
             item.style.display = 'flex';
             visibleClassCount++;
@@ -813,7 +804,6 @@ function searchClasses() {
         }
     });
 
-    // Update empty message for all classes
     const allClassesContainer = document.getElementById('all-classes-container');
     const existingEmptyMsg = allClassesContainer.querySelector('.empty-message');
 
@@ -832,7 +822,6 @@ function searchClasses() {
         existingEmptyMsg.remove();
     }
 
-    // Search in "Pinned Classes" section
     const pinnedItems = document.querySelectorAll('.pinned-class-item');
     const emptyMessage = document.getElementById('pinned-empty-message');
     let visiblePinnedCount = 0;
@@ -854,7 +843,6 @@ function searchClasses() {
         }
     });
 
-    // Update empty message for pinned classes
     if (emptyMessage) {
         if (visiblePinnedCount === 0 && pinnedItems.length > 0) {
             const newMessage = searchTerm
@@ -870,13 +858,11 @@ function searchClasses() {
     }
 }
 
-// Toggle sort dropdown
 function toggleSortDropdown() {
     const dropdown = document.getElementById('sortDropdown');
     dropdown.classList.toggle('hidden');
 }
 
-// Sort classes by selected criteria
 function sortClasses(sortBy) {
     console.log('Sorting by:', sortBy);
 
@@ -894,7 +880,6 @@ function sortClasses(sortBy) {
         });
     }
 
-    // Update sort label
     const sortLabel = document.getElementById('sortLabel');
     const sortLabels = {
         'name': 'Sort by Name',
@@ -904,10 +889,8 @@ function sortClasses(sortBy) {
     };
     sortLabel.textContent = sortLabels[sortBy] || 'Sort by Name';
 
-    // Close dropdown
     document.getElementById('sortDropdown').classList.add('hidden');
 
-    // Sort the items
     classItems.sort((a, b) => {
         switch(sortBy) {
             case 'name':
@@ -937,12 +920,10 @@ function sortClasses(sortBy) {
 
     console.log('Sorted, re-appending items...');
 
-    // Re-append items in sorted order
     classItems.forEach(item => {
         container.appendChild(item);
     });
 
-    // Re-append empty message if it exists
     if (emptyMessage) {
         container.appendChild(emptyMessage);
     }
@@ -950,14 +931,12 @@ function sortClasses(sortBy) {
     console.log('Sort complete!');
 }
 
-// Toggle class menu dropdown
 function toggleClassMenu(event, code) {
     event.preventDefault(); // Prevent link navigation
     event.stopPropagation(); // Prevent opening the class view
 
     const menu = document.getElementById(`menu-${code}`);
 
-    // Close all other menus
     document.querySelectorAll('[id^="menu-"]').forEach(m => {
         if (m.id !== `menu-${code}`) {
             m.classList.add('hidden');
@@ -967,18 +946,15 @@ function toggleClassMenu(event, code) {
         m.classList.add('hidden');
     });
 
-    // Toggle current menu
     menu.classList.toggle('hidden');
 }
 
-// Toggle pinned class menu dropdown
 function togglePinnedClassMenu(event, code) {
     event.preventDefault(); // Prevent link navigation
     event.stopPropagation(); // Prevent opening the class view
 
     const menu = document.getElementById(`pinned-menu-${code}`);
 
-    // Close all other menus
     document.querySelectorAll('[id^="pinned-menu-"]').forEach(m => {
         if (m.id !== `pinned-menu-${code}`) {
             m.classList.add('hidden');
@@ -988,11 +964,9 @@ function togglePinnedClassMenu(event, code) {
         m.classList.add('hidden');
     });
 
-    // Toggle current menu
     menu.classList.toggle('hidden');
 }
 
-// Close menus when clicking outside
 document.addEventListener('click', function(event) {
     if (!event.target.closest('[id^="menu-"]') &&
         !event.target.closest('[id^="pinned-menu-"]') &&
@@ -1005,36 +979,30 @@ document.addEventListener('click', function(event) {
         });
     }
 
-    // Close sort dropdown when clicking outside
     const sortDropdown = document.getElementById('sortDropdown');
     if (sortDropdown && !event.target.closest('#sortDropdown') && !event.target.closest('[onclick*="toggleSortDropdown"]')) {
         sortDropdown.classList.add('hidden');
     }
 });
 
-// Toggle pin status for a class
 function togglePin(event, code) {
     event.preventDefault(); // Prevent link navigation
     event.stopPropagation(); // Prevent opening the class view
 
-    // Create form and submit
     const form = document.createElement('form');
     form.method = 'POST';
     form.action = `/classes/${code}/pin`;
 
-    // Add CSRF token
     const csrfInput = document.createElement('input');
     csrfInput.type = 'hidden';
     csrfInput.name = '_token';
     csrfInput.value = "{{ csrf_token() }}";
     form.appendChild(csrfInput);
 
-    // Append form to body and submit
     document.body.appendChild(form);
     form.submit();
 }
 
-// Leave a class (for students)
 function leaveClass(event, code, className) {
     event.preventDefault();
     event.stopPropagation();
@@ -1044,20 +1012,17 @@ function leaveClass(event, code, className) {
         form.method = 'POST';
         form.action = `/classes/${code}/leave`;
 
-        // Add CSRF token
         const csrfInput = document.createElement('input');
         csrfInput.type = 'hidden';
         csrfInput.name = '_token';
         csrfInput.value = "{{ csrf_token() }}";
         form.appendChild(csrfInput);
 
-        // Append form to body and submit
         document.body.appendChild(form);
         form.submit();
     }
 }
 
-// Delete a class (for teachers/admins)
 function deleteClass(event, code, className) {
     event.preventDefault();
     event.stopPropagation();
@@ -1067,36 +1032,29 @@ function deleteClass(event, code, className) {
         form.method = 'POST';
         form.action = `/classes/${code}/delete`;
 
-        // Add CSRF token
         const csrfInput = document.createElement('input');
         csrfInput.type = 'hidden';
         csrfInput.name = '_token';
         csrfInput.value = "{{ csrf_token() }}";
         form.appendChild(csrfInput);
 
-        // Append form to body and submit
         document.body.appendChild(form);
         form.submit();
     }
 }
 
-// Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
-    // Get all toast elements
     const successToast = document.getElementById('successToast');
     const errorToast = document.getElementById('errorToast');
     const infoToast = document.getElementById('infoToast');
 
-    // If user just joined a class or already a member, switch to student mode to show it
     if ((successToast && successToast.textContent.includes('joined')) || infoToast) {
         localStorage.setItem('viewMode', 'student');
     }
 
-    // Apply initial filter based on saved mode
     const currentMode = localStorage.getItem('viewMode') || 'student';
     filterClassesByRole(currentMode);
 
-    // Auto-hide flash messages after 5 seconds
     [successToast, errorToast, infoToast].forEach(toast => {
         if (toast) {
             setTimeout(() => {

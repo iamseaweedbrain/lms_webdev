@@ -11,8 +11,8 @@ class PostModel extends Model
 
     protected $table = 'posts';
     protected $primaryKey = 'post_id';
-    public $timestamps = false; // since we’re manually using created_at
-    protected $fillable = ['user_id','code','post_title','post_type','content','color','due_date'];
+    public $timestamps = false; 
+    protected $fillable = ['user_id','code','post_title','post_type','content','color','due_date','avatar','file_path','file_link'];
 
 
     public function class()

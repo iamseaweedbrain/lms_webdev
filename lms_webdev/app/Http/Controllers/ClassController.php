@@ -24,12 +24,10 @@ class ClassController extends Controller
             ->with('creator')
             ->get()
             ->map(function ($class) use ($userId) {
-                // Get the user's role in this class
                 $membership = ClassMember::where('code', $class->code)
                     ->where('user_id', $userId)
                     ->first();
 
-                // If no membership, check if user is the creator
                 if ($membership) {
                     $class->user_role = $membership->role;
                 } else if ($class->creator_id === $userId) {
@@ -38,7 +36,6 @@ class ClassController extends Controller
                     $class->user_role = 'member';
                 }
 
-                // Get pending assignments count (assignments without submissions from this user)
                 $class->pending_count = DB::table('posts')
                     ->where('code', $class->code)
                     ->where('post_type', 'assignment')
@@ -53,7 +50,6 @@ class ClassController extends Controller
                 return $class;
             });
 
-        // Get classes where user is a member
         $memberClasses = DB::table('classmembers')
             ->join('classes', 'classmembers.code', '=', 'classes.code')
             ->leftJoin('useraccount', 'classes.creator_id', '=', 'useraccount.user_id')
@@ -71,15 +67,13 @@ class ClassController extends Controller
             )
             ->get()
             ->map(function ($class) use ($userId) {
-                // Override role to admin if user is the creator AND current role is not 'member'
-                // This allows creators to still see their class in student mode if they joined as a member
+
                 if ($class->creator_id === $userId && $class->user_role !== 'member') {
                     $class->user_role = 'admin';
                 }
                 return $class;
             });
 
-        // Get classes where user is the creator (in case they don't have a classmember entry)
         $createdClasses = DB::table('classes')
             ->leftJoin('useraccount', 'classes.creator_id', '=', 'useraccount.user_id')
             ->where('classes.creator_id', $userId)
@@ -88,6 +82,7 @@ class ClassController extends Controller
                 'classes.code',
                 'classes.classname',
                 'classes.color',
+                'classes.creator_id',
                 'classes.created_at',
                 DB::raw("'admin' as user_role"),
                 DB::raw('COALESCE(CONCAT(useraccount.firstname, " ", useraccount.lastname), "You") as creator_name'),
@@ -96,10 +91,8 @@ class ClassController extends Controller
             )
             ->get();
 
-        // Merge both collections
         $yourClasses = $memberClasses->merge($createdClasses);
 
-        // 4. Pass data to the view
         return view('classes', compact('pinnedClassesDetails', 'yourClasses'));
     }
     public function store(Request $request)
@@ -156,7 +149,6 @@ class ClassController extends Controller
                             ->exists();
 
         if ($exists) {
-            // Already a member, just redirect to classes page in student mode
             return redirect()->route('classes')->with('info', 'You are already a member of this class. Make sure you are in Student mode to see it.');
         }
 
@@ -173,17 +165,14 @@ class ClassController extends Controller
     {
         $userId = Auth::id();
 
-        // Get the class details
         $class = ClassModel::where('code', $code)
             ->with('creator')
             ->firstOrFail();
 
-        // Check if user is a member of this class
         $membership = ClassMember::where('code', $code)
             ->where('user_id', $userId)
             ->first();
 
-        // If no membership but user is the creator, create a virtual membership
         if (!$membership && $class->creator_id === $userId) {
             $membership = (object) [
                 'code' => $code,
@@ -192,12 +181,10 @@ class ClassController extends Controller
             ];
         }
 
-        // If still no membership, user is not authorized
         if (!$membership) {
             abort(403, 'You are not a member of this class.');
         }
 
-        // Get all posts for this class (announcements and materials)
         $posts = DB::table('posts')
             ->leftJoin('useraccount', 'posts.user_id', '=', 'useraccount.user_id')
             ->where('posts.code', $code)
@@ -209,7 +196,6 @@ class ClassController extends Controller
             ->orderBy('posts.created_at', 'desc')
             ->get();
 
-        // Get all assignments for this class
         $assignments = DB::table('posts')
             ->leftJoin('useraccount', 'posts.user_id', '=', 'useraccount.user_id')
             ->where('posts.code', $code)
@@ -221,7 +207,6 @@ class ClassController extends Controller
             ->orderBy('posts.due_date', 'asc')
             ->get();
 
-        // Get submission data for assignments (for current user)
         $submissions = DB::table('submissions')
             ->whereIn('post_id', $assignments->pluck('post_id')->toArray())
             ->where('user_id', $userId)
@@ -229,7 +214,6 @@ class ClassController extends Controller
             ->get()
             ->keyBy('post_id');
 
-        // Get class members with full profile information
         $members = DB::table('classmembers')
             ->join('useraccount', 'classmembers.user_id', '=', 'useraccount.user_id')
             ->where('classmembers.code', $code)
@@ -245,7 +229,6 @@ class ClassController extends Controller
             )
             ->get();
 
-        // Get read status for all posts and assignments
         $readPostIds = PostReadModel::where('user_id', $userId)
             ->whereIn('post_id', array_merge($posts->pluck('post_id')->toArray(), $assignments->pluck('post_id')->toArray()))
             ->pluck('post_id')
@@ -258,7 +241,6 @@ class ClassController extends Controller
     {
         $userId = Auth::id();
 
-        // Check if user is a member of this class
         $membership = ClassMember::where('code', $code)
             ->where('user_id', $userId)
             ->first();
@@ -267,15 +249,12 @@ class ClassController extends Controller
             return redirect()->route('classes')->with('error', 'You are not a member of this class.');
         }
 
-        // Prevent admin/creator from leaving their own class
         if ($membership->role === 'admin') {
             return redirect()->route('classes')->with('error', 'Class creators cannot leave their own class. Please delete the class instead.');
         }
 
-        // Delete the membership
         $membership->delete();
 
-        // Also unpin if pinned
         PinnedClassesModel::where('user_id', $userId)
             ->where('code', $code)
             ->delete();
@@ -287,7 +266,6 @@ class ClassController extends Controller
     {
         $userId = Auth::id();
 
-        // Check if user is admin of this class
         $membership = ClassMember::where('code', $code)
             ->where('user_id', $userId)
             ->first();
@@ -296,19 +274,16 @@ class ClassController extends Controller
             return redirect()->route('classes')->with('error', 'You do not have permission to delete this class.');
         }
 
-        // Only the creator (admin) can delete the class
         if ($membership->role !== 'admin') {
             return redirect()->route('classes')->with('error', 'Only the class creator can delete the class.');
         }
 
-        // Get the class
         $class = ClassModel::where('code', $code)->first();
 
         if (!$class) {
             return redirect()->route('classes')->with('error', 'Class not found.');
         }
 
-        // Delete the class (cascade will handle related records)
         $class->delete();
 
         return redirect()->route('classes')->with('success', 'Class deleted successfully.');
