@@ -26,6 +26,8 @@ class PostSeeder extends Seeder
                 'post_title' => 'Announcement',
                 'post_type' => 'announcement',
                 'content' => fake()->sentence(8) . '. Remember to check the course outline!',
+                'file_path'=> 'avatars/' . $teacherAvatar,
+                'file_link'=> 'https://youtu.be/dQw4w9WgXcQ?si=HoJfL1tq6F5-MiTV',
                 'due_date' => null, 
                 'created_at' => now()->subHours(rand(1, 24)),
             ];
@@ -36,6 +38,8 @@ class PostSeeder extends Seeder
                 'post_title' => 'Material',
                 'post_type' => 'material',
                 'content' => 'Lecture slides for the first module: ' . fake()->paragraph(2),
+                'file_path'=> 'avatars/' . $teacherAvatar,
+                'file_link'=> 'https://youtu.be/dQw4w9WgXcQ?si=HoJfL1tq6F5-MiTV',
                 'due_date' => null, 
                 'created_at' => now()->subDays(rand(1, 7)),
             ];
@@ -46,6 +50,8 @@ class PostSeeder extends Seeder
                 'post_title' => 'Assignment',
                 'post_type' => 'assignment',
                 'content' => 'Term Project: Create a full-stack web application based on the principles discussed in class.',
+                'file_path'=> 'avatars/' . $teacherAvatar,
+                'file_link'=> 'https://youtu.be/dQw4w9WgXcQ?si=HoJfL1tq6F5-MiTV',
                 'due_date' => now()->addDays(rand(7, 30)),
                 'created_at' => now()->subDays(rand(7, 14)),
             ];

@@ -18,6 +18,8 @@ return new class extends Migration
             $table->string('post_title');
             $table->enum('post_type', ['material', 'assignment', 'announcement']);
             $table->text('content');
+            $table->string('file_path');
+            $table->string('file_link');
             $table->enum('color', ['pink', 'blue', 'purple', 'yellow'])->default('pink');
             $table->dateTime('due_date')->nullable();
             $table->timestamp('created_at')->useCurrent();

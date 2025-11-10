@@ -11,13 +11,14 @@
             <div>
                 <h1 class="text-4xl font-bold text-main font-outfit">Grades Overview</h1>
             </div>
-            <div class="relative">
-                <input type="text"
-                       placeholder="Search assignment..."
-                       class="pl-10 pr-4 py-3 rounded-full shadow-md focus:outline-none focus:ring-2 focus:ring-pastel-{{ $activeColor }} w-[260px] text-sm text-gray-700 placeholder-gray-400">
-                <iconify-icon icon="mingcute:search-line"
-                              class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
-                              width="20" height="20"></iconify-icon>
+            <div class="relative flex items-center">
+                <input
+                    type="text"
+                    id="searchAssignmentInput"
+                    placeholder="Search assignment..."
+                    class="pl-8 py-2 focus:outline-none pr-10 shadow-md rounded-[15px] w-[250px] h-[50px]"
+                    oninput="searchAssignments()">
+                <iconify-icon icon="mingcute:search-line" width="20" height="20" class="absolute right-4 text-gray-500"></iconify-icon>
             </div>
         </div>
 
@@ -45,10 +46,10 @@
                     class="absolute left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50"
                 >
                     @foreach($allClasses as $class)
-                                                <a href="{{ route('grades', ['class' => $class['id']]) }}"
-                                                    class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F6E3C5] hover:text-black font-medium transition truncate">
-                                                        <span class="block truncate">{{ $class['class_name'] ?? $class['classname'] }}</span>
-                                                </a>
+                        <a href="{{ route('grades', ['class' => $class['id']]) }}"
+                            class="block px-4 py-2 text-sm text-gray-700 hover:bg-[#F6E3C5] hover:text-black font-medium transition truncate">
+                                <span class="block truncate">{{ $class['class_name'] ?? $class['classname'] }}</span>
+                        </a>
                     @endforeach
                 </div>
             </div>
@@ -94,10 +95,10 @@
                     <tbody>
                         @forelse($assignments as $assignment)
                             <tr class="border-b border-gray-200 hover:bg-pastel-{{ $activeColor }}/30 transition">
-                                <td class="px-6 py-4 text-gray-700 align-top">
-                                    <a href="{{ route('student_grade', ['id' => $assignment['submission_id']]) }}" class="block w-full h-full">{{ $assignment['name'] }}</a>
+                                <td class="px-6 py-4 text-gray-700 align-top truncate">
+                                    <a href="{{ route('student_grade', ['id' => $assignment['submission_id']]) }}" class="block w-[100px] h-full">{{ $assignment['name'] }}</a>
                                 </td>
-                                <td class="px-6 py-4 text-green-600 font-medium text-center align-top">
+                                <td class="px-6 py-4 text-green-600 font-medium ml-1.5 align-top">
                                     <a href="{{ route('student_grade', ['id' => $assignment['submission_id']]) }}" class="block w-full h-full">{{ $assignment['score'] ?? '-' }}</a>
                                 </td>
                                 <td class="px-6 py-4 text-gray-600 truncate align-top">

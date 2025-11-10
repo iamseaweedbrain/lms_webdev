@@ -1,19 +1,19 @@
 <x-layouts.mainlayout>
     <!-- Flash Messages -->
     @if(session('success'))
-        <div class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in" id="successToast">
+        <div class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-9999 font-outfit animate-fade-in" id="successToast">
             {{ session('success') }}
         </div>
     @endif
 
     @if(session('error'))
-        <div class="fixed top-5 right-5 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in" id="errorToast">
+        <div class="fixed top-5 right-5 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg z-9999 font-outfit animate-fade-in" id="errorToast">
             {{ session('error') }}
         </div>
     @endif
 
     @if(session('info'))
-        <div class="fixed top-5 right-5 bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in" id="infoToast">
+        <div class="fixed top-5 right-5 bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg z-9999 font-outfit animate-fade-in" id="infoToast">
             {{ session('info') }}
         </div>
     @endif
@@ -142,7 +142,7 @@
                         onclick="toggleClassMenu(event, '{{ $class->code }}')"
                     ></iconify-icon>
 
-                    <div id="menu-{{ $class->code }}" class="hidden absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-40 z-50">
+                    <div id="menu-{{ $class->code }}" class="absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-40 z-50">
                         <button
                             onclick="togglePin(event, '{{ $class->code }}')"
                             class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg font-outfit flex items-center gap-2">
@@ -203,213 +203,7 @@
         </div>
     </div>
 
-    <!-- CLASS VIEW PAGE -->
-    <div id="classViewPage" class="hidden p-6 relative overflow-visible">
-        <div class="flex justify-between items-center mb-8">
-            <div class="flex items-center gap-6">
-                <button 
-                    onclick="goBackToClasses()" 
-                    class="text-main hover:bg-main/10 p-2 rounded-full transition">
-                    <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
-                </button>
-
-                <div class="flex items-center gap-6 font-outfit text-lg -mt-2">
-                    <button id="postsTab" onclick="showTab('posts')" class="font-semibold text-black border-b-4 border-[#F9CADA] pb-0">Posts</button>
-                    <button id="assignmentsTab" onclick="showTab('assignments')" class="text-black pb-0">Assignments</button>
-                </div>
-
-            </div>
-
-            <div class="flex items-center gap-4 -mt-2">
-                <button 
-                    onclick="showMembers()" 
-                    class="p-2 hover:bg-gray-100 rounded-full transition"
-                    title="View Members">
-                    <iconify-icon icon="mdi:account-group-outline" width="26" height="26" class="text-black"></iconify-icon>
-                </button>
-            <!-- Share Icon (Class Code Copy) -->
-            <div class="relative">
-                <button 
-                    onclick="toggleClassCodePopup()" 
-                    class="p-2 hover:bg-gray-100 rounded-full transition"
-                    title="Share Class Code">
-                    <iconify-icon icon="mdi:share-variant-outline" width="26" height="26" class="text-black"></iconify-icon>
-                </button>
-
-                <!-- Hidden popup -->
-                <div id="classCodePopup" class="hidden absolute right-0 mt-3 bg-white border border-gray-200 rounded-lg shadow-md p-3 w-52 z-50">
-                    <p class="font-semibold text-sm text-gray-700 mb-2 font-outfit">Class Code:</p>
-                    <div class="flex items-center justify-between bg-gray-50 border border-gray-200 rounded-md px-3 py-2">
-                        <span id="classCodeText" class="font-mono text-sm text-gray-700">ABC123</span>
-                        <button 
-                            onclick="copyClassCodePopup()" 
-                            class="text-main font-outfit text-xs font-semibold hover:underline">
-                            Copy
-                        </button>
-                    </div>
-                </div>
-            </div>
-            </div>
-        </div>
-
-        <div id="classHeader" class="relative rounded-2xl p-10 flex justify-between items-start mb-10 bg-pastel-pink shadow-sm overflow-visible">
-            <div class="z-10 ml-[240px] mt-[30px]">
-                <h1 id="classTitle" class="text-4xl font-bold font-outfit text-black mb-1">Class Name</h1>
-                <p id="classCreator" class="text-gray-700 font-outfit text-base mb-6">Creator Name</p>
-            </div>
-
-            <div class="text-right z-10 mt-[25px]">
-                <span id="classCount" class="block text-5xl font-bold font-outfit text-black leading-none">00</span>
-                <p id="classLabel" class="text-gray-800 font-outfit text-sm">New Posts</p>
-            </div>
-
-            <img 
-                src="{{ asset('images/cat-mascot.png') }}" 
-                alt="cat mascot" 
-                class="absolute -left-10 bottom-0 translate-y-[-60%] translate-x-[50%] w-[200px] h-[220px] z-[5] pointer-events-none select-none">
-        </div>
-
-        <!-- POSTS TAB -->
-        <div id="postsSection" class="flex flex-col gap-4">
-        <h2 class="font-semibold text-lg font-outfit mb-2">Posts</h2>
-
-        <!-- Announcement Card -->
-        <div 
-            onclick="openDetailPage('announcement')" 
-            class="relative bg-white w-full px-6 py-4 border border-[#F9CADA] rounded-2xl 
-                shadow-[8px_8px_0_0_#FBD1E2] cursor-pointer 
-                hover:scale-[1.02] transition duration-200 flex justify-between items-center">
-            <div>
-            <h3 class="font-semibold text-lg font-outfit">Announcement</h3>
-            <p class="text-gray-600 text-sm font-outfit">Please submit your essay before Friday.</p>
-            <p class="text-xs text-gray-400 font-outfit mt-1">Posted: Nov 2, 2025</p>
-            </div>
-            <iconify-icon 
-            icon="ic:round-more-vert" 
-            width="22" height="22" 
-            class="text-gray-400 hover:text-black transition cursor-pointer">
-            </iconify-icon>
-        </div>
-
-        <!-- Material Card -->
-        <div 
-            onclick="openDetailPage('material')" 
-            class="relative bg-white w-full px-6 py-4 border border-[#CBE8E9] rounded-2xl 
-                shadow-[8px_8px_0_0_#B7E3E6] cursor-pointer 
-                hover:scale-[1.02] transition duration-200 flex justify-between items-center">
-            <div>
-            <h3 class="font-semibold text-lg font-outfit">Material</h3>
-            <p class="text-gray-600 text-sm font-outfit">Material for final exam.</p>
-            <p class="text-xs text-gray-400 font-outfit mt-1">Posted: Nov 1, 2025</p>
-            </div>
-            <iconify-icon 
-            icon="ic:round-more-vert" 
-            width="22" height="22" 
-            class="text-gray-400 hover:text-black transition cursor-pointer">
-            </iconify-icon>
-        </div>
-        </div>
-
-        <!-- ASSIGNMENTS TAB -->
-        <div id="assignmentsSection" class="hidden flex flex-col gap-4">
-        <h2 class="font-semibold text-lg font-outfit mb-2">Assignments</h2>
-
-        <!-- Assignment Card -->
-        <div 
-            onclick="openDetailPage('assignment')" 
-            class="relative bg-white w-full px-6 py-4 border border-[#F9CADA] rounded-2xl 
-                shadow-[8px_8px_0_0_#FBD1E2] cursor-pointer 
-                hover:scale-[1.02] transition duration-200 flex justify-between items-center">
-            <div>
-            <h3 class="font-semibold text-lg font-outfit">Essay Submission</h3>
-            <p class="text-gray-600 text-sm font-outfit">Write a 300-word essay on modern art.</p>
-            <p class="text-xs text-gray-400 font-outfit mt-1">Due: Nov 5, 2025</p>
-            </div>
-            <iconify-icon 
-            icon="ic:round-upload" 
-            width="22" height="22" 
-            class="text-gray-400 hover:text-black transition cursor-pointer">
-            </iconify-icon>
-        </div>
-        </div>
-
-        <!-- MEMBERS TAB -->
-        <div id="membersSection" class="hidden flex flex-col gap-6">
-        <h2 class="font-semibold text-lg font-outfit mb-2">Class Members</h2>
-
-        <!-- Teachers -->
-        <div>
-            <h3 class="font-semibold text-md font-outfit text-gray-700 mb-2">Teachers</h3>
-            <div id="teachersList" class="flex flex-col gap-3">
-            <div class="bg-white border-2 border-[#F9CADA] rounded-xl p-4 flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                <img 
-                    src="{{ asset('images/teacher-santos.jpg') }}" 
-                    alt="Mr. Santos" 
-                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
-                >
-                <div>
-                    <p class="font-semibold text-lg font-outfit text-black">Mr. Santos</p>
-                    <p class="text-sm text-gray-500 font-outfit">Algebra 101 - Main Instructor</p>
-                </div>
-                </div>
-                <iconify-icon icon="mdi:account-tie-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
-            </div>
-            </div>
-        </div>
-
-        <!-- Students -->
-        <div>
-            <h3 class="font-semibold text-md font-outfit text-gray-700 mb-2">Students</h3>
-            <div id="studentsList" class="flex flex-col gap-3">
-            <div class="bg-white border-2 border-[#CBE8E9] rounded-xl p-4 flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                <img 
-                    src="{{ asset('images/student-venice.jpg') }}" 
-                    alt="Venice Don" 
-                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
-                >
-                <div>
-                    <p class="font-semibold text-lg font-outfit text-black">Venice Don</p>
-                    <p class="text-sm text-gray-500 font-outfit">Member</p>
-                </div>
-                </div>
-                <iconify-icon icon="mdi:account-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
-            </div>
-
-            <div class="bg-white border-2 border-[#CBE8E9] rounded-xl p-4 flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                <img 
-                    src="{{ asset('images/student-jake.jpg') }}" 
-                    alt="Jake Reyes" 
-                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
-                >
-                <div>
-                    <p class="font-semibold text-lg font-outfit text-black">Jake Reyes</p>
-                    <p class="text-sm text-gray-500 font-outfit">Member</p>
-                </div>
-                </div>
-                <iconify-icon icon="mdi:account-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
-            </div>
-
-            <div class="bg-white border-2 border-[#CBE8E9] rounded-xl p-4 flex justify-between items-center">
-                <div class="flex items-center gap-4">
-                <img 
-                    src="{{ asset('images/student-lara.jpg') }}" 
-                    alt="Lara Cruz" 
-                    class="w-10 h-10 rounded-full object-cover border border-gray-200"
-                >
-                <div>
-                    <p class="font-semibold text-lg font-outfit text-black">Lara Cruz</p>
-                    <p class="text-sm text-gray-500 font-outfit">Member</p>
-                </div>
-                </div>
-                <iconify-icon icon="mdi:account-outline" width="22" height="22" class="text-gray-500"></iconify-icon>
-            </div>
-            </div>
-        </div>
-        </div>
-    </div>
+    
 
         <style>
             #classHeader {
@@ -437,187 +231,6 @@
     </div>
 
 <script>
-const dbData = {
-    posts: 12,
-    assignments: 3,
-    members: 14
-};
-
-function openClassView(name, creator, count, color, code) {
-    document.getElementById('classesPage').classList.add('hidden');
-    document.getElementById('classViewPage').classList.remove('hidden');
-    document.getElementById('classTitle').textContent = name;
-    document.getElementById('classCreator').textContent = creator;
-    document.getElementById('classCount').textContent = dbData.posts;
-    document.getElementById('classLabel').textContent = 'New Posts';
-    document.getElementById('classCodeText').textContent = code; 
-    document.getElementById('classHeader').className =
-        `relative rounded-2xl p-10 flex justify-between items-start mb-10 bg-pastel-${color} shadow-sm overflow-visible`;
-
-    showTab('posts');
-}
-
-function goBackToClasses() {
-    document.getElementById('classViewPage').classList.add('hidden');
-    document.getElementById('classesPage').classList.remove('hidden');
-}
-
-function hideAllTabs() {
-    ['postsSection', 'assignmentsSection', 'membersSection'].forEach(id =>
-        document.getElementById(id).classList.add('hidden')
-    );
-}
-
-function resetTabStyles() {
-    ['postsTab', 'assignmentsTab', 'membersTab'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            el.classList.remove('border-b-4', 'border-[#F9CADA]', 'font-semibold', 'text-main');
-            el.classList.add('text-gray-500');
-        }
-    });
-}
-
-function showTab(tab) {
-    hideAllTabs();
-    resetTabStyles();
-
-    const activeTab = document.getElementById(`${tab}Tab`);
-    const classCount = document.getElementById('classCount');
-    const classLabel = document.getElementById('classLabel');
-
-    document.getElementById(`${tab}Section`).classList.remove('hidden');
-    activeTab.classList.add('border-b-4', 'border-[#F9CADA]', 'font-semibold', 'text-main');
-    activeTab.classList.remove('text-gray-500');
-
-    if (tab === 'posts') {
-        classCount.textContent = dbData.posts;
-        classLabel.textContent = 'New Posts';
-    } else if (tab === 'assignments') {
-        classCount.textContent = dbData.assignments;
-        classLabel.textContent = 'Pending Assignments';
-    } else if (tab === 'members') {
-        classCount.textContent = dbData.members;
-        classLabel.textContent = 'Total Members';
-    }
-}
-
-function toggleClassCodePopup() {
-    const popup = document.getElementById('classCodePopup');
-    popup.classList.toggle('hidden');
-}
-
-function submitEssay() {
-    const fileInput = document.getElementById('essayFile');
-    
-    if (!fileInput.value) {
-      alert('Please select a file before submitting.');
-      return;
-    }
-
-    const confirmSubmit = confirm('Are you sure you want to submit your essay?');
-    if (!confirmSubmit) return;
-
-    alert('Your essay has been submitted successfully!');
-
-    fileInput.disabled = true;
-    document.querySelector('button[onclick="submitEssay()"]').disabled = true;
-}
-
-function copyClassCodePopup() {
-    const codeText = document.getElementById('classCodeText').textContent;
-
-    try {
-        if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(codeText)
-                .then(showCopyMessage)
-                .catch(err => {
-                    console.warn("Clipboard writeText failed, using fallback:", err);
-                    fallbackCopy(codeText);
-                });
-        } else {
-            fallbackCopy(codeText);
-        }
-    } catch (err) {
-        console.error("Clipboard API not supported:", err);
-        fallbackCopy(codeText);
-    }
-
-    function fallbackCopy(text) {
-        const textarea = document.createElement("textarea");
-        textarea.value = text;
-        textarea.style.position = "fixed";
-        textarea.style.left = "-9999px";
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        textarea.remove();
-        showCopyMessage();
-    }
-
-function showCopyMessage() {
-    const toast = document.createElement('div');
-    toast.textContent = `Copied ${codeText}`;
-    toast.className = `
-        fixed bottom-5 right-5 bg-main text-white 
-        px-4 py-2 rounded-xl shadow-lg text-sm font-outfit 
-        z-[9999] opacity-0 transition-opacity duration-300
-    `;
-    document.body.appendChild(toast);
-
-    requestAnimationFrame(() => toast.classList.add('opacity-100'));
-
-    setTimeout(() => {
-        toast.classList.remove('opacity-100');
-        setTimeout(() => toast.remove(), 300);
-    }, 1500);
-}
-}
-
-function copyPinnedClassCode(code, event) {
-    event.stopPropagation();
-
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(code).then(showToast);
-    } else {
-        const textarea = document.createElement("textarea");
-        textarea.value = code;
-        textarea.style.position = "fixed";
-        textarea.style.left = "-9999px";
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand("copy");
-        textarea.remove();
-        showToast();
-    }
-
-    function showToast() {
-        const toast = document.createElement('div');
-        toast.textContent = `Copied ${code}`;
-        toast.className = `
-            fixed bottom-5 right-5 bg-main text-white 
-            px-4 py-2 rounded-xl shadow-lg text-sm font-outfit 
-            z-[9999] opacity-0 transition-opacity duration-300
-        `;
-        document.body.appendChild(toast);
-
-        requestAnimationFrame(() => toast.classList.add('opacity-100'));
-        setTimeout(() => {
-            toast.classList.remove('opacity-100');
-            setTimeout(() => toast.remove(), 300);
-        }, 1500);
-    }
-}
-
-function handleAddButtonClick() {
-  const currentMode = localStorage.getItem('viewMode') || 'student';
-
-  if (currentMode === 'teacher') {
-    window.location.href = "{{ route('add_class') }}";
-  } else {
-    toggleJoinPopup();
-  }
-}
 
 function toggleJoinPopup() {
   console.log("Add button clicked!");
@@ -658,37 +271,21 @@ function joinClassFromCode() {
   form.submit();
 }
 
-function openDetailPage(type) {
-    document.getElementById('classViewPage').classList.add('hidden');
-
-    document.getElementById('assignmentDetailPage').classList.add('hidden');
-    document.getElementById('materialDetailPage').classList.add('hidden');
-    document.getElementById('announcementDetailPage').classList.add('hidden');
-
-    if (type === 'assignment') {
-        document.getElementById('assignmentDetailPage').classList.remove('hidden');
-    } else if (type === 'material') {
-        document.getElementById('materialDetailPage').classList.remove('hidden');
-    } else if (type === 'announcement') {
-        document.getElementById('announcementDetailPage').classList.remove('hidden');
-    }
-}
-
-function goBack() {
-    document.getElementById('assignmentDetailPage').classList.add('hidden');
-    document.getElementById('materialDetailPage').classList.add('hidden');
-    document.getElementById('announcementDetailPage').classList.add('hidden');
-    document.getElementById('classViewPage').classList.remove('hidden');
-}
-
-function showMembers() {
-    showTab('members');
-}
 
 window.addEventListener('viewModeChanged', function(event) {
     const newMode = event.detail.mode;
     filterClassesByRole(newMode);
 });
+
+function handleAddButtonClick() {
+  const currentMode = localStorage.getItem('viewMode') || 'student';
+
+  if (currentMode === 'teacher') {
+    window.location.href = "{{ route('add_class') }}";
+  } else {
+    toggleJoinPopup();
+  }
+}
 
 function filterClassesByRole(mode) {
     const allClassItems = document.querySelectorAll('.class-item');
@@ -1066,6 +663,4 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 });
 </script>
-
-
 </x-layouts.mainlayout>

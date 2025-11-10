@@ -21,7 +21,7 @@
                 class="w-full py-3 px-4 bg-[#e9e9e9] rounded-full text-[0.95rem] outline-none font-light">
             <input type="password" name="password_confirmation" placeholder="Re-enter Password" 
                 class="w-full py-3 px-4 bg-[#e9e9e9] rounded-full text-[0.95rem] outline-none font-light">
-            <button type="submit" class="bg-black text-white py-3 rounded-full font-semibold hover:translate-y-[-2px] hover:shadow-lg transition-all">
+            <button type="submit" class="bg-black text-white py-3 rounded-full font-semibold hover:translate-y-0.5 hover:shadow-lg transition-all">
                 SIGN UP
             </button>
         </form>
