@@ -68,7 +68,7 @@ class SubmissionController extends Controller
             $selectedClassRecord = $allClasses->firstWhere('id', $selectedClassId);
             $selectedClassCode = $selectedClassRecord['code'] ?? null;
 
-            $query = \App\Models\SubmissionModel::with(['post'])
+            $query = SubmissionModel::with(['post'])
                 ->where('user_id', $userId)
                 ->whereHas('post', function($q) use ($selectedClassCode) {
                     if ($selectedClassCode) {
@@ -82,7 +82,7 @@ class SubmissionController extends Controller
             $assignments = $submissions->map(function($sub) {
                 return [
                     'submission_id' => $sub->submission_id,
-                    'name' => $sub->post->content ?? 'Assignment',
+                    'name' => $sub->post->post_title ?? 'Assignment',
                     'score' => $sub->score,
                     'feedback' => $sub->feedback,
                 ];

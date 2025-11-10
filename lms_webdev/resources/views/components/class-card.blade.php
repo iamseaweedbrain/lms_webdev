@@ -11,7 +11,7 @@
 <a href="{{ $code ? route('classes.show', $code) : '#' }}" class="block no-underline">
 <div class="bg-white border-[5px] {{ $borderColor }} {{ $shadowClass }} rounded-[40px] p-7 flex flex-col justify-between cursor-pointer hover:scale-[1.02] transition duration-200" title="{{ $className }}">
 
-    <div class="flex justify-center gap-1.5">
+    <div class="flex justify-between gap-1.5">
         <div>
             <p class="text-gray-500 text-sm font-light font-poppins">{{ $creatorName }}</p>
             <p class="font-bold text-2xl font-outfit mb-6">{{ $className }}</p>

@@ -43,13 +43,15 @@ class DashboardController extends Controller
         
         $recentPostsRaw = DB::table('posts')
             ->join('classes', 'posts.code', '=', 'classes.code')
+            ->join('useraccount', 'posts.user_id', '=', 'useraccount.user_id')
             ->select(
                 'posts.post_id',
                 'posts.code',
                 'posts.content',
                 'posts.post_type',
                 'posts.created_at',
-                'classes.classname as class_name'
+                'classes.classname as class_name',
+                'useraccount.avatar as avatar'
             )
             ->whereIn('posts.code', $classIds)
             ->whereIn('posts.post_type', ['announcement'])
@@ -73,6 +75,7 @@ class DashboardController extends Controller
             return [
                 'creator' => $class->creator,
                 'name' => $class->name,
+                'code' => $class->code,
                 'count' => str_pad($memberCount, 2, '0', STR_PAD_LEFT), 
                 'color' => $color,
                 'role' => $class->role,

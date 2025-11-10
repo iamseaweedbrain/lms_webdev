@@ -8,7 +8,7 @@
                         <img src="{{ asset('images/cat-mascot.png') }}" alt="cat-mascot" class="w-80 h-auto object-contain drop-shadow-lg pl-4">
                         <div class="mt-auto mb-6 flex gap-3">
                             <button type="submit" class="px-8 py-2 bg-black text-white rounded-md font-semibold">Create</button>
-                            <a href="{{ route('classes') }}" class="px-8 py-2 border-2 border-black text-black rounded-md font-semibold">Cancel</a>
+                            <a href="#" onclick="window.history.back()" class="px-8 py-2 border-2 border-black text-black rounded-md font-semibold">Cancel</a>
                         </div>
                     </div>
 

@@ -213,7 +213,7 @@
                         <div class="flex items-center gap-4">
                             @if($teacher->avatar)
                             <img
-                                src="{{ asset('storage/' . $teacher->avatar) }}"
+                                src="{{ asset('public/avatars' . $teacher->avatar) }}"
                                 alt="{{ $teacher->name }}"
                                 class="w-10 h-10 rounded-full object-cover border border-gray-200">
                             @else
