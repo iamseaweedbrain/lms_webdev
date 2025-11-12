@@ -1,76 +1,74 @@
 <x-layouts.mainlayout>
-	<div class="min-h-screen flex items-center justify-center bg-[#FAF8F5] px-6">
-        <div class="w-full">
-            <div class="flex justify-between items-center mb-6">
-                <button onclick="window.history.back()" class="flex items-center gap-3 text-gray-600 hover:text-black hover:bg-main/10 p-2 rounded-full transition text-lg">
+    <div class="min-h-screen flex items-center justify-center bg-[#FAF8F5] px-6 py-10">
+        <div class="w-full max-w-5xl">
+
+            <div class="flex justify-between items-center mb-10">
+                <button onclick="window.history.back()" 
+                    class="flex items-center gap-2 text-gray-600 hover:text-black transition">
                     <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
                 </button>
 
-                <button class="bg-[#F9CADA] text-black px-6 py-3 rounded-xl font-semibold hover:opacity-80 transition">
-                    Return to Appeal
+                <button 
+                    class="bg-[#F9CADA] text-black px-6 py-2 rounded-xl font-semibold hover:opacity-80 transition shadow-[4px_4px_0_0_#F9CADA]">
+                    Return for Appeal
                 </button>
             </div>
 
             @php
-                $creatorName = $creatorName ?? 'Instructor Name';
-                $assignmentName = $assignmentName ?? 'Untitled Assignment';
+                $creatorName = $creatorName ?? 'Creator Name';
+                $assignmentName = $assignmentName ?? 'Assignment Name';
                 $createdDate = $createdDate ?? now()->format('M d, Y');
-                $dateSubmitted = $dateSubmitted ?? '—';
-                $filePath = $filePath ?? 'No file';
-                $fileFormat = $fileFormat ?? '';
-                $feedback = $feedback ?? 'No feedback yet.';
-                $grade = $grade ?? '—';
-                $score = $score ?? '—';
+                $dateSubmitted = $dateSubmitted ?? 'Date Submitted';
+                $filePath = $filePath ?? 'File Path';
+                $fileFormat = $fileFormat ?? 'File Format';
+                $feedback = $feedback ?? 'Nagreklamo i layk it so much wow';
+                $score = $score ?? '100';
             @endphp
 
-            <div class="relative justify-between bg-white w-[90%] max-w-5xl min-h-[80vh] mx-auto p-10 border-[3px] border-[#F9CADA] shadow-[12px_12px_0_0_#F9CADA] rounded-2xl z-10 flex flex-col">
+            <div class="bg-white w-full border-[3px] border-[#F9CADA] rounded-2xl shadow-[10px_10px_0_0_#F9CADA] p-10">
+                <div class="flex gap-8">
 
-                <div class="flex flex-col">
-                    <div class="flex gap-6 items-center">
-                        <div class="absolute -top-16 -left-4 w-[300px] h-80 z-30 pointer-events-none">
-                            <img src="{{ asset('images/cat-mascot.png') }}" alt="cat-mascot" class="w-full h-full object-contain drop-shadow-lg">
-                        </div>
-
-                        <div class="ml-[270px]">
-                            <h2 class="font-semibold text-3xl leading-tight">{{ $assignmentName }}</h2>
-                            <p class="text-gray-500 text-base mt-1">{{ $creatorName }}</p>
-                        </div>
+                    <div class="flex-shrink-0 w-[220px] relative -top-32">
+                        <img src="{{ asset('images/cat-mascot.png') }}" 
+                             alt="cat-mascot" 
+                             class="w-full h-auto object-contain">
                     </div>
 
-                    <div class="mt-28 flex items-center justify-between absolute top-40 z-50">
-                        <p class="text-gray-400 text-sm">Created: {{ $createdDate }}</p>
-                        <div class="flex-1 ml-4 border-t-[5px] border-[#F9CADA]"></div>
+                    <div class="flex flex-col flex-1">
+                        <p class="text-gray-700 text-sm">{{ $creatorName }}</p>
+                        <h2 class="font-bold text-2xl text-black">{{ $assignmentName }}</h2>
                     </div>
                 </div>
 
-                <div class="flex flex-col mt-36 px-6 space-y-6 gap-14 flex-1 overflow-y-auto">
-                    <div class="flex items-start gap-6">
-                        <div class="flex-1">
-                            <h3 class="font-semibold text-gray-700 text-4xl">Turned In</h3>
-                            <div class="text-md text-gray-700">{{ $dateSubmitted }}</div>
-                        </div>
-                        <div class="relative border-[3px] border-[#F9CADA] rounded-xl p-3 flex-1 shadow-[5px_5px_0_0_#F9CADA] flex flex-col">
-                            <div class="text-lg text-gray-700">{{ basename($filePath) }}</div>
-                            @if($fileFormat)
-                                <div class="text-sm text-gray-500">{{ $fileFormat }}</div>
-                            @endif
-                        </div>
+                <div class="flex items-center mt-2">
+                    <p class="text-gray-600 text-sm">Date Created</p>
+                    <div class="flex-1 ml-3 border-t-[2.5px] border-[#F9CADA]"></div>
+                </div>
+
+                <div class="mt-6 flex gap-8">
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg text-black">Turned in</h3>
+                        <p class="text-sm text-gray-700 mt-1">{{ $dateSubmitted }}</p>
                     </div>
 
-                    <div class="flex items-start gap-6 mt-auto">
-                        <div class="flex-1 flex flex-col justify-center">
-                            <h3 class="font-semibold text-gray-700 text-4xl">Feedback</h3>
-                            <div class="text-md text-gray-600 whitespace-pre-wrap mt-2">{{ $feedback }}</div>
-                        </div>
+                    <div class="flex-1 border-[3px] border-[#F9CADA] rounded-xl p-4 shadow-[5px_5px_0_0_#F9CADA]">
+                        <div class="font-semibold text-gray-800">{{ basename($filePath) }}</div>
+                        <div class="text-sm text-gray-500">{{ $fileFormat }}</div>
+                    </div>
+                </div>
 
-                        <div class="w-40 text-right">
-                            <div class="text-xl font-semibold">Your Grade</div>
-                            <div class="text-4xl text-gray-600 font-bold">{{ $score }}</div>
-                        </div>
+                <div class="mt-6 flex justify-between items-start">
+                    <div class="flex-1">
+                        <h3 class="font-bold text-lg text-black">Feedback</h3>
+                        <p class="text-gray-700 mt-2">{{ $feedback }}</p>
+                    </div>
+
+                    <div class="text-right">
+                        <p class="font-semibold text-black">Your Grade</p>
+                        <p class="text-4xl font-bold text-black">{{ $score }}</p>
                     </div>
                 </div>
             </div>
         </div>
-	</div>
+    </div>
 </x-layouts.mainlayout>
-
