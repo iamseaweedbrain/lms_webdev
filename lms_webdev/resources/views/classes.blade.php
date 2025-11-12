@@ -142,7 +142,7 @@
                         onclick="toggleClassMenu(event, '{{ $class->code }}')"
                     ></iconify-icon>
 
-                    <div id="menu-{{ $class->code }}" class="absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-40 z-50">
+                    <div id="menu-{{ $class->code }}" class="hidden absolute right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg w-40 z-50">
                         <button
                             onclick="togglePin(event, '{{ $class->code }}')"
                             class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-t-lg font-outfit flex items-center gap-2">
