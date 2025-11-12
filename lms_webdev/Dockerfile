@@ -30,19 +30,18 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy project files
-COPY . /var/www/html
+# Copy composer files first (for caching)
+COPY composer.json composer.lock ./
 
 # Install PHP dependencies
 RUN composer install --optimize-autoloader --no-dev
 
-# Install Node dependencies and build front-end assets
+# Copy the rest of your application files
+COPY . .
+
+# Install Node.js dependencies (if needed)
 RUN npm install
 RUN npm run build
-
-# Laravel setup
-RUN php artisan key:generate
-RUN php artisan config:cache
 
 # Expose Laravel port
 EXPOSE 8000
