@@ -7,6 +7,7 @@ use App\Http\Controllers\SubmissionController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\PostReadController;
+use App\Http\Controllers\ForgotPasswordOtpController;
 use Illuminate\Support\Facades\Route;
 
 Route::post('/signup', [AccountController::class, 'store'])->name('storeSignUp');
@@ -53,3 +54,15 @@ Route::prefix('assignments')->group(function () {
     Route::get('/{code}/create', [PostController::class, 'create'])->name('assignments.create');
     Route::post('/{code}/create', [PostController::class, 'newAssignment'])->name('assignments.store');
 });
+
+Route::get('/forgot-password', function () {
+    return view('auth.forgot-password');
+})->name('forgot.password');
+Route::get('/verify-otp', function () {
+    return view('auth.verify-otp');
+})->name('verify.otp');
+Route::get('/reset-password', function () {
+    return view('auth.reset-password');})->name('reset.password');
+Route::post('/forgot-password/request', [ForgotPasswordOtpController::class, 'requestOtp'])->name('password.request.otp');
+Route::post('/forgot-password/verify', [ForgotPasswordOtpController::class, 'verifyOtp'])->name('password.verify.otp');
+Route::post('/forgot-password/reset', [ForgotPasswordOtpController::class, 'resetPassword'])->name('password.reset.otp');
