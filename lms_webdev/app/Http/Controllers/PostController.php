@@ -133,7 +133,7 @@ class PostController extends Controller
         $validatedData = $request->validate([
             'due_date' => ['required', 'date', 'after_or_equal:' . now()->format('Y-m-d H:i')],
             'title' => 'required|max:255',
-            'instructions' => 'nullable|string',
+            'instructions' => 'required|string',
             'assignment_file' => 'nullable|file|max:10240',
             'assignment_link' => 'nullable|url',
         ]);

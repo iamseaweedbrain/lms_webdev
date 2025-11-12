@@ -28,7 +28,6 @@
             </div>
 
             <div class="flex items-center gap-4 -mt-2">
-                <!-- Share Icon (Class Code Copy) -->
                 <div class="relative">
                     <button
                         onclick="toggleClassCodePopup()"
@@ -213,7 +212,7 @@
                         <div class="flex items-center gap-4">
                             @if($teacher->avatar)
                             <img
-                                src="{{ asset('public/avatars' . $teacher->avatar) }}"
+                                src="{{ asset($teacher->avatar) }}"
                                 alt="{{ $teacher->name }}"
                                 class="w-10 h-10 rounded-full object-cover border border-gray-200">
                             @else
@@ -246,7 +245,7 @@
                         <div class="flex items-center gap-4">
                             @if($student->avatar)
                             <img
-                                src="{{ asset('storage/' . $student->avatar) }}"
+                                src="{{ asset($student->avatar) }}"
                                 alt="{{ $student->name }}"
                                 class="w-10 h-10 rounded-full object-cover border border-gray-200">
                             @else
@@ -1037,21 +1036,26 @@
         const defaultAvatar = '{{ asset("images/default-avatar.png") }}';
 
         if (member.avatar) {
-            const avatarPath = member.avatar.startsWith('avatars/') || member.avatar.startsWith('images/')
-                ? assetBase + member.avatar
-                : assetBase + 'storage/' + member.avatar;
+            let avatarPath;
+            if (member.avatar.startsWith('http')) {
+                avatarPath = member.avatar;
+            } else if (member.avatar.startsWith('avatars/') || member.avatar.startsWith('images/')) {
+                avatarPath = assetBase + member.avatar;
+            } else {
+                avatarPath = assetBase + 'storage/avatars/' + member.avatar;
+            }
 
             avatarContainer.innerHTML = `
                 <img src="${avatarPath}"
-                     alt="${member.name || 'Avatar'}"
-                     class="w-[500px] h-[500px] object-cover"
-                     onerror="this.src='${defaultAvatar}'">
+                    alt="${member.name || 'Avatar'}"
+                    class="w-[500px] h-[500px] object-cover"
+                    onerror="this.src='${defaultAvatar}'">
             `;
         } else {
             avatarContainer.innerHTML = `
                 <img src="${defaultAvatar}"
-                     alt="${member.name || 'Avatar'}"
-                     class="w-[500px] h-[500px] object-cover">
+                    alt="${member.name || 'Avatar'}"
+                    class="w-[500px] h-[500px] object-cover">
             `;
         }
 
