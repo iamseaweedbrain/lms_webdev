@@ -14,6 +14,20 @@
 
                     <div class="p-8">
                         <h2 class="text-2xl font-bold mb-6">Create a post</h2>
+                        @if(session('error'))
+                            <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+                        @if($errors->any())
+                            <div class="mb-4 p-3 bg-red-100 text-red-700 rounded-md text-sm">
+                                <ul class="list-disc list-inside">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
 
                         <div class="mb-4">
                             <label for="post_type" class="block text-sm font-medium text-gray-700 mb-2">Post Type</label>
