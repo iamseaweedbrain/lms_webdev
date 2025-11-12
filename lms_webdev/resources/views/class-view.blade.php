@@ -1,13 +1,13 @@
 <x-layouts.mainlayout>
     <!-- Flash Messages -->
     @if(session('success'))
-        <div class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in" id="successToast">
+        <div class="fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-9999 font-outfit animate-fade-in" id="successToast">
             {{ session('success') }}
         </div>
     @endif
 
     @if(session('error'))
-        <div class="fixed top-5 right-5 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in" id="errorToast">
+        <div class="fixed top-5 right-5 bg-red-500 text-white px-6 py-3 rounded-xl shadow-lg z-9999 font-outfit animate-fade-in" id="errorToast">
             {{ session('error') }}
         </div>
     @endif
@@ -57,7 +57,7 @@
                 <img
                     src="{{ asset('images/cat-mascot.png') }}"
                     alt="cat mascot"
-                    class="w-[180px] h-[200px] object-contain pointer-events-none select-none flex-shrink-0">
+                    class="w-[180px] h-[200px] object-contain pointer-events-none select-none shrink-0">
                 <div>
                     <h1 class="text-4xl font-bold font-outfit text-black mb-1">{{ $class->classname }}</h1>
                     <p class="text-gray-700 font-outfit text-base mb-6">{{ $class->creator->name ?? 'Unknown' }}</p>
@@ -101,7 +101,7 @@
                     <div class="flex items-start gap-3 flex-1">
                         <!-- Read/Unread Indicator for Students -->
                         @if(($membership->role ?? 'member') === 'member')
-                        <div class="read-indicator flex-shrink-0 mt-1">
+                        <div class="read-indicator shrink-0 mt-1">
                             <iconify-icon icon="{{ $isRead ? 'mdi:check-circle' : 'mdi:circle' }}" width="12" height="12" class="{{ $isRead ? 'text-green-500' : 'text-gray-300' }}"></iconify-icon>
                         </div>
                         @endif
@@ -153,7 +153,7 @@
                     <div class="flex items-start gap-3 flex-1">
                         <!-- Done/Not Done Indicator for Students -->
                         @if(($membership->role ?? 'member') === 'member')
-                        <div class="done-indicator flex-shrink-0 mt-1">
+                        <div class="done-indicator shrink-0 mt-1">
                             <iconify-icon icon="{{ $isDone ? 'mdi:check-circle' : 'mdi:circle' }}" width="12" height="12" class="{{ $isDone ? 'text-green-500' : 'text-gray-300' }}"></iconify-icon>
                         </div>
                         @endif
@@ -289,11 +289,11 @@
 
             <div class="flex flex-col">
                 <div class="flex gap-6 items-center">
-                    <div class="relative w-[300px] h-[320px]">
+                    <div class="relative w-[300px] h-80">
                         <img
                             src="{{ asset('images/cat-mascot.png') }}"
                             alt="cat mascot"
-                            class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
+                            class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-80 z-5 pointer-events-none select-none">
                     </div>
 
                     <div class="-mt-[140px] ml-[70px]">
@@ -348,11 +348,11 @@
 
             <div class="flex flex-col">
                 <div class="flex gap-6 items-center">
-                    <div class="relative w-[300px] h-[320px]">
+                    <div class="relative w-[300px] h-80">
                         <img
                             src="{{ asset('images/cat-mascot.png') }}"
                             alt="cat mascot"
-                            class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
+                            class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-80 z-5 pointer-events-none select-none">
                     </div>
 
                     <div class="-mt-[140px] ml-[70px]">
@@ -399,11 +399,11 @@
 
             <div class="flex flex-col">
                 <div class="flex gap-6 items-center">
-                    <div class="relative w-[300px] h-[320px]">
+                    <div class="relative w-[300px] h-80">
                         <img
                             src="{{ asset('images/cat-mascot.png') }}"
                             alt="cat mascot"
-                            class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-[320px] z-[5] pointer-events-none select-none">
+                            class="absolute -left-10 bottom-0 translate-y-[-17%] translate-x-[10%] w-[300px] h-80 z-5 pointer-events-none select-none">
                     </div>
 
                     <div class="-mt-[140px] ml-[70px]">
@@ -430,7 +430,7 @@
                                 id="assignmentFile"
                                 class="border border-gray-300 rounded-xl p-3 flex-1 text-base focus:ring-2 focus:ring-[#F9CADA] outline-none transition" />
                             <button
-                                class="bg-[#F9CADA] px-4 py-2 rounded-xl font-semibold hover:opacity-80 transition flex-shrink-0"
+                                class="bg-[#F9CADA] px-4 py-2 rounded-xl font-semibold hover:opacity-80 transition shrink-0"
                                 onclick="submitAssignment()">
                                 SUBMIT
                             </button>
@@ -444,7 +444,7 @@
                                     <p class="font-semibold" id="submittedFileName">filename.pdf</p>
                                     <p class="text-sm text-gray-500" id="submittedDate">Submitted on Nov 9, 2025</p>
                                 </div>
-                                <a id="downloadSubmissionLink" href="#" download class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl font-semibold transition flex-shrink-0">
+                                <a id="downloadSubmissionLink" href="#" download class="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl font-semibold transition shrink-0">
                                     <iconify-icon icon="mdi:download" width="20" height="20" class="inline"></iconify-icon>
                                     Download
                                 </a>
@@ -608,7 +608,7 @@
             toast.className = `
                 fixed bottom-5 right-5 bg-main text-white
                 px-4 py-2 rounded-xl shadow-lg text-sm font-outfit
-                z-[9999] opacity-0 transition-opacity duration-300
+                z-9999 opacity-0 transition-opacity duration-300
             `;
             document.body.appendChild(toast);
 
@@ -882,7 +882,7 @@
 
         const toast = document.createElement('div');
         toast.textContent = 'Marked as read!';
-        toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in';
+        toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-9999 font-outfit animate-fade-in';
         document.body.appendChild(toast);
 
         setTimeout(() => {
@@ -924,7 +924,7 @@
 
         const toast = document.createElement('div');
         toast.textContent = 'Marked as done!';
-        toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit animate-fade-in';
+        toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-9999 font-outfit animate-fade-in';
         document.body.appendChild(toast);
 
         setTimeout(() => {
@@ -954,7 +954,7 @@
 
         const loadingToast = document.createElement('div');
         loadingToast.textContent = 'Submitting...';
-        loadingToast.className = 'fixed top-5 right-5 bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit';
+        loadingToast.className = 'fixed top-5 right-5 bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg z-9999 font-outfit';
         loadingToast.id = 'loadingToast';
         document.body.appendChild(loadingToast);
 
@@ -972,7 +972,7 @@
             if (data.success) {
                 const toast = document.createElement('div');
                 toast.textContent = 'Assignment submitted successfully!';
-                toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit';
+                toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-9999 font-outfit';
                 document.body.appendChild(toast);
 
                 setTimeout(() => {
@@ -1180,7 +1180,7 @@
 
         const loadingToast = document.createElement('div');
         loadingToast.textContent = 'Updating...';
-        loadingToast.className = 'fixed top-5 right-5 bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit';
+        loadingToast.className = 'fixed top-5 right-5 bg-blue-500 text-white px-6 py-3 rounded-xl shadow-lg z-9999 font-outfit';
         loadingToast.id = 'editLoadingToast';
         document.body.appendChild(loadingToast);
 
@@ -1198,7 +1198,7 @@
             if (result.success) {
                 const toast = document.createElement('div');
                 toast.textContent = 'Post updated successfully!';
-                toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-[9999] font-outfit';
+                toast.className = 'fixed top-5 right-5 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-9999 font-outfit';
                 document.body.appendChild(toast);
 
                 setTimeout(() => toast.remove(), 3000);

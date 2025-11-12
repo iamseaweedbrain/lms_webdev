@@ -29,26 +29,35 @@ class AccountController extends Controller
     //panglogin to ofc
     public function login(Request $request)
     {
-        $credentials = $request->validate([
+        $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
         ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            try {
-                $currentSessionId = session()->getId();
-                DB::table('sessions')->where('id', $currentSessionId)->update(['user_id' => Auth::id()]);
-            } catch (\Exception $e) {
-            }
-            return redirect()->intended('dashboard');
+        $user = AccountModel::where('email', $request->email)->first();
+        //email error check
+        if (!$user) {
+            return back()->withErrors(['email' => 'No account found with that email.'])
+                        ->onlyInput('email');
+        }
+        //password error check 
+        if (!Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['password' => 'Password does not match.'])
+                        ->onlyInput('email');
         }
 
-        return back()->withErrors([
-            'email' => 'Invalid credentials.',
-        ])->onlyInput('email');
+        Auth::login($user);
+        $request->session()->regenerate();
+
+        try {
+            $currentSessionId = session()->getId();
+            DB::table('sessions')->where('id', $currentSessionId)->update(['user_id' => Auth::id()]);
+        } catch (\Exception $e) {
+        }
+
+        return redirect()->intended('dashboard');
     }
-    
+
     //panglogout sha beh
     public function logout(Request $request)
     {
