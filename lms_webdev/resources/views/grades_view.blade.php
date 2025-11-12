@@ -28,7 +28,6 @@
             <div class="bg-white w-full border-[3px] border-[#F9CADA] rounded-2xl shadow-[10px_10px_0_0_#F9CADA] p-10">
                 <div class="flex gap-8">
 
-                    <!-- Adjusted Image Container with Negative Top Value -->
                     <div class="flex-shrink-0 w-[220px] relative -top-32">
                         <img src="{{ asset('images/cat-mascot.png') }}" 
                              alt="cat-mascot" 
@@ -41,13 +40,11 @@
                     </div>
                 </div>
 
-                <!-- Date Created Below the Cat -->
                 <div class="flex items-center mt-2">
                     <p class="text-gray-600 text-sm">Date Created</p>
                     <div class="flex-1 ml-3 border-t-[2.5px] border-[#F9CADA]"></div>
                 </div>
 
-                <!-- Turned In Section Adjusted -->
                 <div class="mt-6 flex gap-8">
                     <div class="flex-1">
                         <h3 class="font-bold text-lg text-black">Turned in</h3>
@@ -60,7 +57,6 @@
                     </div>
                 </div>
 
-                <!-- Feedback and Grade Section Adjusted -->
                 <div class="mt-6 flex justify-between items-start">
                     <div class="flex-1">
                         <h3 class="font-bold text-lg text-black">Feedback</h3>
