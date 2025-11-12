@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SubmissionModel;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\Models\ClassModel;
+use App\Models\ClassMember;
+use Illuminate\Support\Facades\Auth; // Added ClassMember model for clarity
 
 class SubmissionController extends Controller
 {
@@ -16,100 +17,103 @@ class SubmissionController extends Controller
     {
         $user = Auth::user();
         $userId = $user->user_id;
+        $colors = ['blue', 'pink', 'yellow', 'purple'];
+        
+        $mode = request()->query('view', 'student');
 
-        $joinedClassMembers = \App\Models\ClassMember::with('class')
+        $allClassMemberships = ClassMember::with('class')
             ->where('user_id', $userId)
             ->get();
-        $allClasses = $joinedClassMembers
-            ->filter(fn($cm) => $cm->class)
-            ->map(function($cm, $index) {
-                $colors = ['blue', 'pink', 'yellow', 'purple'];
-                return [
-                    'id' => $cm->class->id,
-                    'classname' => $cm->class->classname,
-                    'code' => $cm->class->code ?? null,
-                    'color' => $colors[$index % count($colors)],
-                ];
-            })->values();
 
-        $requestedClassId = request('class');
+        $filteredMemberships = $allClassMemberships->filter(function($cm) use ($mode) {
+            if ($mode === 'teacher') {
+                return in_array($cm->role, ['admin', 'co-admin']);
+            }
+            return $cm->role === 'member'; 
+        });
 
-        $recentIds = session()->get('recent_classes', []);
+        $allClasses = $filteredMemberships->values()->map(function($cm, $index) use ($colors) {
+            return [
+                'id' => $cm->class->id,
+                'classname' => $cm->class->classname,
+                'code' => $cm->class->code ?? null,
+                'color' => $colors[$index % count($colors)],
+                'role' => $cm->role ?? 'member',
+            ];
+        });
 
-        if ($requestedClassId) {
-            $recentIds = array_values(array_filter($recentIds, fn($id) => (string)$id !== (string)$requestedClassId));
-            array_unshift($recentIds, $requestedClassId);
-            $recentIds = array_slice($recentIds, 0, 4);
-            session()->put('recent_classes', $recentIds);
-            session()->put('last_selected_class', $requestedClassId);
-        }
+        $selectedClassId = request('class') 
+            ?? session()->get('last_selected_class') 
+            ?? ($allClasses->first()['id'] ?? null);
 
-        $selectedClassId = $requestedClassId ?? session()->get('last_selected_class') ?? ($allClasses->first()['id'] ?? null);
         $selectedClass = $allClasses->firstWhere('id', $selectedClassId);
 
-        $recentClasses = collect();
-        foreach (session()->get('recent_classes', []) as $id) {
-            $c = $allClasses->firstWhere('id', $id);
-            if ($c) {
-                $recentClasses->push($c);
+        $query = SubmissionModel::with('post');
+
+        if ($selectedClass) {
+            $code = $selectedClass['code'];
+
+            $query->whereHas('post', fn($q) => $q->where('code', $code));
+            
+            if ($mode === 'student') {
+                $query->where('user_id', $userId);
             }
         }
-        if ($recentClasses->count() < 4) {
-            $fill = $allClasses->reject(fn($c) => $recentClasses->firstWhere('id', $c['id']))->take(4 - $recentClasses->count());
-            $recentClasses = $recentClasses->concat($fill)->values();
-        }
 
-        $assignments = collect();
-        $pageCount = 1;
-        $currentPage = max(1, (int)request('page', 1));
         $perPage = 10;
-        if ($selectedClassId) {
-            // posts are linked to classes by 'code' (see posts migration). Find the code for the selected class id.
-            $selectedClassRecord = $allClasses->firstWhere('id', $selectedClassId);
-            $selectedClassCode = $selectedClassRecord['code'] ?? null;
+        $currentPage = max(1, (int) request('page', 1));
+        $pageCount = 0;
+        $submissions = collect();
 
-            $query = SubmissionModel::with(['post'])
-                ->where('user_id', $userId)
-                ->whereHas('post', function($q) use ($selectedClassCode) {
-                    if ($selectedClassCode) {
-                        $q->where('code', $selectedClassCode);
-                    }
-                });
-
-            $total = $query->count();
+        if ($selectedClass) {
+            $total = (clone $query)->count(); 
             $pageCount = (int) ceil($total / $perPage);
-            $submissions = $query->skip(($currentPage-1)*$perPage)->take($perPage)->get();
-            $assignments = $submissions->map(function($sub) {
-                return [
-                    'submission_id' => $sub->submission_id,
-                    'name' => $sub->post->post_title ?? 'Assignment',
-                    'score' => $sub->score,
-                    'feedback' => $sub->feedback,
-                ];
-            });
+    
+            $submissions = $query
+                ->skip(($currentPage - 1) * $perPage)
+                ->take($perPage)
+                ->get();
+        } 
+
+        $assignments = $submissions->map(function($sub) use ($mode) {
+            return [
+                'submission_id' => $sub->submission_id,
+                'name' => $sub->post->post_title ?? 'Assignment',
+                'score' => $sub->score, 
+                'feedback' => $sub->feedback,
+                'route' => $mode === 'teacher'
+                    ? route('grades_check', ['submissionId' => $sub->submission_id]) 
+                    : route('student_grade', ['id' => $sub->submission_id]),
+            ];
+        });
+
+        if ($mode === 'teacher') {
+            $recentClasses = ClassModel::where('creator_id', $userId)
+                ->latest()
+                ->take(5)
+                ->get();
+        } else {
+            $recentClasses = ClassMember::with('class')
+                ->where('user_id', $userId)
+                ->orderBy('joined_at', 'desc') 
+                ->take(5)
+                ->get()
+                ->map(fn($cm) => $cm->class);
         }
 
-        return view('grades', [
-            'recentClasses' => $recentClasses,
-            'allClasses' => $allClasses,
-            'selectedClass' => $selectedClass,
-            'assignments' => $assignments,
-            'pageCount' => $pageCount,
-            'currentPage' => $currentPage,
-        ]);
+        session()->put('last_selected_class', $selectedClassId);
+
+        return view('grades', compact(
+            'allClasses',
+            'selectedClass',
+            'assignments',
+            'pageCount',
+            'currentPage', 
+            'recentClasses',
+            'mode'
+        ));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         try {
@@ -139,6 +143,7 @@ class SubmissionController extends Controller
                     'user_id' => $userId,
                     'file_type' => $fileType,
                     'file_path' => $filePath,
+                    'submitted_at' => now(), // added submitted_at for consistency
                 ]);
 
                 return response()->json([
@@ -181,9 +186,11 @@ class SubmissionController extends Controller
     }
 
     /**
-     * Display the specified resource.
+     * Extracts the logic for displaying a single submission.
+     * @param string $id Submission ID
+     * @return \Illuminate\View\View
      */
-    public function show(string $id)
+    private function getSubmissionDetails(string $id)
     {
         $submission = SubmissionModel::with(['post.user'])->findOrFail($id);
 
@@ -218,28 +225,48 @@ class SubmissionController extends Controller
             'score' => $score,
         ]);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
+    public function show(string $id)
     {
-        //
+        return $this->getSubmissionDetails($id);
+    }
+    public function gradesCheck($submissionId)
+    {
+        $submission = SubmissionModel::with('student', 'post', 'grader')->findOrFail($submissionId);
+
+        return view('grades_check', [
+            'submissionId' => $submission->submission_id,
+            'creatorName'  => $submission->student->firstname . ' ' . $submission->student->lastname,
+            'assignmentName' => $submission->post->post_title ?? 'Assignment',
+            'dateSubmitted'  => $submission->submitted_at ?? 'Not submitted',
+            'filePath'       => $submission->file_path,
+            'fileFormat'     => $submission->file_type ?? 'File',
+            'score'          => $submission->score,
+            'feedback'       => $submission->feedback,
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
+    public function saveGrade(Request $request, $submissionId)
     {
-        //
+        $validated = $request->validate([
+            'score'     => 'required|numeric|min:0|max:100',
+            'feedback'  => 'nullable|string|max:2000',
+            'graded_by' => 'required|string|max:255',
+        ]);
+
+        $submission = SubmissionModel::findOrFail($submissionId);
+
+        $submission->update([
+            'score'     => $validated['score'],
+            'feedback'  => $validated['feedback'],
+            'graded_by' => Auth::id(),
+            'graded_at' => now(),
+        ]);
+
+        return response()->json(['message' => 'Grade submitted successfully!']);
+    }
+    public function showStudentGrade(string $id)
+    {
+        return $this->getSubmissionDetails($id);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 }

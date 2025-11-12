@@ -12,7 +12,7 @@ class PostModel extends Model
     protected $table = 'posts';
     protected $primaryKey = 'post_id';
     public $timestamps = false; 
-    protected $fillable = ['user_id','code','post_title','post_type','content','color','due_date','avatar','file_path','file_link'];
+    protected $fillable = ['user_id','code','post_title','post_type','content','color','due_date','file_path','file_link'];
 
 
     public function class()

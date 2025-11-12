@@ -73,14 +73,12 @@
                 <div class="flex flex-col gap-4 justify-center">
                     @forelse ($recentPosts as $post)
                         @php
-                            // Laravel/PHP variables
                             $color = data_get($post, 'color_prefix', 'gray');
                             $borderColor = "border-pastel-{$color}";
                             $textColor = "text-pastel-{$color}";
                             $shadowColor = "shadow-pastel-{$color}";
                             $bgColor = "bg-pastel-{$color}";
 
-                            // Encode the post object for the JavaScript function
                             $postJson = json_encode($post);
                         @endphp
                         
@@ -171,21 +169,21 @@
     </div>
 
     <script>
+        const searchInput = document.getElementById('searchClassInput');
+        const modal = document.getElementById('searchResultsModal');
+        const resultsContainer = document.getElementById('searchResultsContainer');
+        const emptyMsg = document.getElementById('searchModalEmptyMsg');
+        
         function openPostPopup(post) {
             console.log('Opening post popup with data:', post);
-            // Implement modal display logic here
             alert(`Post: ${post.content}`); 
         }
 
-        // The function you provided
         function openPostPopupById(element) {
             const postData = element.dataset.post;
             if (postData) {
-                // IMPORTANT: The data attribute is always a string, so we must parse it.
                 try {
                     const post = JSON.parse(postData);
-                    // This function should be defined to show your custom modal 
-                    // (replacing the default browser alert)
                     openPostPopup(post); 
                 } catch (e) {
                     console.error("Error parsing post data:", e);
@@ -234,28 +232,33 @@
             form.submit();
         }
 
-        function searchClasses() {
-            const searchTerm = document.getElementById('searchClassInput').value.toLowerCase().trim();
-            const resultsContainer = document.getElementById('searchResultsContainer');
-            const emptyMsg = document.getElementById('searchModalEmptyMsg');
-            const modal = document.getElementById('searchResultsModal');
+        document.addEventListener('click', (event) => {
+            if (!modal || !searchInput) return;
 
-            if (!resultsContainer || !emptyMsg || !modal) return;
+            const clickedOutside = !modal.contains(event.target) && !searchInput.contains(event.target);
+
+            if (clickedOutside) {
+                closeSearchModal();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeSearchModal();
+            }
+        });
+
+        function searchClasses() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            const allClassItems = document.querySelectorAll('.class-search-item');
 
             if (!searchTerm) {
-                resultsContainer.innerHTML = '';
-                emptyMsg.textContent = 'Type your search and hit Enter.';
-                emptyMsg.style.display = 'block';
-                modal.classList.add('hidden');
+                clearSearchResults();
                 return;
             }
 
-            modal.classList.remove('hidden');
-
             let resultsHTML = '';
             let matchCount = 0;
-
-            const allClassItems = document.querySelectorAll('.class-search-item');
 
             allClassItems.forEach(item => {
                 const className = (item.dataset.classname || '').toLowerCase();
@@ -264,10 +267,11 @@
 
                 if (className.includes(searchTerm) || creator.includes(searchTerm)) {
                     resultsHTML += `
-                        <a href="${href}" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-outfit flex items-center justify-between gap-2 transition rounded-md">
+                        <a href="${href}" 
+                            class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-outfit flex items-center justify-between gap-2 transition rounded-md">
                             <div class="flex flex-col justify-center min-w-0 flex-grow">
                                 <h4 class="font-medium text-black truncate capitalize">${item.dataset.classname}</h4>
-                                <p class="text-xs text-gray-500 font-outfit truncate capitalize">${item.dataset.creator}</p>
+                                <p class="text-xs text-gray-500 truncate capitalize">${item.dataset.creator}</p>
                             </div>
                             <iconify-icon icon="mdi:chevron-right" width="16" height="16" class="text-gray-400 shrink-0"></iconify-icon>
                         </a>`;
@@ -283,25 +287,21 @@
                 resultsContainer.innerHTML = resultsHTML;
                 emptyMsg.style.display = 'none';
             }
-        }
 
-        function openSearchModal() {
-            const modal = document.getElementById('searchResultsModal');
-            if (modal) {
-                modal.classList.remove('hidden');
-            }
+            modal.classList.remove('hidden');
         }
 
         function closeSearchModal() {
-            const modal = document.getElementById('searchResultsModal');
-            const input = document.getElementById('searchClassInput');
-            
-            if (modal) {
-                modal.classList.add('hidden');
-            }
-            
-            if (input) {
-                 input.value = "";
+            if (modal) modal.classList.add('hidden');
+            if (searchInput) searchInput.value = '';
+            clearSearchResults();
+        }
+
+        function clearSearchResults() {
+            if (resultsContainer) resultsContainer.innerHTML = '';
+            if (emptyMsg) {
+                emptyMsg.textContent = 'Type to start searching...';
+                emptyMsg.style.display = 'block';
             }
         }
     </script>

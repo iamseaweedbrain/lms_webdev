@@ -87,7 +87,7 @@
 
             @forelse ($posts as $post)
                 @php
-                    $borderColor = ($post->post_type ?? 'material') === 'announcement' ? 'border-[#F9CADA]' : 'border-[#CBE8E9]';
+                    $borderColor = ($post->post_type ?? 'material') === 'announcement' ? 'border-{[#F9CADA]}' : 'border-[#CBE8E9]';
                     $shadowColor = ($post->post_type ?? 'material') === 'announcement' ? 'shadow-[8px_8px_0_0_#FBD1E2]' : 'shadow-[8px_8px_0_0_#B7E3E6]';
                     $isRead = in_array($post->post_id, $readPostIds ?? []);
                 @endphp

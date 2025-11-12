@@ -20,7 +20,7 @@ class ClassModel extends Model
 
     public function members()
     {
-        return $this->hasMany(ClassMember::class, 'class_id', 'id');
+        return $this->hasMany(ClassMember::class, 'code', 'code');
     }
     public function pinnedBy()
     {

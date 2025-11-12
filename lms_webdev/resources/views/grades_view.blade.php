@@ -1,18 +1,6 @@
 <x-layouts.mainlayout>
     <div class="min-h-screen flex items-center justify-center bg-[#FAF8F5] px-6 py-10">
-        <div class="w-full max-w-5xl">
-
-            <div class="flex justify-between items-center mb-10">
-                <button onclick="window.history.back()" 
-                    class="flex items-center gap-2 text-gray-600 hover:text-black transition">
-                    <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
-                </button>
-
-                <button 
-                    class="bg-[#F9CADA] text-black px-6 py-2 rounded-xl font-semibold hover:opacity-80 transition shadow-[4px_4px_0_0_#F9CADA]">
-                    Return for Appeal
-                </button>
-            </div>
+        <div class="w-full max-w-5xl font-outfit">
 
             @php
                 $creatorName = $creatorName ?? 'Creator Name';
@@ -25,18 +13,30 @@
                 $score = $score ?? '100';
             @endphp
 
+            <div class="flex justify-between items-center mb-10">
+                <button onclick="window.history.back()" 
+                    class="flex items-center gap-2 text-gray-600 hover:text-black transition">
+                    <iconify-icon icon="mdi:arrow-left" width="28" height="28"></iconify-icon>
+                </button>
+
+                <button 
+                    class="bg-[#F9CADA] text-black px-6 py-2 rounded-xl font-semibold hover:bg-page transition shadow-[4px_4px_0_0_#F9CADA]">
+                    Return for Appeal
+                </button>
+            </div>
+
             <div class="bg-white w-full border-[3px] border-[#F9CADA] rounded-2xl shadow-[10px_10px_0_0_#F9CADA] p-10">
                 <div class="flex gap-8">
 
-                    <div class="flex-shrink-0 w-[220px] relative -top-32">
+                    <div class="shrink-0 w-[270px] relative -top-20 2">
                         <img src="{{ asset('images/cat-mascot.png') }}" 
                              alt="cat-mascot" 
                              class="w-full h-auto object-contain">
                     </div>
 
-                    <div class="flex flex-col flex-1">
+                    <div class="flex flex-col flex-1 justify-center">
                         <p class="text-gray-700 text-sm">{{ $creatorName }}</p>
-                        <h2 class="font-bold text-2xl text-black">{{ $assignmentName }}</h2>
+                        <h2 class="font-bold text-[46px] text-black font-poppins">{{ $assignmentName }}</h2>
                     </div>
                 </div>
 

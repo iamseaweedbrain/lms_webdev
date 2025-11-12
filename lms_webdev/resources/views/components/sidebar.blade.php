@@ -70,8 +70,8 @@
            id="viewToggleBtn"
            onclick="toggleViewMode()"
            class="flex justify-center items-center w-[50px] h-[50px] my-10 rounded-full text-[22px] transition-all duration-200
-                  {{ request()->is('classes') ? 'text-main hover:bg-main hover:text-pastel-pink cursor-pointer' : 'text-gray-300 cursor-not-allowed' }}"
-           title="{{ request()->is('classes') ? 'Toggle Student/Teacher View' : 'Only available on Classes page' }}">
+                  {{ request()->is('classes') || request()->is('grades') ? 'text-main hover:bg-main hover:text-pastel-pink cursor-pointer' : 'text-gray-300 cursor-not-allowed' }}"
+           title="{{ request()->is('classes') || request()->is('grades') ? 'Toggle Student/Teacher View' : 'Only available on Classes page' }}">
             <svg id="toggleIcon" xmlns="http://www.w3.org/2000/svg" width="30" height="30" viewBox="0 0 256 256">
                 <rect width="256" height="256" fill="none"/>
                 <path fill="currentColor"
@@ -89,9 +89,9 @@
 
 <script>
 function toggleViewMode() {
-    const isOnClassesPage = window.location.pathname === '/classes';
+    const onTogglePage = window.location.pathname === '/classes' || window.location.pathname === '/grades';
 
-    if (!isOnClassesPage) {
+    if (!onTogglePage) {
         const toast = document.createElement('div');
         toast.textContent = 'This feature is only available on the Classes page';
         toast.className = `
@@ -115,6 +115,9 @@ function toggleViewMode() {
     const newMode = currentMode === 'student' ? 'teacher' : 'student';
 
     localStorage.setItem('viewMode', newMode);
+    const url = new URL(window.location.href);
+    url.searchParams.set('view', newMode);
+    window.location.href = url.toString();
 
     window.dispatchEvent(new CustomEvent('viewModeChanged', { detail: { mode: newMode } }));
 
@@ -126,11 +129,11 @@ function toggleViewMode() {
 function updateToggleButton(mode) {
     const btn = document.getElementById('viewToggleBtn');
     const icon = document.getElementById('toggleIcon');
-    const isOnClassesPage = window.location.pathname === '/classes';
+    const onTogglePage = window.location.pathname === '/classes' || window.location.pathname === '/grades';
 
     if (!btn || !icon) return;
 
-    if (isOnClassesPage) {
+    if (onTogglePage) {
         if (mode === 'teacher') {
             btn.classList.add('bg-main', 'text-pastel-pink');
             btn.classList.remove('text-main', 'text-gray-300');
