@@ -130,6 +130,7 @@ class PostController extends Controller
             'due_date' => ['required', 'date', 'after_or_equal:' . now()->format('Y-m-d H:i')],
             'title' => 'required|max:255',
             'instructions' => 'required|string',
+            'color' => ['nullable', Rule::in(['pink', 'blue', 'purple', 'yellow', ''])],
             'assignment_file' => 'nullable|file|max:10240',
             'assignment_link' => 'nullable|url',
         ]);
@@ -140,8 +141,13 @@ class PostController extends Controller
             'post_title' => $validatedData['title'],
             'post_type'  => 'assignment',
             'content'    => $validatedData['instructions'] ?? null,
+            'color'      => $validatedData['color'] ?? 'pink',
             'due_date'   => $validatedData['due_date'],
         ];
+
+        if (!empty($validatedData['color'])) {
+            $assignmentData['color'] = $validatedData['color'];
+        }
 
         if ($request->hasFile('assignment_file')) {
             $file = $request->file('assignment_file');

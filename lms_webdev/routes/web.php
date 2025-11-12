@@ -36,12 +36,16 @@ Route::view('/login', 'auth.login')->name('login');
 Route::view('/signup', 'auth.signup')->name('signup');
 Route::view('/add-class', 'add_class')->name('add_class');
 Route::post('/classes', [ClassController::class, 'store'])->name('classes.store');
+
+Route::get('/grades/{submissionId}', [SubmissionController::class, 'gradesCheck'])->name('grades_check');
 Route::get('/grades/{class?}', [SubmissionController::class, 'index'])->name('grades');
+Route::get('/student_grade/{id}', [SubmissionController::class, 'show'])->name('student_grade');
+Route::post('/grades/{submissionId}/grade', [SubmissionController::class, 'saveGrade'])->name('grades.save');
+
 Route::view('/settings', 'settings')->name('settings');
 Route::view('/student', 'student')->name('student');
 Route::get('/notification', [NotificationController::class, 'index'])->name('notification');
 Route::view('/settings-edit', 'settings-edit')->name('settings-edit');
-Route::get('/student_grade/{id}', [SubmissionController::class, 'show'])->name('student_grade');
 
 Route::prefix('posts')->group(function () {
     Route::get('/', [PostController::class, 'index'])->name('posts.index');

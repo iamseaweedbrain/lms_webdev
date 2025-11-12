@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,6 +12,7 @@ class SubmissionModel extends Model
     protected $table = 'submissions';
     protected $primaryKey = 'submission_id';
     public $timestamps = false;
+
     protected $fillable = [
         'post_id',
         'user_id',
@@ -32,14 +31,13 @@ class SubmissionModel extends Model
         return $this->belongsTo(PostModel::class, 'post_id', 'post_id');
     }
 
-    /*public function student()
+    public function student()
     {
-        return $this->belongsTo(AccountModel::class, 'user_id'foreignKey: , 'userid');
-    }*/
+        return $this->belongsTo(AccountModel::class, 'user_id', 'user_id');
+    }
 
     public function grader()
     {
-        return $this->belongsTo(AccountModel::class, 'graded_byforeignKey: ', 'userid');
+        return $this->belongsTo(AccountModel::class, 'graded_by', 'user_id');
     }
 }
-
