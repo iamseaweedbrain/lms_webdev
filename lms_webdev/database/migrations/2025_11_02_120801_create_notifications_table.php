@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id('notif_id');
             $table->string('user_id');
             $table->text('message'); 
+            $table->string('type')->nullable();
+            $table->string('url')->nullable();
+            $table->text('meta')->nullable();
             $table->boolean('is_read')->default(false); // 0 = unread, 1 = read
             $table->timestamp('created_at')->useCurrent();
 

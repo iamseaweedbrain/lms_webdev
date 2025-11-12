@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\NotificationModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
@@ -12,27 +13,23 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        $notifications = [
-            [
-                'title' => 'New Assignment: WEB SYSTEM AND TECHNOLOGIES 2',
-                'date' => 'Posted: Nov 8, 2025',
-                'icon' => 'mdi:book-open-variant',
-                'bgColor' => '#F9CADA',
-                'url' => '/grades'
-            ],
-            [
-                'title' => 'Class Announcement: ALGORITHM AND COMPLEXITY',
-                'date' => 'Posted: Nov 7, 2025',
-                'icon' => 'mdi:bullhorn-outline',
-                'bgColor' => '#D9CCF1',
-                'url' => '/dashboard'
-            ],
-            // add other notifications
-        ];
+         $userId = Auth::id();
+
+        // Fetch user's notifications (latest first)
+        $notifications = NotificationModel::where('user_id', $userId)
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         return view('notification', compact('notifications'));
     }
 
+     public function markAsRead($id)
+    {
+        $notif = NotificationModel::findOrFail($id);
+        $notif->update(['is_read' => 1]);
+
+        return response()->json(['message' => 'Notification marked as read']);
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -47,14 +44,6 @@ class NotificationController extends Controller
     public function store(Request $request)
     {
         //
-    }
-
-    public function markAsRead($id)
-    {
-        $notif = NotificationModel::findOrFail($id);
-        $notif->update(['is_read' => 1]);
-
-        return response()->json(['message' => 'Notification marked as read']);
     }
 
     /**
