@@ -18,13 +18,12 @@ return new class extends Migration
             $table->string('post_title');
             $table->enum('post_type', ['material', 'assignment', 'announcement']);
             $table->text('content');
-            $table->string('file_path');
-            $table->string('file_link');
+            $table->string('file_path')->nullable();
+            $table->string('file_link')->nullable();
             $table->enum('color', ['pink', 'blue', 'purple', 'yellow'])->default('pink');
             $table->dateTime('due_date')->nullable();
             $table->timestamp('created_at')->useCurrent();
 
-            // foreign keys ulit sa mga tables
             $table->foreign('code')->references('code')->on('classes')->onDelete('cascade');
             $table->foreign('user_id')->references('user_id')->on('useraccount')->onDelete('cascade');
         });

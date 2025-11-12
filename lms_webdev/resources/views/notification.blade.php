@@ -14,14 +14,52 @@
 
         <div class="flex flex-col gap-5">
             @foreach($notifications as $notification)
+                @php
+                    // Set icon & color based on type
+                    switch ($notification->type) {
+                        case 'assignment':
+                            $icon = 'mdi:book-open-variant';
+                            $bgColor = '#F9CADA';
+                            break;
+                        case 'announcement':
+                            $icon = 'mdi:bullhorn-outline';
+                            $bgColor = '#D9CCF1';
+                            break;
+                        case 'reminder':
+                            $icon = 'mdi:calendar-alert';
+                            $bgColor = '#FCEED1';
+                            break;
+                        default:
+                            $icon = 'mdi:bell-outline';
+                            $bgColor = '#E3E8EF';
+                    }
+
+                    $date = 'Posted: ' . \Carbon\Carbon::parse($notification->created_at)->format('M d, Y');
+                    $title = ucfirst($notification->type) . ': ' . ($notification->message ?? '');
+                @endphp
+
                 <x-notification-card 
-                    :title="$notification['title']"
-                    :date="$notification['date']"
-                    :icon="$notification['icon']"
-                    :bgColor="$notification['bgColor']"
-                    :url="$notification['url']"
-                    class="border-[3px] shadow-[8px_8px_0_0_{{ $notification['bgColor'] }}]" />
+                    :title="$title"
+                    :date="$date"
+                    :icon="$icon"
+                    :bgColor="$bgColor"
+                    :url="$notification->url"
+                    class="border-[3px] shadow-[8px_8px_0_0_{{ $bgColor }}] {{ $notification->is_read ? 'opacity-60' : '' }}"
+                />
             @endforeach
         </div>
     </div>
+
+    <script>
+        function markAsRead(id) {
+            fetch(`/notifications/${id}/read`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            }).then(res => res.json())
+            .then(data => location.reload());
+        }
+    </script>
 </x-layouts.mainlayout>

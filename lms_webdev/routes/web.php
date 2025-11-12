@@ -66,3 +66,9 @@ Route::get('/reset-password', function () {
 Route::post('/forgot-password/request', [ForgotPasswordOtpController::class, 'requestOtp'])->name('password.request.otp');
 Route::post('/forgot-password/verify', [ForgotPasswordOtpController::class, 'verifyOtp'])->name('password.verify.otp');
 Route::post('/forgot-password/reset', [ForgotPasswordOtpController::class, 'resetPassword'])->name('password.reset.otp');
+
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');
+
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+Route::post('/notifications/{id}/read', [NotificationController::class, 'markAsRead'])->name('notifications.read');

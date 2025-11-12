@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PostModel;
+use App\Models\NotificationModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -74,7 +75,7 @@ class PostController extends Controller
             'post_title' => $title,
             'post_type'  => $validated['post_type'],
             'content'    => $content,
-            'avatar'     => '', 
+            //'avatar'     => '', 
         ];
 
         if (!empty($validated['color'])) {
@@ -99,13 +100,34 @@ class PostController extends Controller
         try {
             $post = PostModel::create($postData);
 
+            $classMembers = DB::table('class_users')
+                ->where('class_code', $code)
+                ->where('user_id', '!=', Auth::id())
+                ->pluck('user_id');
+
+            foreach ($classMembers as $memberId) {
+                NotificationModel::create([
+                    'user_id'   => $memberId,
+                    'message'   => Auth::user()->name . " posted a new {$validated['post_type']}: {$title}",
+                    'type'      => $validated['post_type'],
+                    'url'       => route('classes.show', ['code' => $code]),
+                    'meta'      => json_encode(['post_id' => $post->post_id ?? $post->id ?? null, 'code' => $code]),
+                    'is_read'   => false,
+                ]);
+            }
+
             return redirect()->route('classes.show', ['code' => $code])
                             ->with('success', 'Post created successfully!');
+
         } catch (\Throwable $e) {
-            Log::error('Error creating post', ['exception' => $e->getMessage(), 'data' => $postData]);
+            Log::error('Error creating post', [
+                'exception' => $e->getMessage(),
+                'data' => $postData,
+            ]);
             return back()->with('error', 'Server error while creating post. Check logs.')->withInput();
         }
     }
+
     public function newAssignment(Request $request, $code)
     {
         $validatedData = $request->validate([
@@ -123,7 +145,7 @@ class PostController extends Controller
             'post_type'  => 'assignment',
             'content'    => $validatedData['instructions'] ?? null,
             'due_date'   => $validatedData['due_date'],
-            'avatar'     => '', 
+            //'avatar'     => '', 
         ];
 
         if ($request->hasFile('assignment_file')) {
@@ -137,7 +159,24 @@ class PostController extends Controller
             $assignmentData['file_link'] = $validatedData['assignment_link'];
         }
 
-        PostModel::create($assignmentData);
+        $assignmentPost = PostModel::create($assignmentData);
+
+        // notify class members about the new assignment
+        $classMembers = DB::table('classmembers')
+            ->where('code', $code)
+            ->where('user_id', '!=', Auth::id())
+            ->pluck('user_id');
+
+        foreach ($classMembers as $memberId) {
+            NotificationModel::create([
+                'user_id' => $memberId,
+                'message' => Auth::user()->name . " posted a new assignment: {$assignmentData['post_title']}",
+                'type'    => 'assignment',
+                'url'     => route('classes.show', ['code' => $code]),
+                'meta'    => json_encode(['post_id' => $assignmentPost->post_id ?? $assignmentPost->id ?? null, 'code' => $code]),
+                'is_read' => false,
+            ]);
+        }
 
         return redirect()->route('classes.show', ['code' => $code])
                          ->with('success', 'Assignment created successfully!');
