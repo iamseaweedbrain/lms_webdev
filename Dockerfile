@@ -57,7 +57,7 @@ RUN mkdir -p storage bootstrap/cache \
  && chmod -R 775 storage bootstrap/cache
 
 # Add an entrypoint script that will perform runtime tasks (caching, permissions) and start the app
-COPY ./lms_webdev/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY ./entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 # Expose a default port; Render provides $PORT at runtime so we respect it in the entrypoint
