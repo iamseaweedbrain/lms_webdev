@@ -13,9 +13,11 @@ if [ -n "${APP_KEY}" ]; then
   php artisan view:cache || true
 fi
 
-# Run database migrations safely
+# Run database migrations and seeder safely
 echo "Running database migrations..."
 php artisan migrate --force || true
+echo "Running database seeders..."
+php artisan db:seed --force || true
 
 # Ensure storage and cache are writable by the web user
 mkdir -p storage bootstrap/cache
